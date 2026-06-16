@@ -6,6 +6,7 @@ class Business(Base):
     __tablename__ = "businesses"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(unique=True)
     name: Mapped[str]
     phone: Mapped[str | None]
     created_at: Mapped[str] = mapped_column(default="now()")
