@@ -1,4 +1,5 @@
 import uuid
+from sqlalchemy import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
@@ -8,7 +9,7 @@ class Business(Base):
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     name: Mapped[str]
     phone: Mapped[str | None]
-    created_at: Mapped[str] = mapped_column(default="now()")
+    created_at: Mapped[str] = mapped_column(server_default=func.now())
 
     customers: Mapped[list["Customer"]] = relationship(back_populates="business")
     products: Mapped[list["Product"]] = relationship(back_populates="business")
