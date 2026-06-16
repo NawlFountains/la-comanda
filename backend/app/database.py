@@ -12,7 +12,7 @@ if not DATABASE_URL:
 
 assert DATABASE_URL is not None
 
-engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True)
+engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True, connect_args={})
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(DeclarativeBase):

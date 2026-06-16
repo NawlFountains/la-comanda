@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.database import get_db
 from app.models import Business
 from app.schemas.business import BusinessCreate, BusinessResponse
@@ -25,6 +26,13 @@ async def create_business(
                     detail="Invalid token"
                     )
         user_id = response.user.id
+
+        result = await db.execute(
+            select(Business).where(Business.user_id == uuid.UUID(user_id))
+        )
+        existing = result.scalar_one_or_none()
+        if existing:
+            raise HTTPException(status_code=409, detail="Business already exists for this user")
 
         business = Business(
                 id=uuid.uuid4(),

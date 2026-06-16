@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from uuid import UUID
-from datetime import datetime
 
 class BusinessCreate(BaseModel):
     name: str
@@ -10,6 +9,6 @@ class BusinessResponse(BaseModel):
     id: UUID
     name: str
     phone: str | None
-    created_at: datetime
+    created_at: str 
 
     model_config = {"from_attributes": True}

@@ -1,15 +1,16 @@
 import uuid
 from sqlalchemy import ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects.postgresql import TIMESTAMP
 from app.database import Base
-from datetime import date
+from datetime import datetime
 
 class Restock(Base):
     __tablename__ = "restocks"
 
     id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid.uuid4)
     business_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("businesses.id"))
-    created_at: Mapped[date] = mapped_column(server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True),server_default=func.now())
     supplier: Mapped[str | None]
     notes: Mapped[str | None]
 
