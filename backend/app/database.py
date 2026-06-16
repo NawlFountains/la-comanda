@@ -1,4 +1,4 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession, AsyncEngine
 from sqlalchemy.orm import DeclarativeBase
 from dotenv import load_dotenv
 from typing import AsyncGenerator
@@ -12,14 +12,11 @@ if not DATABASE_URL:
 
 assert DATABASE_URL is not None
 
+engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True)
+AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
+
 class Base(DeclarativeBase):
     pass
-
-def get_engine():
-    return create_async_engine(DATABASE_URL, echo=True)
-
-def get_session_maker():
-    return async_sessionmaker(get_engine(), expire_on_commit=False)
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:

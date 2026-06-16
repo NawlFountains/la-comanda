@@ -13,6 +13,6 @@ class Business(Base):
 
     customers: Mapped[list["Customer"]] = relationship(back_populates="business")
     products: Mapped[list["Product"]] = relationship(back_populates="business")
-    items: Mapped[list["Items"]] = relationship(back_populates="business")
+    items: Mapped[list["Item"]] = relationship(back_populates="business")
     orders: Mapped[list["Order"]] = relationship(back_populates="business")
     restocks: Mapped[list["Restock"]] = relationship(back_populates="business")
