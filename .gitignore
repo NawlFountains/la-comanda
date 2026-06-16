@@ -1,1 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+pytest_cache/
+
+# Enviroment
 .env
+
+# Alembic
+alembic/versions/*.pyc
+
+# Editor
+.nvim/
+*.swp
+*.swo
