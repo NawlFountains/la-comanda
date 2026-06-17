@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import desc, select
 from app.database import get_db
 from app.models import Product, Business, PriceHistory 
 from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
@@ -122,7 +122,7 @@ async def get_prices(
     result = await db.execute(
             select(PriceHistory).where(
                     PriceHistory.product_id == product.id
-                )
+                ).order_by(desc(PriceHistory.valid_from))
     )
     prices = result.scalars().all()
     return prices
