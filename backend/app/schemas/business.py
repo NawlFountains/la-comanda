@@ -7,6 +7,7 @@ class BusinessCreate(BaseModel):
 
 class BusinessResponse(BaseModel):
     id: UUID
+    user_id: UUID
     name: str
     phone: str | None
     created_at: str 

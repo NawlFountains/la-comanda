@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.database import get_db
 from app.models import Business
+import anyio
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
@@ -23,7 +24,7 @@ async def get_current_business(
         ) -> Business:
     token = credentials.credentials
     try:
-        response = supabase.auth.get_user(token)
+        response = await anyio.to_thread.run_sync(supabase.auth.get_user, token)
         if response and response.user.id:
             user_id = response.user.id
         else:

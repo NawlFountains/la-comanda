@@ -10,7 +10,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL is not set in .env")
 
-assert DATABASE_URL is not None
+if os.getenv("TESTING") == "True":
+    DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 engine: AsyncEngine = create_async_engine(DATABASE_URL, echo=True, connect_args={})
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
