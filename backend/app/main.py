@@ -4,10 +4,12 @@ from app.dependencies.auth import get_current_business
 from app.models.business import Business
 
 from app.routers.business import router as business_router
+from app.routers.product import router as product_router
 
 app = FastAPI(title='Comanda API')
 
 app.include_router(business_router)
+app.include_router(product_router)
 
 @app.get('/health')
 async def healt():
