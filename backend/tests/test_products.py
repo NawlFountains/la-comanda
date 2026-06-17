@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, AsyncMock
 from app.main import app
 from app.database import get_db
 from app.dependencies.auth import get_current_business
-from app.models import Business, Product, PriceHistory, product
+from app.models import Business, Product, PriceHistory
 from datetime import date
 from decimal import Decimal
 
