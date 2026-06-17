@@ -11,10 +11,7 @@ import anyio
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 
-if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
-    raise ValueError("SUPABASE_URL or SUPABASE_SERVICE_KEY is not set")
-
-supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+supabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY) if SUPABASE_URL and SUPABASE_SERVICE_KEY else None
 
 bearer_scheme = HTTPBearer()
 
@@ -22,6 +19,11 @@ async def get_current_business(
         credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
         db: AsyncSession = Depends(get_db)
         ) -> Business:
+    if supabase is None:
+        raise HTTPException(
+                status_code=status.HTTTP_503_SERVICE_UNAVAILABLE,
+                detail="Auth service not configured"
+    )
     token = credentials.credentials
     try:
         response = await anyio.to_thread.run_sync(supabase.auth.get_user, token)
