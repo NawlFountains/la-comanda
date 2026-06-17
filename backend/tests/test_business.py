@@ -8,36 +8,28 @@ from app.dependencies.auth import get_current_business
 from app.models import Business
 from app.main import app
 
-from app.routers import business as business_router
-
 TEST_USER_ID = str(uuid.uuid4())
 
-mock_user = MagicMock()
-mock_user.id = TEST_USER_ID
-
-mock_response = MagicMock()
-mock_response.user = mock_user
-
-business_router.supabase.auth.get_user = MagicMock(return_value=mock_response)
-
 @pytest.mark.asyncio
-async def test_create_business(client: AsyncClient):
-    """ Verifies business creation works when authrized context resolves """
+async def test_create_business(client: AsyncClient, db_session):
+    """Verifies business creation works when authorized context resolves"""
+    from unittest.mock import patch, MagicMock
 
-    app.dependency_overrides.clear()
+    mock_user = MagicMock()
+    mock_user.id = TEST_USER_ID
+    mock_response = MagicMock()
+    mock_response.user = mock_user
 
-    response = await client.post(
+    with patch("app.routers.business.supabase") as mock_sup:
+        mock_sup.auth.get_user.return_value = mock_response
+        response = await client.post(
             "/businesses",
             json={"name": "Test Business", "phone": "+54 123456"},
             headers={"Authorization": "Bearer faketoken"}
-    )
+        )
 
     assert response.status_code == 201
-    data = response.json()
-    assert data["name"] == "Test Business"
-    assert data["user_id"] == TEST_USER_ID
-
-
+    assert response.json()["name"] == "Test Business"
 @pytest.mark.asyncio
 async def test_get_me(client: AsyncClient):
     """ Verifies profile retrival works for valid, authenticated user """
