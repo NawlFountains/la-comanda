@@ -1,17 +1,12 @@
 import uuid
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import pytest
 from httpx import AsyncClient
 from fastapi import HTTPException
-from unittest.mock import MagicMock, AsyncMock
 from app.main import app
-from app.database import get_db
 from app.dependencies.auth import get_current_business
-from app.models import Business, Product, PriceHistory
-from datetime import date
-from decimal import Decimal
+from app.models import Business, Product
 
 # Fixtures
 @pytest.fixture
