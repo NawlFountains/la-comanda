@@ -19,7 +19,7 @@ class RestockCreate(BaseModel):
     created_at: date
     supplier: str | None = None
     notes: str | None = None
-    items: list[RestockItemCreate]
+    restock_items: list[RestockItemCreate]
 
 class RestockUpdate(BaseModel):
     created_at: date | None = None
@@ -32,6 +32,6 @@ class RestockResponse(BaseModel):
     created_at: date
     supplier: str | None
     notes: str | None
-    items: list[RestockItemResponse] = []
+    restock_items: list[RestockItemResponse] = []
 
     model_config = {"from_attributes": True}
