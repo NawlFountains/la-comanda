@@ -2,7 +2,7 @@ from sqlalchemy.orm import selectinload
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from app.database import get_db
 from app.models import Restock, RestockItem, Business
 from app.schemas.restock import RestockCreate, RestockResponse, RestockUpdate
@@ -53,6 +53,7 @@ async def get_restocks(
     result = await db.execute(
             select(Restock)
                 .where( Restock.business_id == business.id)
+                .order_by(desc(Restock.restock_date))
                 .options(selectinload(Restock.restock_items))
     )
 
