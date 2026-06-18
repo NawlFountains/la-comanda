@@ -6,12 +6,14 @@ from app.models.business import Business
 from app.routers.business import router as business_router
 from app.routers.product import router as product_router
 from app.routers.item import router as item_router
+from app.routers.restock import router as restock_router
 
 app = FastAPI(title='Comanda API')
 
 app.include_router(business_router)
 app.include_router(product_router)
 app.include_router(item_router)
+app.include_router(restock_router)
 
 @app.get('/health')
 async def healt():
