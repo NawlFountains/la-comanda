@@ -810,6 +810,7 @@ async def test_update_item_another_business(client: AsyncClient, db_session: Asy
 @pytest.mark.asyncio
 async def test_update_item_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
     """ should't allow unauthorized client to update existing items """
+    app.dependency_overrides[get_current_business] = mock_auth_failure
 
     item_uuid = uuid.uuid4()
     i1 = Item(
