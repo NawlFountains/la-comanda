@@ -16,20 +16,20 @@ class RestockItemResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 class RestockCreate(BaseModel):
-    created_at: date
+    restock_date: date
     supplier: str | None = None
     notes: str | None = None
     restock_items: list[RestockItemCreate]
 
 class RestockUpdate(BaseModel):
-    created_at: date | None = None
+    restock_date: date | None = None
     supplier: str | None = None
     notes: str | None = None
 
 class RestockResponse(BaseModel):
     id: UUID
     business_id: UUID
-    created_at: date
+    restock_date: date
     supplier: str | None
     notes: str | None
     restock_items: list[RestockItemResponse] = []
