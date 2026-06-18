@@ -2,10 +2,10 @@ from sqlalchemy.orm import selectinload
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select
 from app.database import get_db
 from app.models import Restock, RestockItem, Business
-from app.schemas.restock import RestockCreate, RestockResponse, RestockUpdate, RestockItemCreate, RestockItemResponse
+from app.schemas.restock import RestockCreate, RestockResponse, RestockUpdate
 from app.dependencies.auth import get_current_business
 import uuid
 
@@ -20,7 +20,7 @@ async def create_restock(
     restock = Restock(
             id=uuid.uuid4(),
             business_id=business.id,
-            created_at=data.created_at,
+            restock_date=data.restock_date,
             supplier=data.supplier,
             notes=data.notes
     )
@@ -60,3 +60,83 @@ async def get_restocks(
 
     return restocks
 
+@router.get("/{restock_id}", response_model=RestockResponse)
+async def get_restock(
+        restock_id: uuid.UUID,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+            select(Restock)
+            .where(
+                Restock.id == restock_id,
+                Restock.business_id == business.id
+            )
+            .options( selectinload((Restock.restock_items)))
+    )
+    restock = result.scalar_one_or_none()
+
+    if restock is None:
+        raise HTTPException(status_code=404, detail="Restock not found")
+
+    return restock
+
+@router.patch("/{restock_id}", response_model=RestockResponse)
+async def update_restock(
+        restock_id: uuid.UUID,
+        data: RestockUpdate,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+            select(Restock)
+            .where(
+                Restock.id == restock_id,
+                Restock.business_id == business.id
+            )
+            .options( selectinload((Restock.restock_items)))
+    )
+    restock = result.scalar_one_or_none()
+
+    if restock is None:
+        raise HTTPException(status_code=404, detail="Restock not found")
+
+    if data.restock_date is not None:
+        restock.restock_date= data.restock_date
+
+    if data.supplier is not None:
+        restock.supplier = data.supplier
+
+    if data.notes is not None:
+        restock.notes= data.notes
+
+    await db.commit()
+    result = await db.execute(
+            select(Restock)
+            .where(Restock.id == restock.id)
+            .options(selectinload(Restock.restock_items))
+    )
+    restock = result.scalar_one()
+    return restock
+
+@router.delete("/{restock_id}", status_code=204)
+async def delete_restock(
+        restock_id: uuid.UUID,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+            select(Restock)
+            .where(
+                Restock.id == restock_id,
+                Restock.business_id == business.id
+            )
+    )
+
+    restock = result.scalar_one_or_none()
+
+    if restock is None:
+        raise HTTPException(status_code=404, detail="Restock not found")
+
+    await db.delete(restock)
+    await db.commit()
