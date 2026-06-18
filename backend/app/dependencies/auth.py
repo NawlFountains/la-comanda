@@ -21,7 +21,7 @@ async def get_current_business(
         ) -> Business:
     if supabase is None:
         raise HTTPException(
-                status_code=status.HTTTP_503_SERVICE_UNAVAILABLE,
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="Auth service not configured"
     )
     token = credentials.credentials
