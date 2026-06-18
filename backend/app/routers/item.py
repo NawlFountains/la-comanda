@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.database import get_db
 from app.models import Business, Item
 from app.schemas.item import ItemCreate, ItemUpdate, ItemResponse
@@ -35,7 +35,7 @@ async def get_items(
     result = await db.execute(
             select(Item).where(
                     Item.business_id == business.id
-                )
+                ).order_by(func.lower(Item.name))
     )
     items = result.scalars().all()
     return items 
@@ -49,7 +49,7 @@ async def get_low_stock_items(
             select(Item).where(
                     Item.business_id == business.id,
                     Item.current_stock <= Item.low_stock_threshold
-                )
+                ).order_by(func.lower(Item.name))
     )
 
     items = result.scalars().all()
