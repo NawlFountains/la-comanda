@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from app.database import get_db
-from app.models import Restock, RestockItem, Business
+from app.models import Restock, RestockItem, Business, Item
 from app.schemas.restock import RestockCreate, RestockResponse, RestockUpdate
 from app.dependencies.auth import get_current_business
 import uuid
@@ -17,6 +17,18 @@ async def create_restock(
         business: Business = Depends(get_current_business),
         db: AsyncSession = Depends(get_db)
 ):
+    for item_data in data.restock_items:
+        item_result = await db.execute(
+                select(Item).where(
+                    Item.id == item_data.item_id,
+                    Item.business_id == business.id
+                    )
+                )
+        item = item_result.scalar_one_or_none()
+
+        if not item:
+            raise HTTPException(status_code=404, detail=f"Item {item_data.item_id} not found")
+    
     restock = Restock(
             id=uuid.uuid4(),
             business_id=business.id,
