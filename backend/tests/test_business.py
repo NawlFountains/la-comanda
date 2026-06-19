@@ -1,8 +1,7 @@
 import uuid
 import pytest
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from httpx import AsyncClient
-from unittest.mock import MagicMock
 
 from app.dependencies.auth import get_current_business
 from app.models import Business
@@ -37,7 +36,7 @@ async def test_get_me(client: AsyncClient):
         id=uuid.uuid4(),
         user_id=uuid.UUID(TEST_USER_ID),
         name="Mocked Business Profile",
-        created_at=datetime.now(UTC).isoformat()
+        created_at=datetime.now(timezone.utc).isoformat()
     )
 
     app.dependency_overrides[get_current_business] = lambda: fake_business
