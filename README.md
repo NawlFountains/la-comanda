@@ -3,9 +3,10 @@
 Full-Stack application designed to manage restaurant (or take-out only) stock, orders, clients, and operational workflows.
 
 ## Current development Roadmap
-- [ ] Add customer endpoint
+- [x] Add customer endpoint
 - [ ] Add order endpoint
-- [ ] Add recipe endpoin
+- [ ] Add recipe endpoint
+- [ ] Add stock logic on restocking and ordering
 - [ ] Create a front web application using React and Typescript
 - [ ] Deploy both backend and front end
 
