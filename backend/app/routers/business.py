@@ -12,6 +12,12 @@ router = APIRouter(prefix="/businesses", tags=["businesses"])
 
 bearer_scheme = HTTPBearer()
 
+@router.get("/me", response_model=BusinessResponse)
+async def get_me(
+        business: Business = Depends(get_current_business)
+):
+        return business
+
 @router.post("", response_model=BusinessResponse, status_code=201)
 async def create_business(
         data: BusinessCreate,
@@ -44,8 +50,4 @@ async def create_business(
         await db.refresh(business)
         return business
 
-@router.get("/me", response_model=BusinessResponse)
-async def get_me(
-        business: Business = Depends(get_current_business)
-):
-        return business
+

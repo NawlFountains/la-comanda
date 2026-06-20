@@ -11,6 +11,43 @@ import uuid
 
 router = APIRouter(prefix="/restocks", tags=["restocks"])
 
+@router.get("", response_model=list[RestockResponse])
+async def get_restocks(
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+            select(Restock)
+                .where( Restock.business_id == business.id)
+                .order_by(desc(Restock.restock_date))
+                .options(selectinload(Restock.restock_items))
+    )
+
+    restocks = result.scalars().all()
+
+    return restocks
+
+@router.get("/{restock_id}", response_model=RestockResponse)
+async def get_restock(
+        restock_id: uuid.UUID,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+            select(Restock)
+            .where(
+                Restock.id == restock_id,
+                Restock.business_id == business.id
+            )
+            .options( selectinload((Restock.restock_items)))
+    )
+    restock = result.scalar_one_or_none()
+
+    if restock is None:
+        raise HTTPException(status_code=404, detail="Restock not found")
+
+    return restock
+
 @router.post("", response_model=RestockResponse, status_code=201)
 async def create_restock(
         data: RestockCreate,
@@ -55,43 +92,6 @@ async def create_restock(
             .options(selectinload(Restock.restock_items))
     )
     restock = result.scalar_one()
-    return restock
-
-@router.get("", response_model=list[RestockResponse])
-async def get_restocks(
-        business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(
-            select(Restock)
-                .where( Restock.business_id == business.id)
-                .order_by(desc(Restock.restock_date))
-                .options(selectinload(Restock.restock_items))
-    )
-
-    restocks = result.scalars().all()
-
-    return restocks
-
-@router.get("/{restock_id}", response_model=RestockResponse)
-async def get_restock(
-        restock_id: uuid.UUID,
-        business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(
-            select(Restock)
-            .where(
-                Restock.id == restock_id,
-                Restock.business_id == business.id
-            )
-            .options( selectinload((Restock.restock_items)))
-    )
-    restock = result.scalar_one_or_none()
-
-    if restock is None:
-        raise HTTPException(status_code=404, detail="Restock not found")
-
     return restock
 
 @router.patch("/{restock_id}", response_model=RestockResponse)

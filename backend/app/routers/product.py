@@ -11,24 +11,8 @@ import uuid
 
 router = APIRouter(prefix="/products", tags=["products"])
 
-@router.post("", response_model=ProductResponse, status_code=201)
-async def create_product(
-        data: ProductCreate,
-        business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
-):
-    product = Product(
-            id = uuid.uuid4(),
-            business_id = business.id,
-            **data.model_dump()
-    )
 
-    db.add(product)
-
-    await db.commit()
-    await db.refresh(product)
-    return product
-
+# --- Product endpoints ---
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
     product_id: uuid.UUID,
@@ -60,6 +44,26 @@ async def get_products(
 
     return products
 
+@router.post("", response_model=ProductResponse, status_code=201)
+async def create_product(
+        data: ProductCreate,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    product = Product(
+            id = uuid.uuid4(),
+            business_id = business.id,
+            **data.model_dump()
+    )
+
+    db.add(product)
+
+    await db.commit()
+    await db.refresh(product)
+    return product
+
+
+
 @router.patch("/{product_id}", response_model=ProductResponse)
 async def update_product(
         product_id: uuid.UUID,
@@ -83,9 +87,6 @@ async def update_product(
     await db.refresh(product)
     return product
 
-
-
-
 @router.delete("/{product_id}", status_code=204)
 async def delete_product(
     product_id: uuid.UUID,
@@ -103,6 +104,8 @@ async def delete_product(
         raise HTTPException(status_code=404, detail="Product not found")
     await db.delete(product)
     await db.commit()
+
+# --- Price endpoints ---
 
 @router.get("/{product_id}/prices", response_model=list[PriceHistoryResponse])
 async def get_prices(
@@ -155,3 +158,4 @@ async def add_price(
     await db.refresh(price)
     return price
 
+# --- Recipe endpoints ---

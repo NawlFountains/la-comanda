@@ -9,37 +9,6 @@ import uuid
 
 router = APIRouter(prefix="/items", tags=["items"])
 
-@router.post("", response_model=ItemResponse, status_code=201)
-async def create_item(
-        data: ItemCreate,
-        business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
-):
-    item = Item(
-            id = uuid.uuid4(),
-            business_id = business.id,
-            **data.model_dump()
-    )
-
-    db.add(item)
-
-    await db.commit()
-    await db.refresh(item)
-    return item
-
-@router.get("", response_model=list[ItemResponse])
-async def get_items(
-        business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(
-            select(Item).where(
-                    Item.business_id == business.id
-                ).order_by(func.lower(Item.name))
-    )
-    items = result.scalars().all()
-    return items 
-
 @router.get("/low-stock", response_model= list[ItemResponse])
 async def get_low_stock_items(
         business: Business = Depends(get_current_business),
@@ -54,6 +23,19 @@ async def get_low_stock_items(
 
     items = result.scalars().all()
     return items
+
+@router.get("", response_model=list[ItemResponse])
+async def get_items(
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+            select(Item).where(
+                    Item.business_id == business.id
+                ).order_by(func.lower(Item.name))
+    )
+    items = result.scalars().all()
+    return items 
 
 @router.get("/{item_id}", response_model=ItemResponse)
 async def get_item(
@@ -71,6 +53,24 @@ async def get_item(
 
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
+    return item
+
+@router.post("", response_model=ItemResponse, status_code=201)
+async def create_item(
+        data: ItemCreate,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    item = Item(
+            id = uuid.uuid4(),
+            business_id = business.id,
+            **data.model_dump()
+    )
+
+    db.add(item)
+
+    await db.commit()
+    await db.refresh(item)
     return item
 
 @router.patch("/{item_id}", response_model=ItemResponse)

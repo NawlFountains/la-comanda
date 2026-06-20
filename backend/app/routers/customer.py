@@ -11,24 +11,6 @@ import uuid
 
 router = APIRouter(prefix="/customers", tags=["customers"])
 
-@router.post("", response_model=CustomerResponse, status_code=201)
-async def create_customer(
-        data: CustomerCreate,
-        business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
-):
-    customer= Customer(
-            id = uuid.uuid4(),
-            business_id = business.id,
-            **data.model_dump()
-    )
-
-    db.add(customer)
-
-    await db.commit()
-    await db.refresh(customer)
-    return customer 
-
 @router.get("", response_model=list[CustomerResponse])
 async def get_customers(
         business: Business = Depends(get_current_business),
@@ -63,6 +45,24 @@ async def get_customer(
         raise HTTPException(status_code=404, detail="Customer not found")
 
     return customer
+
+@router.post("", response_model=CustomerResponse, status_code=201)
+async def create_customer(
+        data: CustomerCreate,
+        business: Business = Depends(get_current_business),
+        db: AsyncSession = Depends(get_db)
+):
+    customer= Customer(
+            id = uuid.uuid4(),
+            business_id = business.id,
+            **data.model_dump()
+    )
+
+    db.add(customer)
+
+    await db.commit()
+    await db.refresh(customer)
+    return customer 
 
 @router.patch("/{customer_id}", response_model=CustomerResponse)
 async def update_customer(
