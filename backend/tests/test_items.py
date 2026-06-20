@@ -4,33 +4,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import pytest
 from httpx import AsyncClient
-from fastapi import HTTPException
 from app.main import app
 from app.dependencies.auth import get_current_business
-from app.models import Business, Item 
-
-# Fixtures
-
-def mock_auth_failure():
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-@pytest.fixture
-def cleanup_override():
-    yield
-    app.dependency_overrides.clear()
-
-@pytest.fixture
-async def setup_business(db_session: AsyncSession):
-    fake_business = Business(id=uuid.uuid4(), user_id=uuid.uuid4(),name="Test")
-    db_session.add(fake_business)
-    await db_session.commit()
-    await db_session.refresh(fake_business)
-
-    app.dependency_overrides[get_current_business] = lambda: fake_business
-    yield fake_business
-    app.dependency_overrides.clear()
-
-# Tests 
+from app.models import Item 
+from conftest import mock_auth_failure
 
 # --- POST Tests --- 
 

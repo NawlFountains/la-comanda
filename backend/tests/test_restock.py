@@ -6,33 +6,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from httpx import AsyncClient
-from fastapi import HTTPException
 from app.main import app
 from app.dependencies.auth import get_current_business
 from app.models import Business, Restock
 from datetime import date
 from decimal import Decimal
-
-# Fixtures
-
-@pytest.fixture
-def cleanup_override():
-    yield
-    app.dependency_overrides.clear()
-
-def mock_auth_failure():
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-@pytest.fixture
-async def setup_business(db_session: AsyncSession):
-    fake_business = Business(id=uuid.uuid4(), user_id=uuid.uuid4(),name="Test")
-    db_session.add(fake_business)
-    await db_session.commit()
-    await db_session.refresh(fake_business)
-
-    app.dependency_overrides[get_current_business] = lambda: fake_business
-    yield fake_business
-    app.dependency_overrides.clear()
+from conftest import mock_auth_failure
 
 @pytest.fixture
 async def setup_item(db_session: AsyncSession, setup_business):
@@ -84,8 +63,6 @@ async def setup_restock(db_session: AsyncSession, setup_business, setup_item):
     await db_session.commit()
     await db_session.refresh(restock)
     yield restock
-
-# Tests
 
 # --- POST Test ---
 

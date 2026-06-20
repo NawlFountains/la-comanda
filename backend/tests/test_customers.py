@@ -1,55 +1,12 @@
-from decimal import Decimal
 import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import pytest
 from httpx import AsyncClient
-from fastapi import HTTPException
 from app.main import app
 from app.dependencies.auth import get_current_business
-from app.models import Business, Customer, business 
-
-# Fixtures
-
-def mock_auth_failure():
-        raise HTTPException(status_code=401, detail="Invalid or expired token")
-
-@pytest.fixture
-def cleanup_override():
-    yield
-    app.dependency_overrides.clear()
-
-@pytest.fixture
-async def setup_business(db_session: AsyncSession):
-    fake_business = Business(id=uuid.uuid4(), user_id=uuid.uuid4(),name="Test")
-    db_session.add(fake_business)
-    await db_session.commit()
-    await db_session.refresh(fake_business)
-
-    app.dependency_overrides[get_current_business] = lambda: fake_business
-    yield fake_business
-    app.dependency_overrides.clear()
-
-@pytest.fixture
-def customer_factory(db_session: AsyncSession):
-    """ factory fixture that generates customers with given uuids """
-    async def _create_customer(name: str, business_id: uuid.UUID | None = None):
-        actual_business_id = business_id if business_id is not None else uuid.uuid4()
-        customer = Customer(
-                id = uuid.uuid4(),
-                business_id = actual_business_id,
-                name = name,
-                phone = "+1 1111 1111"
-        )
-
-        db_session.add(customer)
-        await db_session.flush()
-        await db_session.refresh(customer)
-
-        return customer
-    return _create_customer 
-
-# Tests
+from app.models import Customer
+from conftest import mock_auth_failure
 
 # --- Post Tests ---
 
