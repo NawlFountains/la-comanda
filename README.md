@@ -1,29 +1,24 @@
 # La Comanda
 
-Full-Stack application designed to manage restaurant (or take-out only) stock, orders, clients, and operational workflows.
+Backend API for small food businesses to manage stock, orders, customers and restocking. Built for the typical Argentine take-out workflow where orders come in via WhatsApp and the cook tracks everything manually.
 
-## Current development Roadmap
-- [x] Add customer endpoint
-- [ ] Add order endpoint
-- [ ] Add recipe endpoint
-- [ ] Add stock logic on restocking and ordering
-- [ ] Create a front web application using React and Typescript
-- [ ] Deploy both backend and front end
+## Stack
+FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
 
-## Automated Quality Assurance & Testing Architecture
+## Roadmap
+- [x] Business, Product, Item, Customer, Restock, Recipe endpoints
+- [ ] Stock logic on restock and order creation
+- [ ] Order endpoints
+- [ ] React + TypeScript frontend
+- [ ] Deploy to Railway + Vercel
 
-Following testing practices, enforcing strict validation across the entire application.
+## Testing
+97% code coverage across 8 test files. Each test runs against an in-memory SQLite database with automatic rollback — no real database needed. Auth is mocked via FastAPI dependency overrides. CI runs on every push via GitHub Actions.
 
-### Test Coverage Metrics
-* **Total Backend Code Coverage:** 89% verified via `pytest-cov`
-* **Core API Routers Coverage:** 100% on `Product` and `Restock` business logic.
+Exploratory and manual testing done via Postman.
 
-### Testing Strategy & Isolation
-* **API & Integration Layer:** Asynchronous endpoint validation implemented using `pytest` and `httpx.AsyncClient`.
-* **State & Environment Isolation:** Automated database session tracking utilizing an in-memory SQLite provider (`sqlite+aiosqlite:///:memory:`). Every test executes in complete isolation with automatic transaction rollbacks via `pytest` database fixtures.
-* **Authentication Mocking:** Validated authenticated user cleanly by utilizing FastAPI's `dependency_overrides`.
-
-### CI/CD Pipeline Infrastructure
-Relying on **GitHub Actions** to automate quality control gates on every `push` and `pull_request` targeting production branches:
-* **Dependency Caching:** Leverages native pipeline caching strategies to minimize test setup latency.
-* **Regression Protection:** Automatically runs the comprehensive regression suite, failing builds and blocking unverified code integration.
+Run tests:
+\```bash
+cd backend
+pytest tests/ -v --cov
+\```
