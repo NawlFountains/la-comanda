@@ -11,6 +11,6 @@ class Product(Base):
     name: Mapped[str]
 
     business: Mapped["Business"] = relationship(back_populates="products")
-    recipe_items: Mapped[list["RecipeItem"]] = relationship(back_populates="product")
-    prices: Mapped[list["PriceHistory"]] = relationship(back_populates="product")
+    recipe_items: Mapped[list["RecipeItem"]] = relationship(back_populates="product", cascade="all, delete-orphan")
+    prices: Mapped[list["PriceHistory"]] = relationship(back_populates="product", cascade="all, delete-orphan")
     order_items: Mapped[list["OrderItem"]] = relationship(back_populates="product")
