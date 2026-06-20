@@ -11,11 +11,22 @@ from conftest import mock_auth_failure
 
 # --- POST Tests --- 
 
-@pytest.mark.asyncio
-async def test_create_item(client: AsyncClient, db_session: AsyncSession, setup_business):
-    """ should create item for valid authorized client and update db """
-    expected_business_id = setup_business.id
+@pytest.fixture
+def assert_json_match_item():
+    def _assert(item: Item, json_str):
+        assert json_str["name"] == item.name
+        assert json_str["id"] == str(item.id)
+        assert json_str["business_id"] == str(item.business_id)
+        assert json_str["unit"] == item.unit
+        assert Decimal(json_str["current_stock"]) == item.current_stock
+        assert Decimal(json_str["low_stock_threshold"]) == item.low_stock_threshold
+        assert json_str["notes"] == item.notes
+    return _assert
 
+
+@pytest.mark.asyncio
+async def test_create_item(client: AsyncClient, db_session: AsyncSession, setup_business, assert_json_match_item):
+    """ should create item for valid authorized client and update db """
     response = await client.post(
             "/items",
             json={
@@ -46,19 +57,11 @@ async def test_create_item(client: AsyncClient, db_session: AsyncSession, setup_
     )
     db_item= result.scalar_one_or_none()
 
-    assert db_item is not None
-    assert str(db_item.id) == data["id"]
-    assert db_item.business_id == expected_business_id
-    assert db_item.name == "Azucar"
-    assert db_item.unit == "kg"
-    assert db_item.current_stock == Decimal("15")
-    assert db_item.low_stock_threshold == Decimal("2")
-    assert db_item.notes == "Ledesma"
+    assert_json_match_item(db_item, data)
 
 @pytest.mark.asyncio
-async def test_create_item_without_note(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_create_item_without_note(client: AsyncClient, db_session: AsyncSession, setup_business, assert_json_match_item):
     """ should create item for valid authorized client and update db """
-    expected_business_id = setup_business.id
 
     response = await client.post(
             "/items",
@@ -90,15 +93,8 @@ async def test_create_item_without_note(client: AsyncClient, db_session: AsyncSe
     db_item= result.scalar_one_or_none()
 
     assert db_item is not None
-    assert str(db_item.id) == data["id"]
-    assert db_item.name == "Peperina"
-    assert db_item.unit == "kg"
-    assert db_item.current_stock == Decimal("15")
-    assert db_item.low_stock_threshold == Decimal("2")
-    assert db_item.notes == None
-    assert db_item.business_id == expected_business_id
-
-
+    
+    assert_json_match_item(db_item, data)
 
 @pytest.mark.asyncio
 async def test_create_item_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
@@ -204,10 +200,10 @@ async def test_create_item_missing_input(client: AsyncClient, db_session: AsyncS
 # --- GET Test ---
 
 @pytest.mark.asyncio
-async def test_get_items(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_items(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory, assert_json_match_item):
     """ should return all items from a business sorted alphabetically """
-    i1 = Item(
-            id=uuid.uuid4(),
+    
+    i1 = await item_factory(
             business_id=setup_business.id, 
             name="Puerro",
             unit="kg",
@@ -215,28 +211,20 @@ async def test_get_items(client: AsyncClient, db_session: AsyncSession, setup_bu
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    i2 = await item_factory(
             business_id=setup_business.id, 
             name="Cebolla",
             unit="kg",
             current_stock=Decimal("22.3"),
             low_stock_threshold=Decimal("10"),
-            notes=None
     )
-    i3 = Item(
-            id=uuid.uuid4(),
+    i3 = await item_factory(
             business_id=setup_business.id, 
             name="agua",
             unit="l",
             current_stock=Decimal("30.3"),
             low_stock_threshold=Decimal("2"),
-            notes=None
     )
- 
-    db_session.add_all([i1, i2, i3])
-
-    await db_session.commit()
 
     response = await client.get(
             "/items", 
@@ -249,30 +237,13 @@ async def test_get_items(client: AsyncClient, db_session: AsyncSession, setup_bu
     # First should be agua, then cebolla, and last puerro
     items_sorted = [i3, i2, i1]
 
-    for i, item in enumerate(data):
-        assert item["name"] == items_sorted[i].name
-        assert item["id"] == str(items_sorted[i].id)
-        assert item["business_id"] == str(items_sorted[i].business_id)
-        assert item["unit"] == items_sorted[i].unit
-        assert Decimal(item["current_stock"]) == items_sorted[i].current_stock
-        assert Decimal(item["low_stock_threshold"]) == items_sorted[i].low_stock_threshold
-        assert item["notes"] == items_sorted[i].notes
+    for i, item_json in enumerate(data):
+        assert_json_match_item(items_sorted[i], item_json)
 
 @pytest.mark.asyncio
-async def test_get_items_empty(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_items_empty(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should return an empty list if no items logged for this business"""
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(), 
-            name="Puerro",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    db_session.add(i1)
-
-    await db_session.commit()
+    _ = await item_factory(business_id=uuid.uuid4(), name="Puerro")
 
     response = await client.get(
             "/items", 
@@ -283,22 +254,11 @@ async def test_get_items_empty(client: AsyncClient, db_session: AsyncSession, se
     assert response.json() == []
 
 @pytest.mark.asyncio
-async def test_get_items_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_get_items_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ shouldn't allow an unauthorized user to retrieve items"""
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(), 
-            name="Puerro",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    db_session.add(i1)
-
-    await db_session.commit()
+    _= await item_factory(business_id=uuid.uuid4(), name="Puerro")
 
     response = await client.get(
             "/items", 
@@ -308,11 +268,10 @@ async def test_get_items_unauthorized(client: AsyncClient, db_session: AsyncSess
     assert response.status_code == 401
 
 @pytest.mark.asyncio
-async def test_get_low_stock_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_low_stock_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should only return low stock items from the business queried"""
     another_business_uuid = uuid.uuid4()
-    i1 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=another_business_uuid, 
             name="Perejil",
             unit="kg",
@@ -320,28 +279,20 @@ async def test_get_low_stock_another_business(client: AsyncClient, db_session: A
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=another_business_uuid, 
             name="Cafe",
             unit="kg",
             current_stock=Decimal("2.3"),
             low_stock_threshold=Decimal("10"),
-            notes=None
     )
-    i3 = Item(
-            id=uuid.uuid4(),
+    _ = await item_factory(
             business_id=another_business_uuid, 
             name="Yapa",
             unit="kg",
             current_stock=Decimal("30.3"),
             low_stock_threshold=Decimal("2"),
-            notes=None
     )
- 
-    db_session.add_all([i1, i2, i3])
-
-    await db_session.commit()
 
     response = await client.get(
             "/items/low-stock", 
@@ -352,10 +303,9 @@ async def test_get_low_stock_another_business(client: AsyncClient, db_session: A
     assert response.json() == []
 
 @pytest.mark.asyncio
-async def test_get_low_stock_empty(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_low_stock_empty(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should return empty if no items are below threshold"""
-    i1 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=setup_business.id, 
             name="Perejil",
             unit="kg",
@@ -363,28 +313,20 @@ async def test_get_low_stock_empty(client: AsyncClient, db_session: AsyncSession
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=setup_business.id, 
             name="Cafe",
             unit="kg",
             current_stock=Decimal("22.3"),
             low_stock_threshold=Decimal("10"),
-            notes=None
     )
-    i3 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=setup_business.id, 
             name="Yapa",
             unit="kg",
             current_stock=Decimal("30.3"),
             low_stock_threshold=Decimal("2"),
-            notes=None
     )
- 
-    db_session.add_all([i1, i2, i3])
-
-    await db_session.commit()
 
     response = await client.get(
             "/items/low-stock", 
@@ -395,10 +337,9 @@ async def test_get_low_stock_empty(client: AsyncClient, db_session: AsyncSession
     assert response.json() == []
 
 @pytest.mark.asyncio
-async def test_get_low_stock(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_low_stock(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory, assert_json_match_item):
     """ should return business items that are below threshold stock """
-    i1 = Item(
-            id=uuid.uuid4(),
+    i1 = await item_factory(
             business_id=setup_business.id, 
             name="Perejil",
             unit="kg",
@@ -406,28 +347,20 @@ async def test_get_low_stock(client: AsyncClient, db_session: AsyncSession, setu
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    i2 = await item_factory(
             business_id=setup_business.id, 
             name="Cafe",
             unit="kg",
             current_stock=Decimal("2.3"),
             low_stock_threshold=Decimal("10"),
-            notes=None
     )
-    i3 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=setup_business.id, 
             name="Yapa",
             unit="kg",
             current_stock=Decimal("30.3"),
             low_stock_threshold=Decimal("2"),
-            notes=None
     )
- 
-    db_session.add_all([i1, i2, i3])
-
-    await db_session.commit()
 
     response = await client.get(
             "/items/low-stock", 
@@ -437,13 +370,16 @@ async def test_get_low_stock(client: AsyncClient, db_session: AsyncSession, setu
     assert response.status_code == 200
     data = response.json()
 
+    # Should return sorted
+    assert_json_match_item(i1, data[1])
+    assert_json_match_item(i2, data[0])
+
 
 @pytest.mark.asyncio
-async def test_get_low_stock_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_get_low_stock_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override, item_factory):
     """ should't allow unauthorized client to query low stock items """
     
-    i1 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=uuid.uuid4(), 
             name="Perejil",
             unit="kg",
@@ -451,39 +387,29 @@ async def test_get_low_stock_unauthorized(client: AsyncClient, db_session: Async
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=uuid.uuid4(), 
             name="Cafe",
             unit="kg",
             current_stock=Decimal("2.3"),
             low_stock_threshold=Decimal("10"),
-            notes=None
     )
-    i3 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=uuid.uuid4(), 
             name="Yapa",
             unit="kg",
             current_stock=Decimal("30.3"),
             low_stock_threshold=Decimal("2"),
-            notes=None
     )
- 
-    db_session.add_all([i1, i2, i3])
-
-    await db_session.commit()
 
     response = await client.get("/items/low-stock")
 
     assert response.status_code == 401
 
 @pytest.mark.asyncio
-async def test_get_item_by_id(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_item_by_id(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory, assert_json_match_item):
     """ should return an existing item of the business by id """
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
+    i = await item_factory(
             business_id=setup_business.id, 
             name="Queso",
             unit="kg",
@@ -491,61 +417,28 @@ async def test_get_item_by_id(client: AsyncClient, db_session: AsyncSession, set
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    _= await item_factory(
             business_id=setup_business.id, 
             name="Leche",
             unit="l",
             current_stock=Decimal("22.3"),
             low_stock_threshold=Decimal("10"),
-            notes=None
     )
-    
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
 
     response = await client.get(
-            f"/items/{item_uuid}", 
+            f"/items/{i.id}", 
             headers={"Authorization": "Bearer faketoken"}
     )
 
     assert response.status_code == 200
     data = response.json()
 
-    assert data["name"] == i1.name
-    assert data["id"] == str(i1.id)
-    assert data["business_id"] == str(i1.business_id)
-    assert data["unit"] == i1.unit
-    assert Decimal(data["current_stock"]) == i1.current_stock
-    assert Decimal(data["low_stock_threshold"]) == i1.low_stock_threshold
-    assert data["notes"] == i1.notes
+    assert_json_match_item(i, data)
 
 @pytest.mark.asyncio
-async def test_get_item_by_id_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
-    """ should return an existing item of the business by id """
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Queso",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Leche",
-            unit="l",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
-    
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
+async def test_get_item_by_id_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
+    """ should return 404 for a non-existing item of the business by id """
+    _ = await item_factory(business_id=setup_business.id, name="Queso")
 
     response = await client.get(
             f"/items/{uuid.uuid4()}", 
@@ -555,70 +448,27 @@ async def test_get_item_by_id_non_existing(client: AsyncClient, db_session: Asyn
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_get_item_by_id_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_item_by_id_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should return an existing item of the business by id """
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=uuid.uuid4(), 
-            name="Queso",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(), 
-            name="Leche",
-            unit="l",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
-    
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
+    i = await item_factory(business_id=uuid.uuid4(), name="Queso")
+    _= await item_factory(business_id=uuid.uuid4(), name="Leche")
 
     response = await client.get(
-            f"/items/{item_uuid}",
+            f"/items/{i.id}",
             headers={"Authorization": "Bearer faketoken"}
     )
 
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_get_item_by_id_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_get_item_by_id_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override, item_factory):
     """ should return an existing item of the business by id """
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=uuid.uuid4(), 
-            name="Queso",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(), 
-            name="Leche",
-            unit="l",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
-    
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
+    i = await item_factory(business_id=uuid.uuid4(), name="Queso")
 
     response = await client.get(
-            f"/items/{item_uuid}"
+            f"/items/{i.id}"
     )
 
     assert response.status_code == 401
@@ -626,11 +476,9 @@ async def test_get_item_by_id_unauthorized(client: AsyncClient, db_session: Asyn
 # --- PATCH Test ---
 
 @pytest.mark.asyncio
-async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should update existing item """
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
+    i1 = await item_factory(
             business_id=setup_business.id, 
             name="Queso",
             unit="kg",
@@ -638,8 +486,7 @@ async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
+    i2 = await item_factory(
             business_id=setup_business.id, 
             name="Leche",
             unit="l",
@@ -648,13 +495,10 @@ async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_
             notes=None
     )
     
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
 
     # Only change stock
     response = await client.patch(
-            f"/items/{item_uuid}",
+            f"/items/{i1.id}",
             json={
                 "current_stock": "152.3"
             },
@@ -677,7 +521,7 @@ async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_
 
     # Only change low_stock_threshold and notes
     response = await client.patch(
-            f"/items/{item_uuid}",
+            f"/items/{i1.id}",
             json={
                 "low_stock_threshold": "0.3",
                 "notes": "NewNote"
@@ -702,30 +546,10 @@ async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_
     assert db_item.notes == "NewNote" 
 
 @pytest.mark.asyncio
-async def test_update_item_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_update_item_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should notify trying to update non existing product """
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Queso",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Leche",
-            unit="l",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
+    _ = await item_factory(business_id=setup_business.id, name="Queso")
     
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
 
     response = await client.patch(
             f"/items/{uuid.uuid4()}",
@@ -737,34 +561,13 @@ async def test_update_item_non_existing(client: AsyncClient, db_session: AsyncSe
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_update_item_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_update_item_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should't allow item to update if the client isn't it that business """
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=uuid.uuid4(), 
-            name="Queso",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(), 
-            name="Leche",
-            unit="l",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
+    another_business_uuid = uuid.uuid4()
+    i = await item_factory(business_id=another_business_uuid, name="Queso")
     
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
-
     response = await client.patch(
-            f"/items/{item_uuid}",
+            f"/items/{i.id}",
             json={
                 "current_stock": "152.3"
             },
@@ -775,46 +578,38 @@ async def test_update_item_another_business(client: AsyncClient, db_session: Asy
     # Check no changes made to db
     result= await db_session.execute(
             select(Item).where(
-                Item.id == i1.id
+                Item.id == i.id
             )
     )
 
     db_item = result.scalar_one_or_none()
 
     assert db_item is not None
-    assert db_item.current_stock == Decimal("10.0")
+    assert db_item.current_stock == i.current_stock 
 
 @pytest.mark.asyncio
-async def test_update_item_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_update_item_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should't allow unauthorized client to update existing items """
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=uuid.uuid4(), 
+    i = await item_factory(
+            business_id=setup_business.id, 
             name="Queso",
             unit="kg",
             current_stock=Decimal("10.0"),
             low_stock_threshold=Decimal("15"),
             notes="Verde"
     )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(), 
+    _ = await item_factory(
+            business_id=setup_business.id, 
             name="Leche",
             unit="l",
             current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
+            low_stock_threshold=Decimal("10")
     )
     
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
-
     response = await client.patch(
-            f"/items/{item_uuid}",
+            f"/items/{i.id}",
             json={
                 "current_stock": "152.3"
             },
@@ -825,46 +620,25 @@ async def test_update_item_unauthorized(client: AsyncClient, db_session: AsyncSe
     # Check no changes made to db
     result= await db_session.execute(
             select(Item).where(
-                Item.id == i1.id
+                Item.id == i.id
             )
     )
 
     db_item = result.scalar_one_or_none()
 
     assert db_item is not None
-    assert db_item.current_stock == Decimal("10.0")
+    assert db_item.current_stock == i.current_stock 
 
 # --- DELETE Tests ---
 
 @pytest.mark.asyncio
-async def test_delete_item(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_delete_item(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should delete existing item and reflect on database """
-    item_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=setup_business.id, 
-            name="Mani",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Nuez",
-            unit="kg",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
+    i = await item_factory(business_id=setup_business.id, name="Mani")
     
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
 
     response = await client.delete(
-            f"/items/{item_uuid}",
+            f"/items/{i.id}",
             headers={"Authorization": "Bearer faketoken"}
     )
 
@@ -872,7 +646,7 @@ async def test_delete_item(client: AsyncClient, db_session: AsyncSession, setup_
 
     result = await db_session.execute(
             select(Item).where(
-                Item.id == item_uuid
+                Item.id == i.id
             )
     )
 
@@ -882,29 +656,6 @@ async def test_delete_item(client: AsyncClient, db_session: AsyncSession, setup_
 @pytest.mark.asyncio
 async def test_delete_item_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
     """ should notify trying to delete non existing item"""
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Mani",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id, 
-            name="Nuez",
-            unit="kg",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
-    
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
-
     response = await client.delete(
             f"/items/{uuid.uuid4()}",
             headers={"Authorization": "Bearer faketoken"}
@@ -913,32 +664,10 @@ async def test_delete_item_non_existing(client: AsyncClient, db_session: AsyncSe
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_delete_item_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_delete_item_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should't allow authenticated user to delete item from another business"""
-    item_uuid = uuid.uuid4()
     another_business_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=another_business_uuid, 
-            name="Mani",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid, 
-            name="Nuez",
-            unit="kg",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
-    
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
+    i = await item_factory(business_id=another_business_uuid, name="Mani")    
 
     response = await client.delete(
             f"/items/{another_business_uuid}",
@@ -949,43 +678,21 @@ async def test_delete_item_another_business(client: AsyncClient, db_session: Asy
 
     result = await db_session.execute(
             select(Item).where(
-                Item.id == item_uuid
+                Item.id == i.id
             )
     )
 
     db_item = result.scalar_one_or_none()
     assert db_item is not None
-    assert db_item == i1
+    assert db_item == i
 
 @pytest.mark.asyncio
-async def test_delete_item_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_delete_item_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override, item_factory):
     """ should't allow unauthenticated client to delete items"""
     app.dependency_overrides[get_current_business] = mock_auth_failure
-
-    item_uuid = uuid.uuid4()
-    another_business_uuid = uuid.uuid4()
-    i1 = Item(
-            id=item_uuid,
-            business_id=another_business_uuid, 
-            name="Mani",
-            unit="kg",
-            current_stock=Decimal("10.0"),
-            low_stock_threshold=Decimal("15"),
-            notes="Verde"
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid, 
-            name="Nuez",
-            unit="kg",
-            current_stock=Decimal("22.3"),
-            low_stock_threshold=Decimal("10"),
-            notes=None
-    )
     
-    db_session.add_all([i1, i2])
-
-    await db_session.commit()
+    another_business_uuid = uuid.uuid4()
+    i = await item_factory(business_id=another_business_uuid, name="Nuez")
 
     response = await client.delete(
             f"/items/{another_business_uuid}",
@@ -996,12 +703,12 @@ async def test_delete_item_unauthorized(client: AsyncClient, db_session: AsyncSe
 
     result = await db_session.execute(
             select(Item).where(
-                Item.id == item_uuid
+                Item.id == i.id 
             )
     )
 
     db_item = result.scalar_one_or_none()
     assert db_item is not None
-    assert db_item == i1
+    assert db_item == i
 
 

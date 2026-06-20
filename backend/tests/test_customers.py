@@ -1,14 +1,14 @@
 import uuid
+import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-import pytest
 from httpx import AsyncClient
 from app.main import app
 from app.dependencies.auth import get_current_business
 from app.models import Customer
 from conftest import mock_auth_failure
 
-# --- Post Tests ---
+# --- POST Tests ---
 
 @pytest.mark.asyncio
 async def test_create_customer(client: AsyncClient, db_session: AsyncSession, setup_business):

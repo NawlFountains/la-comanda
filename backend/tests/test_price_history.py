@@ -5,7 +5,7 @@ from sqlalchemy import select
 from httpx import AsyncClient
 from app.main import app
 from app.dependencies.auth import get_current_business
-from app.models import Business, Product, PriceHistory
+from app.models import PriceHistory
 from datetime import date
 from decimal import Decimal
 from conftest import mock_auth_failure
@@ -13,15 +13,12 @@ from conftest import mock_auth_failure
 # --- POST Tests --- 
 
 @pytest.mark.asyncio
-async def test_create_product_price(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_create_product_price(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ should be able to add prices to existing business products, reflecting on the database """
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=setup_business.id, name="Papa")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=setup_business.id, name="Papa")
 
     response = await client.post(
-            f"/products/{product_uuid}/prices",
+            f"/products/{p.id}/prices",
             json={"price": 1000.23, "valid_from": "2026-06-17"},
             headers={"Authorization": "Bearer faketoken"}
     )
@@ -29,14 +26,14 @@ async def test_create_product_price(client: AsyncClient, db_session: AsyncSessio
     data = response.json()
 
     # Json field are string
-    assert data["product_id"] == str(product_uuid)
+    assert data["product_id"] == str(p.id)
     assert Decimal(data["price"]) == Decimal("1000.23")
     assert data["valid_from"] == "2026-06-17"
     assert "id" in data 
 
     result = await db_session.execute(
             select(PriceHistory).where(
-                    PriceHistory.product_id == product_uuid
+                    PriceHistory.product_id == p.id
                 )
     )
     db_price = result.scalar_one_or_none()
@@ -45,15 +42,12 @@ async def test_create_product_price(client: AsyncClient, db_session: AsyncSessio
     assert db_price is not None
     assert db_price.price == Decimal("1000.23")
     assert db_price.valid_from == date(2026,6,17)
-    assert db_price.product_id == product_uuid
+    assert db_price.product_id == p.id
 
 @pytest.mark.asyncio
-async def test_create_product_price_non_existing_product(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_create_product_price_non_existing_product(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ shouldn't be able to create prices for a non-existing product """
-    expected_business_id = setup_business.id
-    p = Product(id=uuid.uuid4(), business_id=expected_business_id, name="Cebolla")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=setup_business.id, name="Cebolla")
 
     response = await client.post(
             f"/products/{uuid.uuid4()}/prices",
@@ -63,18 +57,14 @@ async def test_create_product_price_non_existing_product(client: AsyncClient, db
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_create_product_price_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_create_product_price_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ should't be able to create prices if unauthorized """
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
-    expected_business_id = setup_business.id
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=expected_business_id, name="Cebolla")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=setup_business.id, name="Cebolla")
 
     response = await client.post(
-            f"/products/{product_uuid}/prices",
+            f"/products/{p.id}/prices",
             json={"price": 2000.23, "valid_from": "2026-06-17"},
     )
 
@@ -82,7 +72,7 @@ async def test_create_product_price_unauthorized(client: AsyncClient, db_session
 
     result = await db_session.execute(
             select(PriceHistory).where(
-                    PriceHistory.product_id == product_uuid
+                    PriceHistory.product_id == p.id
                 )
     )
     db_price = result.scalar_one_or_none()
@@ -90,20 +80,12 @@ async def test_create_product_price_unauthorized(client: AsyncClient, db_session
     assert db_price is None
 
 @pytest.mark.asyncio
-async def test_create_product_price_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_create_product_price_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ shouldn't be able to add prices to another business products """
-    fake_business = Business(id=uuid.uuid4(), user_id=uuid.uuid4(),name="Another Business")
-    db_session.add(fake_business)
-    await db_session.commit()
-    await db_session.refresh(fake_business)
-
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=fake_business.id, name="Cebolla Deluxe")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=uuid.uuid4(), name="Cebolla")
 
     response = await client.post(
-            f"/products/{product_uuid}/prices",
+            f"/products/{p.id}/prices",
             json={"price": 500.02, "valid_from": "2026-06-17"},
             headers={"Authorization": "Bearer faketoken"}
     )
@@ -112,7 +94,7 @@ async def test_create_product_price_another_business(client: AsyncClient, db_ses
 
     result = await db_session.execute(
             select(PriceHistory).where(
-                    PriceHistory.product_id == product_uuid
+                    PriceHistory.product_id == p.id
                 )
     )
     db_price = result.scalar_one_or_none()
@@ -122,20 +104,17 @@ async def test_create_product_price_another_business(client: AsyncClient, db_ses
 # --- GET Tests ---
 
 @pytest.mark.asyncio
-async def test_get_prices(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_prices(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ should return all prices for a given product in the business """
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=setup_business.id, name="Palta")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=setup_business.id, name="Palta")
 
-    price_one = PriceHistory(id=uuid.uuid4(), product_id=product_uuid, price=Decimal("100.5"), valid_from=date(2026,1,1))
-    price_two= PriceHistory(id=uuid.uuid4(), product_id=product_uuid, price=Decimal("150"), valid_from=date(2026,2,5))
+    price_one = PriceHistory(id=uuid.uuid4(), product_id=p.id, price=Decimal("100.5"), valid_from=date(2026,1,1))
+    price_two= PriceHistory(id=uuid.uuid4(), product_id=p.id, price=Decimal("150"), valid_from=date(2026,2,5))
 
     db_session.add_all([price_one, price_two])
     await db_session.commit()
 
-    response = await client.get(f"/products/{product_uuid}/prices")
+    response = await client.get(f"/products/{p.id}/prices")
 
     assert response.status_code == 200
     
@@ -144,24 +123,22 @@ async def test_get_prices(client: AsyncClient, db_session: AsyncSession, setup_b
     assert len(data) == 2
 
     # Endpoints return from most recent price
-    assert data[0]["product_id"] == str(product_uuid)
+    assert data[0]["product_id"] == str(p.id)
     assert Decimal(data[0]["price"]) == Decimal("150")
     assert data[0]["valid_from"] == "2026-02-05"
 
-    assert data[1]["product_id"] == str(product_uuid)
+    assert data[1]["product_id"] == str(p.id)
     assert Decimal(data[1]["price"]) == Decimal("100.5")
     assert data[1]["valid_from"] == "2026-01-01"
 
 
 @pytest.mark.asyncio
-async def test_get_prices_empty(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_prices_empty(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ should return empty json for a existing product without prices """
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=setup_business.id, name="Palta")
-    db_session.add(p)
-    await db_session.commit()
 
-    response = await client.get(f"/products/{product_uuid}/prices")
+    p = await product_factory(business_id=setup_business.id, name="Palta")
+
+    response = await client.get(f"/products/{p.id}/prices")
 
     assert response.status_code == 200
     
@@ -177,29 +154,22 @@ async def test_get_prices_non_existing_product(client: AsyncClient, db_session: 
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_get_prices_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_prices_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ should return product not found when trying to get a price of an existing product but from another business"""
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=uuid.uuid4(), name="Palta Premium")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=uuid.uuid4(), name="Palta Premium")
 
-    response = await client.get(f"/products/{product_uuid}/prices")
+    response = await client.get(f"/products/{p.id}/prices")
 
     assert response.status_code == 404
 
-
 @pytest.mark.asyncio
-async def test_get_prices_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_get_prices_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, product_factory):
     """ shouldn't be able to query prices if unauthorized"""
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
-    product_uuid = uuid.uuid4()
-    p = Product(id=product_uuid, business_id=uuid.uuid4(), name="Palta")
-    db_session.add(p)
-    await db_session.commit()
+    p = await product_factory(business_id=setup_business.id, name="Palta")
 
-    response = await client.get(f"/products/{product_uuid}/prices")
+    response = await client.get(f"/products/{p.id}/prices")
 
     assert response.status_code == 401
 

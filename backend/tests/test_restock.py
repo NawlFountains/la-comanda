@@ -1,73 +1,22 @@
 import uuid
-from app.models.item import Item
-from app.models.restock_item import RestockItem
 import pytest
+from app.models.restock_item import RestockItem
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 from httpx import AsyncClient
 from app.main import app
 from app.dependencies.auth import get_current_business
-from app.models import Business, Restock
+from app.models import Restock
 from datetime import date
 from decimal import Decimal
 from conftest import mock_auth_failure
 
-@pytest.fixture
-async def setup_item(db_session: AsyncSession, setup_business):
-    item = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add(item)
-    await db_session.commit()
-    yield item
-
-@pytest.fixture
-async def setup_item_another_business(db_session: AsyncSession):
-    item = Item(
-            id=uuid.uuid4(),
-            business_id=uuid.uuid4(),
-            name="Leche",
-            unit="l",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add(item)
-    await db_session.commit()
-    yield item
-
-@pytest.fixture
-async def setup_restock(db_session: AsyncSession, setup_business, setup_item):
-    restock = Restock(
-        id=uuid.uuid4(),
-        business_id=setup_business.id,
-        restock_date=date(2026, 5, 5),
-        supplier="Test supplier",
-        notes="Test restock"
-    )
-    db_session.add(restock)
-    await db_session.flush()
-
-    restock_item = RestockItem(
-        id=uuid.uuid4(),
-        restock_id=restock.id,
-        item_id=setup_item.id,
-        quantity=Decimal("3")
-    )
-    db_session.add(restock_item)
-    await db_session.commit()
-    await db_session.refresh(restock)
-    yield restock
-
 # --- POST Test ---
 
 @pytest.mark.asyncio
-async def test_create_restock(client: AsyncClient, db_session: AsyncSession, setup_business, setup_item):
+async def test_create_restock(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory, assert_json_match_restock):
+    i = await item_factory(business_id=setup_business.id, name="Papa")
     """ should be able to create a restock with items, reflecting on database """
 
     response = await client.post(
@@ -78,7 +27,7 @@ async def test_create_restock(client: AsyncClient, db_session: AsyncSession, set
                 "notes": "No notes",
                 "restock_items": [
                     {
-                        "item_id": str(setup_item.id),
+                        "item_id": str(i.id),
                         "quantity": 3
                         }
                     ]
@@ -92,10 +41,10 @@ async def test_create_restock(client: AsyncClient, db_session: AsyncSession, set
     assert data["restock_date"] == "2026-05-05"
     assert data["supplier"] == "Coto"
     assert data["notes"] == "No notes"
-    assert data["business_id"] == str(setup_business.id)
+    assert data["business_id"] == str(i.business_id)
 
     assert data["restock_items"] != []
-    assert data["restock_items"][0]["item_id"] == str(setup_item.id)
+    assert data["restock_items"][0]["item_id"] == str(i.id)
     assert data["restock_items"][0]["quantity"] == "3"
 
     assert "id" in data
@@ -116,13 +65,7 @@ async def test_create_restock(client: AsyncClient, db_session: AsyncSession, set
     db_restock = result.scalar_one_or_none()
 
     assert db_restock is not None
-
-    assert db_restock.restock_items != []
-    assert db_restock.restock_date == date(2026, 5, 5)
-    assert db_restock.supplier == "Coto"
-    assert db_restock.notes == "No notes"
-    assert db_restock.restock_items[0].item_id == setup_item.id
-    assert db_restock.restock_items[0].quantity == Decimal("3") 
+    assert_json_match_restock(db_restock, data)
     
 @pytest.mark.asyncio
 async def test_create_restock_non_existing_item(client: AsyncClient, db_session: AsyncSession, setup_business):
@@ -174,8 +117,9 @@ async def test_create_restock_non_existing_item(client: AsyncClient, db_session:
     assert db_restock_item is None
 
 @pytest.mark.asyncio
-async def test_create_restock_existing_item_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, setup_item_another_business):
+async def test_create_restock_existing_item_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ shouldn't be able to create a restock with items from another business """
+    i = await item_factory(business_id=uuid.uuid4(), name="Cebolla")
 
     response = await client.post(
             "/restocks",
@@ -185,7 +129,7 @@ async def test_create_restock_existing_item_another_business(client: AsyncClient
                 "notes": "No notes",
                 "restock_items": [
                     {
-                        "item_id": str(setup_item_another_business.id),
+                        "item_id": str(i.id),
                         "quantity": 3
                         }
                     ]
@@ -212,7 +156,7 @@ async def test_create_restock_existing_item_another_business(client: AsyncClient
     result = await db_session.execute(
             select(RestockItem)
             .where(
-                RestockItem.item_id == setup_item_another_business.id
+                RestockItem.item_id == i.id
             )
     )
 
@@ -221,9 +165,11 @@ async def test_create_restock_existing_item_another_business(client: AsyncClient
     assert db_restock_item is None
  
 @pytest.mark.asyncio
-async def test_create_restock_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override, setup_item_another_business):
+async def test_create_restock_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ shouldn't allow unauthorized client to create restocks """
     app.dependency_overrides[get_current_business] = mock_auth_failure
+
+    i = await item_factory(business_id=setup_business.id, name="Tomate")
 
     response = await client.post(
             "/restocks",
@@ -233,7 +179,7 @@ async def test_create_restock_unauthorized(client: AsyncClient, db_session: Asyn
                 "notes": "No notes",
                 "restock_items": [
                     {
-                        "item_id": str(setup_item_another_business.id),
+                        "item_id": str(i.id),
                         "quantity": 3
                         }
                     ]
@@ -258,8 +204,9 @@ async def test_create_restock_unauthorized(client: AsyncClient, db_session: Asyn
     assert db_restock is None
 
 @pytest.mark.asyncio
-async def test_create_restock_incomplete_input_optional(client: AsyncClient, db_session: AsyncSession, setup_business, setup_item):
+async def test_create_restock_incomplete_input_optional(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should allow restock creation if optional input it's not given """
+    i = await item_factory(business_id=setup_business.id, name="Pollo")
 
     # Missing supplier and notes
     response = await client.post(
@@ -268,7 +215,7 @@ async def test_create_restock_incomplete_input_optional(client: AsyncClient, db_
                 "restock_date": "2026-03-03",
                 "restock_items": [
                     {
-                        "item_id": str(setup_item.id),
+                        "item_id": str(i.id),
                         "quantity": 3
                         }
                     ]
@@ -278,11 +225,12 @@ async def test_create_restock_incomplete_input_optional(client: AsyncClient, db_
 
     assert response.status_code == 201
     data = response.json()
+
     assert data["restock_date"] == "2026-03-03"
     assert data["supplier"] == None
     assert data["notes"] == None
     assert data["restock_items"] != []
-    assert data["restock_items"][0]["item_id"] == str(setup_item.id)
+    assert data["restock_items"][0]["item_id"] == str(i.id)
     assert data["restock_items"][0]["quantity"] == "3"
     assert "id" in data
 
@@ -306,12 +254,13 @@ async def test_create_restock_incomplete_input_optional(client: AsyncClient, db_
     assert db_restock.supplier == None
     assert db_restock.notes == None
     assert db_restock.restock_items != []
-    assert db_restock.restock_items[0].item_id == setup_item.id
+    assert db_restock.restock_items[0].item_id == i.id
     assert db_restock.restock_items[0].quantity == Decimal("3")
 
 @pytest.mark.asyncio
-async def test_create_restock_incomplete_input_mandatory(client: AsyncClient, db_session: AsyncSession, setup_business, setup_item):
+async def test_create_restock_incomplete_input_mandatory(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory):
     """ should throw 422 if mandatory input isn't given """
+    i = await item_factory(business_id=setup_business.id, name="Mandarina")
 
     # Missing restock date
     response = await client.post(
@@ -321,7 +270,7 @@ async def test_create_restock_incomplete_input_mandatory(client: AsyncClient, db
                 "notes": "No notes",
                 "restock_items": [
                     {
-                        "item_id": str(setup_item.id),
+                        "item_id": str(i.id),
                         "quantity": 3
                         }
                     ]
@@ -361,61 +310,25 @@ async def test_create_restock_incomplete_input_mandatory(client: AsyncClient, db
 # --- GET Test ---
 
 @pytest.mark.asyncio
-async def test_get_restocks(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_restocks(client: AsyncClient, db_session: AsyncSession, setup_business,restock_factory, assert_json_match_restock):
     """ should return all restocks from the current business sorted by the most recent """
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id,
-            name="Pepas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add_all([i1, i2])
-    await db_session.commit()
 
-    r1= Restock(
-        id=uuid.uuid4(),
+    r1, _, _ = await restock_factory(
         business_id=setup_business.id,
         restock_date=date(2026, 5, 5),
         supplier="WallMart",
-        notes="Test restock"
+        notes="Test restock",
+        quantity=Decimal("3")
     )
-
-    r2= Restock(
-        id=uuid.uuid4(),
+    r2, _, _ = await restock_factory(
         business_id=setup_business.id,
         restock_date=date(2026, 6, 5),
         supplier="WallMock",
-        notes="Test restock"
-    )
-    db_session.add_all([r1, r2])
-    await db_session.flush()
-
-    ri1= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r1.id,
-        item_id=i1.id,
-        quantity=Decimal("3")
-    )
-
-    ri2= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r2.id,
-        item_id=i2.id,
+        notes="Test restock",
         quantity=Decimal("5")
     )
 
-    db_session.add_all([ri1, ri2])
-    await db_session.commit()
+
 
     response = await client.get(
             "/restocks", 
@@ -426,18 +339,8 @@ async def test_get_restocks(client: AsyncClient, db_session: AsyncSession, setup
     data = response.json()
 
     assert len(data) == 2
-    assert data[0]["id"] == str(r2.id)
-    assert data[1]["id"] == str(r1.id)
-
-    assert len(data[0]["restock_items"]) == 1
-    assert data[0]["restock_items"][0]["id"] == str(ri2.id)
-    assert data[0]["restock_items"][0]["item_id"] == str(i2.id)
-    assert data[0]["restock_items"][0]["quantity"] == str(ri2.quantity)
-
-    assert len(data[1]["restock_items"]) == 1
-    assert data[1]["restock_items"][0]["id"] == str(ri1.id)
-    assert data[1]["restock_items"][0]["item_id"] == str(i1.id)
-    assert data[1]["restock_items"][0]["quantity"] == str(ri1.quantity)
+    assert_json_match_restock(r2, data[0])
+    assert_json_match_restock(r1, data[1])
 
 @pytest.mark.asyncio
 async def test_get_restocks_empty(client: AsyncClient, db_session: AsyncSession, setup_business):
@@ -448,62 +351,24 @@ async def test_get_restocks_empty(client: AsyncClient, db_session: AsyncSession,
     assert response.json() == []
 
 @pytest.mark.asyncio
-async def test_get_restocks_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_restocks_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory, assert_json_match_restock):
     """ should only return the stocks asocciated with the client business"""
-    another_business_uuid = uuid.uuid4()
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=setup_business.id,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid,
-            name="Pepas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add_all([i1, i2])
-    await db_session.commit()
-
-    r1= Restock(
-        id=uuid.uuid4(),
+    r1, ri1, _ = await restock_factory(
         business_id=setup_business.id,
         restock_date=date(2026, 5, 5),
         supplier="WallMart",
-        notes="Test restock"
-    )
-
-    r2= Restock(
-        id=uuid.uuid4(),
-        business_id=another_business_uuid,
-        restock_date=date(2026, 6, 5),
-        supplier="WallMock",
-        notes="Test restock"
-    )
-    db_session.add_all([r1, r2])
-    await db_session.flush()
-
-    ri1= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r1.id,
-        item_id=i1.id,
+        notes="Test restock",
         quantity=Decimal("3")
     )
 
-    ri2= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r2.id,
-        item_id=i2.id,
+    another_business_uuid = uuid.uuid4()
+    r2, ri2, _= await restock_factory(
+        business_id=another_business_uuid,
+        restock_date=date(2026, 6, 5),
+        supplier="WallMock",
+        notes="Test restock",
         quantity=Decimal("5")
     )
-
-    db_session.add_all([ri1, ri2])
-    await db_session.commit()
 
     response = await client.get("/restocks")
 
@@ -511,80 +376,55 @@ async def test_get_restocks_another_business(client: AsyncClient, db_session: As
 
     data = response.json()
 
-    assert len(data) == 1
-    assert data[0]["id"] == str(r1.id)
-    assert data[0]["business_id"] == str(setup_business.id)
-
+    assert_json_match_restock(r1, data[0])
 
 @pytest.mark.asyncio
-async def test_get_restocks_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override):
+async def test_get_restocks_unauthorized(client: AsyncClient, db_session: AsyncSession, cleanup_override, restock_factory):
     """ should return empty list if no restocks logged for said business """
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
     another_business_uuid = uuid.uuid4()
-    i1 = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    i2 = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid,
-            name="Pepas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add_all([i1, i2])
-    await db_session.commit()
-
-    r1= Restock(
-        id=uuid.uuid4(),
+    r1, _, _ = await restock_factory(
         business_id=another_business_uuid,
         restock_date=date(2026, 5, 5),
         supplier="WallMart",
-        notes="Test restock"
-    )
-
-    r2= Restock(
-        id=uuid.uuid4(),
-        business_id=another_business_uuid,
-        restock_date=date(2026, 6, 5),
-        supplier="WallMock",
-        notes="Test restock"
-    )
-    db_session.add_all([r1, r2])
-    await db_session.flush()
-
-    ri1= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r1.id,
-        item_id=i1.id,
+        notes="Test restock",
         quantity=Decimal("3")
     )
 
-    ri2= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r2.id,
-        item_id=i2.id,
+    r2, _, _ = await restock_factory(
+        business_id=another_business_uuid,
+        restock_date=date(2026, 6, 5),
+        supplier="WallMock",
+        notes="Test restock",
         quantity=Decimal("5")
     )
-
-    db_session.add_all([ri1, ri2])
-    await db_session.commit()
 
     response = await client.get("/restocks")
 
     assert response.status_code == 401
 
 @pytest.mark.asyncio
-async def test_get_restock_by_id(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_get_restock_by_id(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory, assert_json_match_restock):
     """ should return exsting restock in business if queried by id """
+    r, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+    _, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2022, 5, 5),
+        supplier="WallMock",
+        notes="Test restock",
+        quantity=Decimal("35")
+    )
+
+
     response = await client.get(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             headers={"Authorization": "Bearer faketoken"}
     )
 
@@ -592,9 +432,7 @@ async def test_get_restock_by_id(client: AsyncClient, db_session: AsyncSession, 
 
     data = response.json()
 
-    assert data["id"] == str(setup_restock.id)
-    assert data["business_id"] == str(setup_business.id)
-    assert data["restock_items"][0]["id"] == str(setup_restock.restock_items[0].id)
+    assert_json_match_restock(r, data)
 
 @pytest.mark.asyncio
 async def test_get_restock_by_id_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
@@ -607,57 +445,40 @@ async def test_get_restock_by_id_non_existing(client: AsyncClient, db_session: A
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_get_restock_by_id_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_get_restock_by_id_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ should return 404 for exsting restock but linked to another business """
     another_business_uuid = uuid.uuid4()
 
-    item = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add(item)
-    await db_session.commit()
-
-    restock_uuid = uuid.uuid4()
- 
-    restock = Restock(
-        id=restock_uuid,
+    r, _, _= await restock_factory(
         business_id=another_business_uuid,
         restock_date=date(2026, 5, 5),
         supplier="Test supplier",
-        notes="Test restock"
-    )
-    db_session.add(restock)
-    await db_session.flush()
-
-    restock_item = RestockItem(
-        id=uuid.uuid4(),
-        restock_id=restock.id,
-        item_id=item.id,
+        notes="Test restock",
         quantity=Decimal("3")
     )
-    db_session.add(restock_item)
-    await db_session.commit()
-    await db_session.refresh(restock)
  
     response = await client.get(
-            f"/restocks/{restock_uuid}",
+            f"/restocks/{r.id}",
             headers={"Authorization": "Bearer faketoken"}
     )
 
     assert response.status_code == 404
 
 @pytest.mark.asyncio
-async def test_get_restock_by_id_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_get_restock_by_id_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ should return exsting restock in business if queried by id """
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
+    r, _, _= await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="Test supplier",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+ 
     response = await client.get(
-            f"/restocks/{setup_restock.id}"
+            f"/restocks/{r.id}"
     )
 
     assert response.status_code == 401
@@ -665,12 +486,20 @@ async def test_get_restock_by_id_unauthorized(client: AsyncClient, db_session: A
 # -- PATCH Test ---
 
 @pytest.mark.asyncio
-async def test_update_restock(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_update_restock(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory, assert_json_match_restock):
     """ should update restock and update db for an authorized client and a restock in said buisness """
 
+    r, _, _= await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="Test supplier",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+ 
     # Full update
     response = await client.patch(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             json={
                 "restock_date": "2026-01-09",
                 "supplier": "Update supplier",
@@ -684,21 +513,16 @@ async def test_update_restock(client: AsyncClient, db_session: AsyncSession, set
 
     result = await db_session.execute(
             select(Restock)
-            .where(Restock.id == setup_restock.id)
+            .where(Restock.id == r.id)
     )
     db_restock = result.scalar_one_or_none()
     assert db_restock is not None
 
-    assert data["id"] == str(db_restock.id)
-    assert data["business_id"] == str(db_restock.business_id)
-    assert data["supplier"] == db_restock.supplier == "Update supplier"
-    assert data["restock_date"] == "2026-01-09" 
-    assert db_restock.restock_date == date(2026, 1, 9)
-    assert data["notes"] == db_restock.notes== "Update note"
+    assert_json_match_restock(db_restock, data)
 
     # Partial update - restock_date
     response = await client.patch(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             json={
                 "restock_date": "2026-02-10"
             },
@@ -708,23 +532,20 @@ async def test_update_restock(client: AsyncClient, db_session: AsyncSession, set
     assert response.status_code == 200
     data = response.json()
 
+    assert_json_match_restock(r, data)
+
     result = await db_session.execute(
             select(Restock)
-            .where(Restock.id == setup_restock.id)
+            .where(Restock.id == r.id)
     )
     db_restock = result.scalar_one_or_none()
     assert db_restock is not None
 
-    assert data["id"] == str(db_restock.id)
-    assert data["business_id"] == str(db_restock.business_id)
-    assert data["supplier"] == db_restock.supplier == "Update supplier"
-    assert data["restock_date"] == "2026-02-10" 
-    assert db_restock.restock_date == date(2026, 2, 10)
-    assert data["notes"] == db_restock.notes== "Update note"
+    assert_json_match_restock(db_restock, data)
 
     # Partial update - supplier 
     response = await client.patch(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             json={
                 "supplier": "Updated v2 supplier"
             },
@@ -736,21 +557,16 @@ async def test_update_restock(client: AsyncClient, db_session: AsyncSession, set
 
     result = await db_session.execute(
             select(Restock)
-            .where(Restock.id == setup_restock.id)
+            .where(Restock.id == r.id)
     )
     db_restock = result.scalar_one_or_none()
     assert db_restock is not None
 
-    assert data["id"] == str(db_restock.id)
-    assert data["business_id"] == str(db_restock.business_id)
-    assert data["supplier"] == db_restock.supplier == "Updated v2 supplier"
-    assert data["restock_date"] == "2026-02-10" 
-    assert db_restock.restock_date == date(2026, 2, 10)
-    assert data["notes"] == db_restock.notes== "Update note"
+    assert_json_match_restock(db_restock, data)
 
     # Partial update - notes 
     response = await client.patch(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             json={
                 "notes": "Update v2 notes"
             },
@@ -762,20 +578,15 @@ async def test_update_restock(client: AsyncClient, db_session: AsyncSession, set
 
     result = await db_session.execute(
             select(Restock)
-            .where(Restock.id == setup_restock.id)
+            .where(Restock.id == r.id)
     )
     db_restock = result.scalar_one_or_none()
     assert db_restock is not None
 
-    assert data["id"] == str(db_restock.id)
-    assert data["business_id"] == str(db_restock.business_id)
-    assert data["supplier"] == db_restock.supplier == "Updated v2 supplier"
-    assert data["restock_date"] == "2026-02-10" 
-    assert db_restock.restock_date == date(2026, 2, 10)
-    assert data["notes"] == db_restock.notes== "Update v2 notes"
+    assert_json_match_restock(db_restock, data)
 
 @pytest.mark.asyncio
-async def test_update_restock_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_update_restock_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
     """ should return 404 if restock doesn't exist """
 
     response = await client.patch(
@@ -791,17 +602,25 @@ async def test_update_restock_non_existing(client: AsyncClient, db_session: Asyn
     assert response.status_code == 404
  
 @pytest.mark.asyncio
-async def test_update_restock_wrong_input(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_update_restock_wrong_input(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ should return 200 if restock field is not muttable, silently failing but not updating the db """
+
+    r, _, i = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
 
     item_uuid = uuid.uuid4()
     response = await client.patch(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             json={
                 "restock_items": [
                     { 
                      "id": str(uuid.uuid4()),
-                     "restock_id": str(setup_restock.id),
+                     "restock_id": str(r.id),
                      "item_id": str(item_uuid) ,
                      "quantity": 15
                      }
@@ -815,51 +634,26 @@ async def test_update_restock_wrong_input(client: AsyncClient, db_session: Async
     # Check no changes made to db
     result = await db_session.execute(
             select(RestockItem)
-            .where( RestockItem.restock_id == setup_restock.id)
+            .where( RestockItem.restock_id == r.id)
     )
 
     db_restock_item = result.scalar_one_or_none()
     
     assert db_restock_item is not None
-    assert db_restock_item.item_id != item_uuid
+    assert db_restock_item.item_id == i.id
 
 @pytest.mark.asyncio
-async def test_update_restock_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_update_restock_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ shouldn't allow to modify restocks of another business"""
     another_business_uuid = uuid.uuid4()
-    i = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
 
-    db_session.add(i)
-    await db_session.commit()
-
-    r= Restock(
-        id=uuid.uuid4(),
+    r, _, _= await restock_factory(
         business_id=another_business_uuid,
         restock_date=date(2026, 5, 5),
         supplier="WallMart",
-        notes="Test restock"
-    )
-    
-    db_session.add(r)
-    await db_session.flush()
-
-    ri= RestockItem(
-        id=uuid.uuid4(),
-        restock_id=r.id,
-        item_id=i.id,
+        notes="Test restock",
         quantity=Decimal("3")
     )
-
-
-    db_session.add(ri)
-    await db_session.commit()
 
     response = await client.patch(
             f"/restocks/{r.id}",
@@ -888,13 +682,20 @@ async def test_update_restock_another_business(client: AsyncClient, db_session: 
 
 
 @pytest.mark.asyncio
-async def test_update_restock_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_update_restock_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ shouldn't allow unauthorized user to modify restocks """
-
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
+    r, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+
     response = await client.patch(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             json={
                 "restock_date": "2026-01-09",
                 "supplier": "Update supplier",
@@ -907,24 +708,32 @@ async def test_update_restock_unauthorized(client: AsyncClient, db_session: Asyn
 
     result = await db_session.execute(
             select(Restock)
-            .where(Restock.id == setup_restock.id)
+            .where(Restock.id == r.id)
     )
     db_restock = result.scalar_one_or_none()
     assert db_restock is not None
 
-    assert db_restock.id == setup_restock.id
-    assert db_restock.business_id == setup_restock.business_id
-    assert db_restock.supplier == setup_restock.supplier
-    assert db_restock.restock_date == setup_restock.restock_date
-    assert db_restock.notes == setup_restock.notes
+    assert db_restock.id == r.id
+    assert db_restock.business_id == r.business_id
+    assert db_restock.supplier == r.supplier
+    assert db_restock.restock_date == r.restock_date
+    assert db_restock.notes == r.notes
 
  # --- DELETE Test ---
 
 @pytest.mark.asyncio
-async def test_delete_restock(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_delete_restock(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ should allow a authorized client to delete a restock from their business """
+    r, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+
     response = await client.delete(
-            f"/restocks/{setup_restock.id}",
+            f"/restocks/{r.id}",
             headers={"Authorization": "Bearer faketoken"}
     )
 
@@ -932,7 +741,7 @@ async def test_delete_restock(client: AsyncClient, db_session: AsyncSession, set
 
     result = await db_session.execute(
             select(Restock)
-            .where( Restock.id == setup_restock.id)
+            .where( Restock.id == r.id)
     )
 
     db_restock = result.scalar_one_or_none()
@@ -940,14 +749,14 @@ async def test_delete_restock(client: AsyncClient, db_session: AsyncSession, set
 
     result = await db_session.execute(
             select(RestockItem)
-            .where( RestockItem.restock_id == setup_restock.id)
+            .where( RestockItem.restock_id == r.id)
     )
 
     db_restock_item = result.scalar_one_or_none()
     assert db_restock_item is None
 
 @pytest.mark.asyncio
-async def test_delete_restock_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_delete_restock_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
     """ should allow a authorized client to delete a restock from their business """
     response = await client.delete(
             f"/restocks/{uuid.uuid4()}",
@@ -956,60 +765,21 @@ async def test_delete_restock_non_existing(client: AsyncClient, db_session: Asyn
 
     assert response.status_code == 404
 
-    result = await db_session.execute(
-            select(Restock)
-            .where( Restock.id == setup_restock.id)
-    )
-
-    db_restock = result.scalar_one_or_none()
-    assert db_restock is not None
-
-    result = await db_session.execute(
-            select(RestockItem)
-            .where( RestockItem.restock_id == setup_restock.id)
-    )
-
-    db_restock_item = result.scalar_one_or_none()
-    assert db_restock_item is not None
-
 @pytest.mark.asyncio
-async def test_delete_restock_another_business(client: AsyncClient, db_session: AsyncSession, setup_business):
+async def test_delete_restock_another_business(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ shouldn't allow a authorized client to delete a restock from another business """
     another_business_uuid = uuid.uuid4()
 
-    item = Item(
-            id=uuid.uuid4(),
-            business_id=another_business_uuid,
-            name="Papas",
-            unit="kg",
-            current_stock=Decimal("20"),
-            low_stock_threshold=Decimal("0.4"),
-    )
-    db_session.add(item)
-    await db_session.commit()
-
-    restock = Restock(
-        id=uuid.uuid4(),
+    r, _, _ = await restock_factory(
         business_id=another_business_uuid,
         restock_date=date(2026, 5, 5),
         supplier="Test supplier",
-        notes="Test restock"
-    )
-    db_session.add(restock)
-    await db_session.flush()
-
-    restock_item = RestockItem(
-        id=uuid.uuid4(),
-        restock_id=restock.id,
-        item_id=item.id,
+        notes="Test restock",
         quantity=Decimal("3")
     )
-    db_session.add(restock_item)
-    await db_session.commit()
-    await db_session.refresh(restock)
- 
+    
     response = await client.delete(
-            f"/restocks/{restock.id}",
+            f"/restocks/{r.id}",
             headers={"Authorization": "Bearer faketoken"}
     )
 
@@ -1017,7 +787,7 @@ async def test_delete_restock_another_business(client: AsyncClient, db_session: 
 
     result = await db_session.execute(
             select(Restock)
-            .where( Restock.id == restock.id)
+            .where( Restock.id == r.id)
     )
 
     db_restock = result.scalar_one_or_none()
@@ -1025,26 +795,34 @@ async def test_delete_restock_another_business(client: AsyncClient, db_session: 
 
     result = await db_session.execute(
             select(RestockItem)
-            .where( RestockItem.restock_id == restock.id)
+            .where( RestockItem.restock_id == r.id)
     )
 
     db_restock_item = result.scalar_one_or_none()
     assert db_restock_item is not None
 
 @pytest.mark.asyncio
-async def test_delete_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, setup_restock):
+async def test_delete_unauthorized(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
     """ shouldn't allow a unauthorized client to delete a restock from their business """
     app.dependency_overrides[get_current_business] = mock_auth_failure
 
+    r, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+
     response = await client.delete(
-            f"/restocks/{setup_restock.id}"
+            f"/restocks/{r.id}"
     )
 
     assert response.status_code == 401
 
     result = await db_session.execute(
             select(Restock)
-            .where( Restock.id == setup_restock.id)
+            .where( Restock.id == r.id)
     )
 
     db_restock = result.scalar_one_or_none()
@@ -1052,7 +830,7 @@ async def test_delete_unauthorized(client: AsyncClient, db_session: AsyncSession
 
     result = await db_session.execute(
             select(RestockItem)
-            .where( RestockItem.restock_id == setup_restock.id)
+            .where( RestockItem.restock_id == r.id)
     )
 
     db_restock_item = result.scalar_one_or_none()

@@ -9,6 +9,7 @@ from app.models import Business, Product
 from conftest import mock_auth_failure
 
 # --- POST Tests --- 
+
 @pytest.mark.asyncio
 async def test_create_product(client: AsyncClient, db_session: AsyncSession, setup_business):
     expected_business_id = setup_business.id

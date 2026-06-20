@@ -1,6 +1,7 @@
 from decimal import Decimal
 import sys
 import os 
+from datetime import date
 from fastapi import HTTPException
 import pytest
 import asyncio
@@ -15,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.main import app
 from app.database import get_db, Base, engine
-from app.models import Business, Product, Item, RecipeItem, Customer
+from app.models import Business, Product, Item, RecipeItem, Customer, Restock, RestockItem
 from app.dependencies.auth import get_current_business
 
 @pytest.fixture(scope="session")
@@ -70,6 +71,8 @@ async def setup_business(db_session: AsyncSession):
     yield fake_business
     app.dependency_overrides.clear()
 
+# --- Entities factories ---
+
 @pytest.fixture
 async def product_factory(db_session: AsyncSession):
     """ factory generator for product """
@@ -88,14 +91,15 @@ async def product_factory(db_session: AsyncSession):
 @pytest.fixture
 async def item_factory(db_session: AsyncSession):
     """ factory generator for item """
-    async def _create(business_id: uuid.UUID, name: str):
+    async def _create(business_id: uuid.UUID, name: str, unit: str = "kg", current_stock: Decimal = Decimal("10"), low_stock_threshold: Decimal = Decimal("2"), notes: str | None = None):
         item = Item(
                 id = uuid.uuid4(),
                 business_id = business_id,
                 name = name,
-                unit = "kg",
-                current_stock = Decimal("10"),
-                low_stock_threshold = Decimal("2")
+                unit = unit,
+                current_stock = current_stock,
+                low_stock_threshold = low_stock_threshold,
+                notes = notes
         )
         db_session.add(item)
         await db_session.flush()
@@ -150,6 +154,41 @@ def customer_factory(db_session: AsyncSession):
     return _create_customer 
 
 @pytest.fixture
+async def restock_factory(db_session: AsyncSession, item_factory):
+    async def _create(
+            business_id: uuid.UUID,
+            restock_date: date = date(2026, 5, 5),
+            supplier: str = "Test supplier", 
+            notes: str = "Test restock", 
+            quantity: Decimal = Decimal("3")
+    ):
+        item = await item_factory(business_id=business_id, name="Default Item")
+
+        restock = Restock(
+            id=uuid.uuid4(),
+            business_id=business_id,
+            restock_date=restock_date,
+            supplier=supplier,
+            notes=notes
+        )
+        db_session.add(restock)
+        await db_session.flush()
+
+        restock_item = RestockItem(
+            id=uuid.uuid4(),
+            restock_id=restock.id,
+            item_id=item.id,
+            quantity=quantity
+        )
+        db_session.add(restock_item)
+        await db_session.flush()
+
+        return restock, restock_item, item
+    return _create
+
+# --- Object asserters ----
+
+@pytest.fixture
 async def assert_json_match_recipe_item():
     def _assert(recipe_item: RecipeItem, json_str):
         assert str(recipe_item.id) == json_str["id"]
@@ -158,6 +197,30 @@ async def assert_json_match_recipe_item():
         assert recipe_item.quantity == Decimal(json_str["quantity"])
         assert recipe_item.unit == json_str["unit"]
         
+    return _assert
+
+@pytest.fixture
+def assert_json_match_item():
+    def _assert(item: Item, json_str):
+        assert json_str["name"] == item.name
+        assert json_str["id"] == str(item.id)
+        assert json_str["business_id"] == str(item.business_id)
+        assert json_str["unit"] == item.unit
+        assert Decimal(json_str["current_stock"]) == item.current_stock
+        assert Decimal(json_str["low_stock_threshold"]) == item.low_stock_threshold
+        assert json_str["notes"] == item.notes
+    return _assert
+
+@pytest.fixture
+async def assert_json_match_restock():
+    def _assert(restock: Restock, json_str):
+        assert str(restock.restock_date) ==  json_str["restock_date"]
+        assert restock.supplier == json_str["supplier"]
+        assert restock.notes == json_str["notes"] 
+        for (i, _) in enumerate(restock.restock_items):
+            assert str(restock.restock_items[i].item_id) == json_str["restock_items"][i]["item_id"]
+            assert restock.restock_items[i].quantity == Decimal(json_str["restock_items"][i]["quantity"])
+ 
     return _assert
 
 def mock_auth_failure():
