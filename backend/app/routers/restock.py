@@ -1,6 +1,5 @@
-from sqlalchemy.orm import selectinload
-
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 from app.database import get_db
@@ -65,7 +64,9 @@ async def create_restock(
 
         if not item:
             raise HTTPException(status_code=404, detail=f"Item {item_data.item_id} not found")
-    
+
+        item.current_stock += item_data.quantity
+
     restock = Restock(
             id=uuid.uuid4(),
             business_id=business.id,
@@ -144,12 +145,23 @@ async def delete_restock(
                 Restock.id == restock_id,
                 Restock.business_id == business.id
             )
+            .options(selectinload(Restock.restock_items))
     )
 
     restock = result.scalar_one_or_none()
 
     if restock is None:
         raise HTTPException(status_code=404, detail="Restock not found")
+
+    for restock_item in restock.restock_items:
+        item_result = await db.execute(
+                select(Item)
+                .where( Item.id == restock_item.item_id )
+        )
+
+        item = item_result.scalar_one_or_none()
+        if item:
+            item.current_stock -= restock_item.quantity
 
     await db.delete(restock)
     await db.commit()
