@@ -7,7 +7,7 @@ from sqlalchemy import select
 from httpx import AsyncClient
 from app.main import app
 from app.dependencies.auth import get_current_business
-from app.models import Restock
+from app.models import Restock, Item
 from datetime import date
 from decimal import Decimal
 from conftest import mock_auth_failure
@@ -16,8 +16,8 @@ from conftest import mock_auth_failure
 
 @pytest.mark.asyncio
 async def test_create_restock(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory, assert_json_match_restock):
-    i = await item_factory(business_id=setup_business.id, name="Papa")
     """ should be able to create a restock with items, reflecting on database """
+    i = await item_factory(business_id=setup_business.id, name="Papa")
 
     response = await client.post(
             "/restocks",
@@ -66,7 +66,44 @@ async def test_create_restock(client: AsyncClient, db_session: AsyncSession, set
 
     assert db_restock is not None
     assert_json_match_restock(db_restock, data)
-    
+
+@pytest.mark.asyncio
+async def test_create_restock_increment_stock(client: AsyncClient, db_session: AsyncSession, setup_business, item_factory, assert_json_match_restock):
+    """ should be able to create a restock with items, reflecting on database """
+    i = await item_factory(business_id=setup_business.id, name="Papa", current_stock=Decimal("5"))
+
+    assert i.current_stock == Decimal("5") # Previous stock
+
+    response = await client.post(
+            "/restocks",
+            json={
+                "restock_date": "2026-05-05",
+                "supplier": "Coto",
+                "notes": "No notes",
+                "restock_items": [
+                    {
+                        "item_id": str(i.id),
+                        "quantity": 3
+                        }
+                    ]
+            },
+            headers={"Authorization": "Bearer faketoken"}
+    )
+
+    assert response.status_code == 201
+
+    # Check item restocked incremented their current stock
+
+    result = await db_session.execute(
+            select(Item)
+            .where(Item.id == i.id)
+    )
+
+    db_item = result.scalar_one_or_none()
+
+    assert db_item is not None
+    assert db_item.current_stock == Decimal("8")
+
 @pytest.mark.asyncio
 async def test_create_restock_non_existing_item(client: AsyncClient, db_session: AsyncSession, setup_business):
     """ shouldn't be able to create a restock with items from another business """
@@ -754,6 +791,36 @@ async def test_delete_restock(client: AsyncClient, db_session: AsyncSession, set
 
     db_restock_item = result.scalar_one_or_none()
     assert db_restock_item is None
+
+@pytest.mark.asyncio
+async def test_delete_restock_decrement_stock(client: AsyncClient, db_session: AsyncSession, setup_business, restock_factory):
+    """ should decrement item stock if restock deleted """
+    r, ri, i = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+
+    stock_before_deletion = i.current_stock
+
+    response = await client.delete(
+            f"/restocks/{r.id}",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+
+    assert response.status_code == 204
+
+    result = await db_session.execute(
+            select(Item)
+            .where( Item.id == i.id)
+    )
+
+    db_item = result.scalar_one_or_none()
+
+    assert db_item is not None
+    assert db_item.current_stock == stock_before_deletion - ri.quantity # Stock - restock item quantity
 
 @pytest.mark.asyncio
 async def test_delete_restock_non_existing(client: AsyncClient, db_session: AsyncSession, setup_business):
