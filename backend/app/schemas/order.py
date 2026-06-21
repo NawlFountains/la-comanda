@@ -1,6 +1,7 @@
 from decimal import Decimal
 from pydantic import BaseModel
 from uuid import UUID
+from datetime import datetime
 from app.models.order import OrderStatus
 
 class OrderItemCreate(BaseModel):
@@ -17,7 +18,7 @@ class OrderItemResponse(BaseModel):
 
 class OrderCreate(BaseModel):
     customer_id: UUID
-    items: list[OrderItemCreate]
+    order_items: list[OrderItemCreate]
 
 class OrderUpdate(BaseModel):
     status: OrderStatus | None = None
@@ -26,7 +27,7 @@ class OrderResponse(BaseModel):
     id: UUID
     business_id: UUID
     customer_id: UUID
-    created_at: str 
+    created_at: datetime
     status: OrderStatus 
-    items: list[OrderItemResponse] = []
+    order_items: list[OrderItemResponse] = []
     model_config = {"from_attributes": True}
