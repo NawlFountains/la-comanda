@@ -141,6 +141,105 @@ async def test_create_order_decrement_stock(
     assert db_items_by_id[i3.id].current_stock == old_stock[2] - (ri3.quantity * 2)
 
 @pytest.mark.asyncio
+async def test_create_order_duplicate_product(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        product_factory,
+        item_factory,
+        customer_factory,
+        price_history_factory,
+        recipe_item_factory
+):
+    """ should return 400 when a product is requested more than once, aggregation fails on the requester """
+    i1= await item_factory(business_id=setup_business.id, name="Papas", current_stock=Decimal("10"))
+    i2= await item_factory(business_id=setup_business.id, name="Manteca", current_stock=Decimal("10"))
+    i3= await item_factory(business_id=setup_business.id, name="Leche", current_stock=Decimal("10"))
+    product = await product_factory(business_id=setup_business.id, name="Pure")
+    customer = await customer_factory(business_id=setup_business.id, name="Jose")
+    await price_history_factory(business_id=setup_business.id, product=product, price=Decimal("32"), valid_from=date(2022,2,3))
+    await price_history_factory(business_id=setup_business.id, product=product, price=Decimal("150"), valid_from=date(2025,2,3))
+    await recipe_item_factory(business_id=setup_business.id, item=i1, product=product, quantity=Decimal("2.1"))
+    await recipe_item_factory(business_id=setup_business.id, item=i2, product=product, quantity=Decimal("3.2"))
+    await recipe_item_factory(business_id=setup_business.id, item=i3, product=product, quantity=Decimal("1"))
+
+    response = await client.post(
+            "/orders",
+            json={
+                "customer_id": str(customer.id),
+                "order_items":[
+                    {
+                        "product_id": str(product.id),
+                        "quantity": 2
+                    },
+                    {
+                        "product_id": str(product.id),
+                        "quantity": 2
+                    }
+                ]
+            },
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Duplicate products in order - combine quantities instead"
+
+    result = await db_session.execute(
+            select(Order)
+            .where(
+                Order.business_id == setup_business.id
+            )
+    )
+
+    db_order = result.scalar_one_or_none()
+
+    assert db_order is None # Check no order was created 
+
+@pytest.mark.asyncio
+async def test_create_order_empty_order_items(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        product_factory,
+        item_factory,
+        customer_factory,
+        price_history_factory,
+        recipe_item_factory
+):
+    """ should return 400 when a product is requested more than once, aggregation fails on the requester """
+    i1= await item_factory(business_id=setup_business.id, name="Papas", current_stock=Decimal("10"))
+    i2= await item_factory(business_id=setup_business.id, name="Manteca", current_stock=Decimal("10"))
+    i3= await item_factory(business_id=setup_business.id, name="Leche", current_stock=Decimal("10"))
+    product = await product_factory(business_id=setup_business.id, name="Pure")
+    customer = await customer_factory(business_id=setup_business.id, name="Jose")
+    await price_history_factory(business_id=setup_business.id, product=product, price=Decimal("32"), valid_from=date(2022,2,3))
+    await price_history_factory(business_id=setup_business.id, product=product, price=Decimal("150"), valid_from=date(2025,2,3))
+    await recipe_item_factory(business_id=setup_business.id, item=i1, product=product, quantity=Decimal("2.1"))
+    await recipe_item_factory(business_id=setup_business.id, item=i2, product=product, quantity=Decimal("3.2"))
+    await recipe_item_factory(business_id=setup_business.id, item=i3, product=product, quantity=Decimal("1"))
+
+    response = await client.post(
+            "/orders",
+            json={
+                "customer_id": str(customer.id),
+                "order_items":[]
+            },
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 400
+    assert response.json()["detail"] == "No items in order"
+
+    result = await db_session.execute(
+            select(Order)
+            .where(
+                Order.business_id == setup_business.id
+            )
+    )
+
+    db_order = result.scalar_one_or_none()
+
+    assert db_order is None # Check no order was created 
+
+@pytest.mark.asyncio
 async def test_create_order_missing_input(
         client: AsyncClient,
         db_session: AsyncSession,
@@ -428,7 +527,7 @@ async def test_create_order_insufficient_stock(
     )
 
     assert response.status_code == 409
-    assert response.json()["detail"] == f"Insufficent stock for {i1.name}: need {required_stock[0]}, have {i1.current_stock}"
+    assert response.json()["detail"] == f"Insufficient stock for {i1.name}: need {required_stock[0]}, have {i1.current_stock}"
 
     result = await db_session.execute(
             select(Item)

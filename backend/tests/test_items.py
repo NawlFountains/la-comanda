@@ -494,7 +494,29 @@ async def test_update_item(client: AsyncClient, db_session: AsyncSession, setup_
             low_stock_threshold=Decimal("10"),
             notes=None
     )
-    
+ 
+    # Only change name 
+    response = await client.patch(
+            f"/items/{i2.id}",
+            json={
+                "name": "Nata"
+            },
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["name"] == "Nata" 
+
+    response = await db_session.execute(
+            select(Item).where(
+                    Item.id == i2.id
+                )
+    )
+    db_item = response.scalar_one_or_none()
+
+    assert db_item is not None
+    assert db_item.name == "Nata" 
 
     # Only change stock
     response = await client.patch(
