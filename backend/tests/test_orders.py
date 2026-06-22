@@ -1028,6 +1028,7 @@ async def test_update_order_status_cancelled(
     assert db_order is not None
     assert db_order.status == OrderStatus.cancelled
 
+@pytest.mark.asyncio
 async def test_update_order_status_malformed(
         client: AsyncClient,
         db_session: AsyncSession,
