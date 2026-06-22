@@ -8,7 +8,7 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
 ## Roadmap
 - [x] Business, Product, Item, Customer, Restock, Recipe endpoints
 - [x] Stock logic on restock and order creation
-- [ ] Order endpoints <- in testing 
+- [x] Order endpoints 
 - [ ] React + TypeScript frontend
 - [ ] Deploy to Railway + Vercel
 
