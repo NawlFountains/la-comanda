@@ -16,7 +16,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.main import app
 from app.database import get_db, Base, engine
-from app.models import Business, Product, Item, RecipeItem, Customer, Restock, RestockItem
+from app.models import Business, Product, Item, RecipeItem, Customer, Restock, RestockItem, PriceHistory, Order, OrderItem
+from app.models.order import OrderStatus
 from app.dependencies.auth import get_current_business
 
 @pytest.fixture(scope="session")
@@ -186,6 +187,82 @@ async def restock_factory(db_session: AsyncSession, item_factory):
         return restock, restock_item, item
     return _create
 
+@pytest.fixture
+async def price_history_factory(db_session: AsyncSession, product_factory):
+    async def _create(
+            business_id: uuid.UUID,
+            product: Product | None = None,
+            price: Decimal = Decimal("100"),
+            valid_from: date = date(2025,5,4)
+    ):
+        if not product:
+            product = await product_factory(business_id=business_id, name="Default product")
+
+        assert product is not None
+
+        price_history = PriceHistory(
+                id=uuid.uuid4(), 
+                product_id=product.id, 
+                price=price, 
+                valid_from=valid_from
+        )
+
+        db_session.add(price_history)
+        await db_session.flush()
+
+        return price_history, product
+    return _create
+
+@pytest.fixture
+async def order_factory(db_session: AsyncSession, product_factory, price_history_factory, customer_factory): 
+    """ factory for creating orders without items, DO NOT USED IF TESTING RESTOCK """
+    async def _create(
+            business_id: uuid.UUID,
+            customer: Customer | None = None,
+            product: Product | None = None,
+            status: OrderStatus = OrderStatus.pending,
+            quantity: int = 1
+    ):
+        if customer is None:
+            customer = await customer_factory(business_id=business_id, name="Jose")
+
+        if product is None:
+            product = await product_factory(business_id=business_id, name="Pure")
+
+        ph, _ = await price_history_factory(
+            business_id=business_id,
+            product=product,
+            price=Decimal("150"),
+            valid_from=date(2025, 2, 3)
+        )
+
+        assert customer is not None
+        assert product is not None
+
+        order = Order(
+            id=uuid.uuid4(),
+            business_id=business_id,
+            customer_id=customer.id,
+            status=status
+        )
+        db_session.add(order)
+        await db_session.flush()
+
+        order_item = OrderItem(
+            id=uuid.uuid4(),
+            order_id=order.id,
+            product_id=product.id,
+            quantity=quantity,
+            unit_price=ph.price
+        )
+        db_session.add(order_item)
+        await db_session.commit()
+        await db_session.refresh(order)
+
+        return order, order_item, customer, product
+
+    return _create
+
 # --- Object asserters ----
 
 @pytest.fixture
@@ -220,6 +297,20 @@ async def assert_json_match_restock():
         for (i, _) in enumerate(restock.restock_items):
             assert str(restock.restock_items[i].item_id) == json_str["restock_items"][i]["item_id"]
             assert restock.restock_items[i].quantity == Decimal(json_str["restock_items"][i]["quantity"])
+ 
+    return _assert
+
+@pytest.fixture
+async def assert_json_match_order():
+    def _assert(order: Order, json_str):
+        assert str(order.id) ==  json_str["id"]
+        assert str(order.business_id) ==  json_str["business_id"]
+        assert str(order.customer_id) ==  json_str["customer_id"]
+        assert order.status ==  json_str["status"]
+        for (i, _) in enumerate(order.order_items):
+            assert str(order.order_items[i].order_id) == json_str["order_items"][i]["order_id"]
+            assert str(order.order_items[i].product_id) == json_str["order_items"][i]["product_id"]
+            assert order.order_items[i].quantity == Decimal(json_str["order_items"][i]["quantity"])
  
     return _assert
 
