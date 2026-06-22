@@ -3,7 +3,7 @@ from app.models.price_history import PriceHistory
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 from app.database import get_db
 from app.models import Business, Item, Customer, Product, Order, OrderItem, RecipeItem
 from app.models.order import OrderStatus
@@ -19,77 +19,103 @@ async def create_order(
         business: Business = Depends(get_current_business),
         db: AsyncSession = Depends(get_db)
 ):
+    raw_product_ids = [item_data.product_id for item_data in data.order_items]
+
+    if not raw_product_ids:
+        raise HTTPException(status_code=400, detail="No items in order")
+    if len(raw_product_ids) != len(set(raw_product_ids)):
+        raise HTTPException(status_code=400, detail="Duplicate products in order - combine quantities instead")
+
+    product_ids = list(set(raw_product_ids))
+
+    # Check customer existance
     customer_result = await db.execute(
-            select(Customer)
-            .where(
-                Customer.id == data.customer_id,
-                Customer.business_id == business.id
-            )
+        select(Customer).where(
+            Customer.id == data.customer_id,
+            Customer.business_id == business.id
+        )
     )
     customer = customer_result.scalar_one_or_none()
     if customer is None:
         raise HTTPException(status_code=404, detail="Customer not found")
 
-    # Validate product, item, stock and prices
-    validated_items = []
-    for item_data in data.order_items:
-        # Check product exists for business
-        product_result = await db.execute(
-                select(Product)
-                .where(
-                    Product.id == item_data.product_id,
-                    Product.business_id == business.id
-               )
+    # Get recipe and ingredients of a product
+    product_result = await db.execute(
+        select(Product)
+        .options(
+            joinedload(Product.recipe_items)
+            .joinedload(RecipeItem.item)
         )
-        product = product_result.scalar_one_or_none()
+        .where(
+            Product.id.in_(product_ids),
+            Product.business_id == business.id
+        )
+    )
+    products_by_id = {p.id: p for p in product_result.unique().scalars().all()}
+
+    # Load latest price defined
+    latest_price_sub = (
+        select(PriceHistory.product_id, func.max(PriceHistory.valid_from).label("max_date"))
+        .where(PriceHistory.product_id.in_(product_ids))
+        .group_by(PriceHistory.product_id)
+        .subquery()
+    )
+    price_result = await db.execute(
+        select(PriceHistory)
+        .join(
+            latest_price_sub,
+            (PriceHistory.product_id == latest_price_sub.c.product_id) & 
+            (PriceHistory.valid_from == latest_price_sub.c.max_date)
+        )
+    )
+    prices_by_product_id = {price.product_id: price for price in price_result.scalars().all()}
+
+    total_ingredient_demands = {} 
+    validated_items = []
+
+    # Validate all the inputs are correct
+    for item_data in data.order_items:
+        product = products_by_id.get(item_data.product_id)
         if product is None:
             raise HTTPException(status_code=404, detail="Product not found")
 
-        # Check price exist for product
-        price_result = await db.execute(
-                select(PriceHistory)
-                .where(PriceHistory.product_id == product.id)
-                .order_by(PriceHistory.valid_from.desc())
-                .limit(1)
-        )
-        price = price_result.scalar_one_or_none() 
+        price = prices_by_product_id.get(item_data.product_id)
         if not price:
             raise HTTPException(status_code=404, detail="Price for product not found")
 
-        recipe_result = await db.execute(
-                select(RecipeItem)
-                .where(RecipeItem.product_id == product.id)
-        )
-        recipe_items = recipe_result.scalars().all()
-
-        for recipe_item in recipe_items:
-            ingredient_result = await db.execute(
-                    select(Item).where(Item.id == recipe_item.item_id)
-            )
-            ingredient = ingredient_result.scalar_one_or_none()
+        # Compile ingredient deductions and validate structure
+        for recipe_item in product.recipe_items:
+            ingredient = recipe_item.item
             if not ingredient:
                 raise HTTPException(status_code=404, detail="Ingredient not found")
 
             required = recipe_item.quantity * item_data.quantity
-            if ingredient.current_stock < required:
+            total_ingredient_demands[ingredient.id] = total_ingredient_demands.get(ingredient.id, 0) + required
+
+        validated_items.append((item_data, product, price))
+
+    # Verify stock suffies demands
+    for item_data, product, price in validated_items:
+        for recipe_item in product.recipe_items:
+            ingredient = recipe_item.item
+            total_required = total_ingredient_demands[ingredient.id]
+            
+            if ingredient.current_stock < total_required:
                 raise HTTPException(
-                        status_code=409,
-                        detail=f"Insufficent stock for {ingredient.name}: need {required}, have {ingredient.current_stock}"
-                    )
-        validated_items.append((item_data, product, price, recipe_items))
-    
-    # As all is valid create order
+                    status_code=409,
+                    detail=f"Insufficient stock for {ingredient.name}: need {total_required}, have {ingredient.current_stock}"
+                )
+
     order = Order(
-            id=uuid.uuid4(),
-            business_id=business.id,
-            customer_id=data.customer_id,
-            status=OrderStatus.pending
+        id=uuid.uuid4(),
+        business_id=business.id,
+        customer_id=data.customer_id,
+        status=OrderStatus.pending
     )
     db.add(order)
-    await db.flush()
+    await db.flush()  
 
-     # Create order items and decrement stock
-    for item_data, product, price, recipe_items in validated_items:
+    for item_data, product, price in validated_items:
         order_item = OrderItem(
             id=uuid.uuid4(),
             order_id=order.id,
@@ -99,21 +125,18 @@ async def create_order(
         )
         db.add(order_item)
 
-        for recipe_item in recipe_items:
-            ingredient_result = await db.execute(
-                select(Item).where(Item.id == recipe_item.item_id)
-            )
-            ingredient = ingredient_result.scalar_one()
-            ingredient.current_stock -= recipe_item.quantity * item_data.quantity
+        # Decrement the stock directly 
+        for recipe_item in product.recipe_items:
+            recipe_item.item.current_stock -= recipe_item.quantity * item_data.quantity
 
     await db.commit()
+
     result = await db.execute(
         select(Order)
         .where(Order.id == order.id)
         .options(selectinload(Order.order_items))
     )
     return result.scalar_one()
-
 
 @router.get("", response_model=list[OrderResponse])
 async def get_orders(

@@ -53,14 +53,19 @@ async def create_restock(
         business: Business = Depends(get_current_business),
         db: AsyncSession = Depends(get_db)
 ):
+    item_ids = [item_data.item_id for item_data in data.restock_items]
+
+    result = await db.execute(
+        select(Item).where(
+            Item.id.in_(item_ids),
+            Item.business_id == business.id
+        )
+    )
+
+    items_by_id = {item.id: item for item in result.scalars().all()}
+
     for item_data in data.restock_items:
-        item_result = await db.execute(
-                select(Item).where(
-                    Item.id == item_data.item_id,
-                    Item.business_id == business.id
-                    )
-                )
-        item = item_result.scalar_one_or_none()
+        item = items_by_id.get(item_data.item_id)
 
         if not item:
             raise HTTPException(status_code=404, detail=f"Item {item_data.item_id} not found")
@@ -153,15 +158,18 @@ async def delete_restock(
     if restock is None:
         raise HTTPException(status_code=404, detail="Restock not found")
 
-    for restock_item in restock.restock_items:
-        item_result = await db.execute(
-                select(Item)
-                .where( Item.id == restock_item.item_id )
-        )
+    item_ids = [restock_item.item_id for restock_item in restock.restock_items]
 
-        item = item_result.scalar_one_or_none()
+    item_result = await db.execute(
+        select(Item).where(Item.id.in_(item_ids))
+    )
+
+    items_by_id = {item.id: item for item in item_result.scalars().all()}
+
+    for restock_item in restock.restock_items:
+        item = items_by_id.get(restock_item.item_id)
         if item:
-            item.current_stock -= restock_item.quantity
+            item.current_stock -= restock_item.quantity    
 
     await db.delete(restock)
     await db.commit()
