@@ -316,3 +316,4 @@ async def assert_json_match_order():
 
 def mock_auth_failure():
         raise HTTPException(status_code=401, detail="Invalid or expired token")
+
