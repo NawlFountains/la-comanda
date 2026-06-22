@@ -185,11 +185,13 @@ async def update_order_status(
     if data.status is not None:
         order.status = data.status 
 
-
     await db.commit()
-    await db.refresh(order)
-
-    return order 
+    result = await db.execute(
+        select(Order)
+        .where(Order.id == order_id)
+        .options(selectinload(Order.order_items))
+    )
+    return result.scalar_one()
 
 async def restock_order_inventory(order: Order, db: AsyncSession):
     """
