@@ -74,7 +74,7 @@ async def create_order(
             if ingredient.current_stock < required:
                 raise HTTPException(
                         status_code=409,
-                        detail=f"Insufficent stock for {ingredient.name}: need {recipe_item.quantity}, have {item_data.quantity}"
+                        detail=f"Insufficent stock for {ingredient.name}: need {required}, have {ingredient.current_stock}"
                     )
         validated_items.append((item_data, product, price, recipe_items))
     
