@@ -19,3 +19,8 @@ export const loginLoader = async () => {
 	}
 	return null
 }
+
+export const rootSessionLoader = async () => {
+	const { data: { session } } = await supabase.auth.getSession();
+	return session;
+};

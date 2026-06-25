@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom' 
-import { protectedLoader, loginLoader } from './routes/authLoader'
+import { protectedLoader, loginLoader, rootSessionLoader } from './routes/authLoader'
 import Layout from './layouts/Layout'
 
 import Home from './pages/Home'
@@ -11,7 +11,9 @@ import Login from './pages/Login'
 const router = createBrowserRouter([
 	{
 		path: '/',
+		id: 'root-layout',
 		element: <Layout/>,
+		loader: rootSessionLoader,
 		children: [
 			{
 				index: true,

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useRevalidator } from 'react-router-dom'
 import { supabase } from '../supabase/supabaseClient'
 
 export function useLogin() {
@@ -7,6 +7,8 @@ export function useLogin() {
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [errors, setErrors] = useState<{ email?: string, password?: string }>({})
+	const navigate = useNavigate()
+	const revalidator = useRevalidator()
 
 	function validate() {
 
@@ -24,7 +26,7 @@ export function useLogin() {
 		} 
 		// else if (!isValidPassword(password)) {
 		//     newErrors.password = 'Enter a valid password'
-		// }
+		// k
 		setErrors(newErrors)
 		return Object.keys(newErrors).length == 0
 	}
@@ -34,13 +36,17 @@ export function useLogin() {
 		if (!validate()) return
 
 		setLoading(true)
-		const { error } = await supabase.auth.signInWithPassword({ email, password })
 
-		setLoading(false)
-
+		const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 		if (error) {
-			setErrors
+			setErrors({email: error.message})
 		}
+
+		if (data.session) {
+			revalidator.revalidate()
+			navigate('/dashboard', { replace: true } )
+		}
+		setLoading(false)
 	}
 	return {
 		email,
