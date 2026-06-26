@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard'
 import Orders from './pages/Orders'
 import Login from './pages/Login'
 import Stock from './pages/Stock'
+import Products from './pages/Products'
 
 const router = createBrowserRouter([
 	{
@@ -34,7 +35,13 @@ const router = createBrowserRouter([
 				path: 'stock',
 				element: <Stock />,
 				loader: protectedLoader
+			},
+			{
+				path: 'products',
+				element: <Products />,
+				loader: protectedLoader
 			}
+
 		]
 	},
 	{

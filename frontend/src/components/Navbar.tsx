@@ -41,6 +41,10 @@ export default function Navbar({ business }: NavBarProps) {
 				{
 					"to": "/stock",
 					"title": "Stock"
+				},
+				{
+					"to": "/products",
+					"title": "Products"
 				}
 			]
 			: []
