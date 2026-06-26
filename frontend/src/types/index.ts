@@ -36,6 +36,8 @@ export interface RecipeItem {
 export interface Item {
 	id: string,
 	business_id: string,
+	name: string,
+	unit: string,
 	current_stock: string,
 	low_stock_threshold: string,
 	notes: string | null
