@@ -50,7 +50,7 @@ export default function Navbar({ business }: NavBarProps) {
 		<nav className="bg-neutral-100">
 
 		{/* HORIZONTAL MENU */}
-		<div className="text-xl flex-row hidden md:flex w-full justify-between p-2">
+		<div className="text-lg flex-row hidden md:flex w-full justify-between p-2">
 			<div className="my-auto">
 			<NavLink to ="/">La comanda</NavLink>
 			</div>

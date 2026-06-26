@@ -1,31 +1,10 @@
-import {useEffect} from "react"
 import type { Item } from '../types'
-import { useState } from "react"
-import {getLowStockItems} from "../api/items"
-import ErrorMessage from "./ErrorMessage"
 
-export default function LowStockItemsCard() {
-	const [items, setItems] = useState<Item[]>([])
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+interface LowStockItemsCardProps {
+	items: Item[]
+}
 
-	useEffect(() => {
-		async function loadItems() {
-			try {
-				setLoading(true)
-				const data = await getLowStockItems()
-				setItems(data)
-			} catch (err) {
-				setError('Failed to load items')
-			} finally {
-				setLoading(false)
-			}
-		}
-		loadItems()
-	}, [])
-
-	if (loading) return (<div>Fetching low stock items...</div>)
-	if (error) return (<ErrorMessage message={error}/>)
+export default function LowStockItemsCard({ items } : LowStockItemsCardProps) {	
 	if (items.length == 0) return (<div>No items running low</div>)
 
 	return (

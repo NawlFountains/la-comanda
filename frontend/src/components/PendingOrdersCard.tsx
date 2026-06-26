@@ -1,31 +1,10 @@
-import {useEffect, useState} from "react";
 import type { Order } from '../types'
-import ErrorMessage from '../components/ErrorMessage'
-import { getPendingOrders } from "../api/orders";
 
-export default function PendingOrdersCard() {
-	const [orders, setOrders] = useState<Order[]>([])
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
+interface PendingOrdersCardProps {
+	orders: Order[]
+}
 
-	useEffect(() => {
-		async function loadItems() {
-			// TODO change backend to retrive customer names and avoid doing it here
-			try {
-				setLoading(true)
-				const data = await getPendingOrders()
-				setOrders(data)
-			} catch (err) {
-				setError('Failed to load orders')
-			} finally {
-				setLoading(false)
-			}
-		}
-		loadItems()
-	}, [])
-
-	if (loading) return (<div>Fetching orders...</div>)
-	if (error) return (<ErrorMessage message={error} /> )
+export default function PendingOrdersCard({ orders }: PendingOrdersCardProps) {
 	if (orders.length === 0) return (<div>No pending orders</div>)
 
 	return (
