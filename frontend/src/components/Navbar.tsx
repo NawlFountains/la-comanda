@@ -3,43 +3,48 @@ import type { User } from '@supabase/supabase-js'
 import useLogout from "../hooks/useLogout"
 import { useState } from "react"
 import { buttonVariants } from "./ButtonStyles"
+import type {Business} from "../types"
+
+interface NavBarProps {
+	business: Business | null
+}
 
 interface StyledNavLinkProps {
 	to: string
+	onClick?: () => void
 	children: React.ReactNode
 }
 
-function StyledNavLink({to, children}: StyledNavLinkProps) {
+function StyledNavLink({to, onClick, children}: StyledNavLinkProps) {
 	return (
 		<div className={`${buttonVariants.base}`}>
-			<NavLink to={to}>{children}</NavLink>
+			<NavLink to={to} onClick={onClick}>{children}</NavLink>
 		</div>
 	)
 }
 
-export default function Navbar() {
+export default function Navbar({ business }: NavBarProps) {
 	const user = useRouteLoaderData('root-layout') as User | null
 	const { loading, handleLogout } = useLogout()
 	const [ menuOpen, setMenuOpen ] = useState(false)
 
-	const navlink_paths = [
-		{
-			"to": '/',
-			"title": 'Home',
-		},
-		{
-			"to": "/dashboard",
-			"title": "Dashboard"
-		},
-		{
-			"to": "/orders",
-			"title": "Orders"
-		},
-		{
-			"to": "/stock",
-			"title": "Stock"
-		}
-	]
+	const navlinkPaths = business
+			? [
+				{
+					"to": "/dashboard",
+					"title": "Dashboard"
+				},
+				{
+					"to": "/orders",
+					"title": "Orders"
+				},
+				{
+					"to": "/stock",
+					"title": "Stock"
+				}
+			]
+			: []
+
 
 	return (
 		<nav className="bg-neutral-100">
@@ -50,7 +55,7 @@ export default function Navbar() {
 			<NavLink to ="/">La comanda</NavLink>
 			</div>
 			<div className="flex flex-row gap-4 my-auto">
-			{ navlink_paths.map((navlink, idx) => (
+			{ navlinkPaths.map((navlink, idx) => (
 				<span key={idx}>
 					<StyledNavLink to={navlink.to}>{navlink.title}</StyledNavLink>
 				</span>
@@ -58,7 +63,7 @@ export default function Navbar() {
 			</div>
 			{user ? (
 				<div>
-				<span>{user.email} </span>
+				<span>{business.name} </span>
 				<button
 					onClick={handleLogout}
 					disabled={loading}
@@ -102,9 +107,9 @@ export default function Navbar() {
 						: 'max-h-0 opacity-0 pointer-events-none'}`}>
 				<div className="text-center">
 					<ul className="divide-y divide-neutral-300">
-					{navlink_paths.map((navlink, idx) => (
+					{navlinkPaths.map((navlink, idx) => (
 						<li key={idx}>
-							<StyledNavLink to={navlink.to}>{navlink.title}</StyledNavLink>
+							<StyledNavLink to={navlink.to} onClick={() => setMenuOpen(prev => !prev)}>{navlink.title}</StyledNavLink>
 						</li>
 					))}
 					<li>
