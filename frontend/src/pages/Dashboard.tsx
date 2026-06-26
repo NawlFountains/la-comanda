@@ -1,7 +1,9 @@
+import ScreenLayout from "../layouts/ScreenLayout"
+
 export default function Dashboard() {
 	return (
-		<div>
-		Dashboard private
-		</div>
+		<ScreenLayout>
+			Private dashboard page
+		</ScreenLayout>
 	)
 }

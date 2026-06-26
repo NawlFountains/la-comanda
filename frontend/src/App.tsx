@@ -7,6 +7,7 @@ import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import Orders from './pages/Orders'
 import Login from './pages/Login'
+import Stock from './pages/Stock'
 
 const router = createBrowserRouter([
 	{
@@ -27,6 +28,11 @@ const router = createBrowserRouter([
 			{
 				path: 'orders',
 				element: <Orders />,
+				loader: protectedLoader
+			},
+			{
+				path: 'stock',
+				element: <Stock />,
 				loader: protectedLoader
 			}
 		]

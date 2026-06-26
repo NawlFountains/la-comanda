@@ -1,9 +1,9 @@
 import ScreenLayout from "../layouts/ScreenLayout";
 
-export default function Home() {
+export default function Stock() {
 	return (
 		<ScreenLayout>
-			On home page
+			Private stock screen
 		</ScreenLayout>
 	)
 }

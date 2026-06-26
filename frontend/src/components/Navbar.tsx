@@ -34,6 +34,10 @@ export default function Navbar() {
 		{
 			"to": "/orders",
 			"title": "Orders"
+		},
+		{
+			"to": "/stock",
+			"title": "Stock"
 		}
 	]
 
@@ -89,29 +93,35 @@ export default function Navbar() {
 					}`} />
 				</button>
 			</div>
-			{menuOpen && (
+
+			{/* Menu open */}
+			<div
+				className={`text-center transition-all duration-200 ease-in-out 
+					${menuOpen
+						? 'max-h-96 opacity-100 pointer-events-auto'
+						: 'max-h-0 opacity-0 pointer-events-none'}`}>
 				<div className="text-center">
-				<ul className="divide-y divide-neutral-300">
-				{navlink_paths.map((navlink, idx) => (
-					<li key={idx}>
-						<StyledNavLink to={navlink.to}>{navlink.title}</StyledNavLink>
+					<ul className="divide-y divide-neutral-300">
+					{navlink_paths.map((navlink, idx) => (
+						<li key={idx}>
+							<StyledNavLink to={navlink.to}>{navlink.title}</StyledNavLink>
+						</li>
+					))}
+					<li>
+					{user ? (
+						<button
+							onClick={handleLogout}
+							disabled={loading}
+							className={`${buttonVariants.danger} w-full`}>
+						{ loading ? 'Logging out...' : 'Log out'}
+						</button>
+					) : (
+						<StyledNavLink to='/login'>Log in</StyledNavLink>
+					)}
 					</li>
-				))}
-				<li>
-				{user ? (
-					<button
-						onClick={handleLogout}
-						disabled={loading}
-						className={`${buttonVariants.danger} w-full`}>
-					{ loading ? 'Logging out...' : 'Log out'}
-					</button>
-				) : (
-					<StyledNavLink to='/login'>Log in</StyledNavLink>
-				)}
-				</li>
-				</ul>
+					</ul>
 				</div>
-			)}
+			</div>
 		</div>
 		</nav>
 	)
