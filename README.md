@@ -10,6 +10,11 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
 - [x] Stock logic on restock and order creation
 - [x] Order endpoints 
 - [ ] React + TypeScript frontend
+  + [x] Login Screen
+  + [ ] Orders Screen
+  + [ ] Stock Screen
+  + [ ] Dashboard Screen
+  + [ ] Home Screen
 - [ ] Deploy to Railway + Vercel
 
 ## Testing
