@@ -3,7 +3,7 @@ import LowStockItemsCard from "../components/LowStockItemsCard"
 import PendingOrdersCard from "../components/PendingOrdersCard"
 import { useState, useEffect } from "react"
 import type { Order, Item } from "../types"
-import { getPendingOrders } from "../api/orders"
+import { getOrderByStatus } from "../api/orders"
 import {getLowStockItems} from "../api/items"
 
 export default function Dashboard() {
@@ -18,7 +18,7 @@ export default function Dashboard() {
 			try {
 				setLoading(true)
 				const [ordersData, itemsData] = await Promise.all([
-					getPendingOrders(),
+					getOrderByStatus('pending'),
 					getLowStockItems()
 				])
 				setOrders(ordersData)
