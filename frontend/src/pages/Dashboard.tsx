@@ -1,16 +1,12 @@
 import ScreenLayout from "../layouts/ScreenLayout"
-import type { LayoutContextType } from "../layouts/Layout"
-import {useOutletContext} from "react-router-dom"
 import LowStockItemsCard from "../components/LowStockItemsCard"
 import PendingOrdersCard from "../components/PendingOrdersCard"
 import { useState, useEffect } from "react"
 import type { Order, Item } from "../types"
 import { getPendingOrders } from "../api/orders"
-import { getMyBusiness } from "../api/business"
 import {getLowStockItems} from "../api/items"
 
 export default function Dashboard() {
-	const { business } = useOutletContext<LayoutContextType>()
 	const [orders, setOrders] = useState<Order[]>([])
 	const [items, setItems] = useState<Item[]>([])
 	const [loading, setLoading] = useState(true)
