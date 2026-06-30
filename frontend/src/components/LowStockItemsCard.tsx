@@ -1,4 +1,5 @@
 import type { Item } from '../types'
+import {cardVariants} from './CardStyles'
 
 interface LowStockItemsCardProps {
 	items: Item[]
@@ -8,7 +9,7 @@ export default function LowStockItemsCard({ items } : LowStockItemsCardProps) {
 	if (items.length == 0) return (<div>No items running low</div>)
 
 	return (
-		<div className="bg-neutral-100 text-center flex flex-col shadow-lg border border-neutral-300 rounded-xl overflow-hidden">
+		<div className={cardVariants.table}>
 			<h1 className="text-xl p-6"> Items currently running low on stock </h1>
 			<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
 				<div className="bg-neutral-200 grid grid-cols-3 p-1 font-mono">

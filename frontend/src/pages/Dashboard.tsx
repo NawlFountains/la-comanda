@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import type { Order, Item } from "../types"
 import { getOrderByStatus } from "../api/orders"
 import {getLowStockItems} from "../api/items"
+import {buttonVariants} from "../components/ButtonStyles"
 
 export default function Dashboard() {
 	const [orders, setOrders] = useState<Order[]>([])
@@ -37,13 +38,31 @@ export default function Dashboard() {
 
 	return (
 		<ScreenLayout>
-			<h1 className="text-xl py-4">
-			Dashboard
-			</h1>
+			<div className="flex flex-col items-center gap-4">
+				<h1 className="text-xl py-4 font-mono">
+				Quick actions
+				</h1>
+
+			<div className="flex flex-col md:grid md:grid-cols-3 w-full md:w-2/3 xl:w-1/3 gap-4 mb-4">
+				<button className={`${buttonVariants.secondary} rounded-xl`}>
+					+ Add Order
+				</button>
+				<button className={`${buttonVariants.secondary} rounded-xl`}>
+					+ Add Restock 
+				</button>
+				<button className={`${buttonVariants.secondary} rounded-xl`}>
+					+ Add Product 
+				</button>
+			</div>
+
+				<h1 className="text-xl py-4 font-mono">
+				General status
+				</h1>
 
 			<div className="flex flex-col md:grid md:grid-cols-2 w-full sm:w-5/6 gap-8">
 				<PendingOrdersCard orders={orders}/>
 				<LowStockItemsCard items={items}/>
+			</div>
 			</div>
 		</ScreenLayout>
 	)
