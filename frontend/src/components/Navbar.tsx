@@ -51,7 +51,7 @@ export default function Navbar({ business }: NavBarProps) {
 
 
 	return (
-		<nav className="bg-neutral-100">
+		<nav className="bg-neutral-100 w-full">
 
 		{/* HORIZONTAL MENU */}
 		<div className="text-lg flex-row hidden md:flex w-full justify-between p-2">
@@ -67,7 +67,7 @@ export default function Navbar({ business }: NavBarProps) {
 			</div>
 			{user ? (
 				<div>
-				<span>{business.name} </span>
+				<span>{business?.name || "Loading..."} </span>
 				<button
 					onClick={handleLogout}
 					disabled={loading}
