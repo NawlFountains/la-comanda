@@ -9,12 +9,14 @@ import Orders from './pages/Orders'
 import Login from './pages/Login'
 import Stock from './pages/Stock'
 import Products from './pages/Products'
+import ErrorFallback from './components/ErrorFallback'
 
 const router = createBrowserRouter([
 	{
 		path: '/',
 		id: 'root-layout',
 		element: <Layout/>,
+		errorElement: <ErrorFallback />,
 		loader: rootSessionLoader,
 		children: [
 			{
