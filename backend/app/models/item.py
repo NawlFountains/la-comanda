@@ -15,6 +15,6 @@ class Item(Base):
     low_stock_threshold: Mapped[Decimal]
     notes: Mapped[str | None]
 
-    recipe_items: Mapped[list["RecipeItem"]] = relationship(back_populates="item")
-    restock_items: Mapped[list["RestockItem"]] = relationship(back_populates="item")
+    recipe_items: Mapped[list["RecipeItem"]] = relationship(back_populates="item", cascade="all, delete-orphan")
+    restock_items: Mapped[list["RestockItem"]] = relationship(back_populates="item", cascade="all, delete-orphan")
     business: Mapped["Business"] = relationship(back_populates="items")
