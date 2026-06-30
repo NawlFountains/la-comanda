@@ -4,6 +4,7 @@ import type { Order, OrderStatus } from "../types"
 import { getOrders } from "../api/orders"
 import EditableOrdersTable from "../components/EditableOrdersTable"
 import {TrashIcon} from "../components/Icons"
+import { buttonVariants } from "../components/ButtonStyles"
 
 export default function Orders() {
 	const [allOrders, setAllOrders] = useState<Order[]>([])
@@ -45,7 +46,7 @@ export default function Orders() {
 					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
 
 				{/* Drop down filters */}
-				<div className="flex flex-row">
+				<div className="flex flex-row gap-2">
 				<select 
 				  id="filter-select"
 				  value={filterStatus}
@@ -58,12 +59,18 @@ export default function Orders() {
 					<option value="confirmed">Confirmed</option>
 					<option value="confirmed">Confirmed</option>
 				</select>
+
 				<button 
 					title="Remove status filter"
 					onClick={() => setFilterStatus('')}
 					className={`text-red-500 cursor-pointer hover:scale-105
 						${filterStatus === '' ? 'hidden' : 'block'}`}>
 					<TrashIcon />
+				</button>
+
+				<button
+					className={buttonVariants.secondary}>
+				+ Add order
 				</button>
 				</div>
 			</div>

@@ -1,5 +1,6 @@
 import { PenIcon, TrashIcon } from '../components/Icons'
 import type { Order } from '../types'
+import {cardVariants} from './CardStyles'
 
 interface EditableOrdersTableProps {
 	orders: Order[]
@@ -9,7 +10,7 @@ export default function EditableOrdersTable({ orders }: EditableOrdersTableProps
 	if (orders.length == 0) return (<div> No orders </div>)
 
 	return (
-	<div className="bg-neutral-100 text-center flex flex-col shadow-lg border border-neutral-300 rounded-xl sm:mx-2 overflow-hidden">
+	<div className={`${cardVariants.table} sm:mx-2`}>
 		<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
 			<div className="bg-neutral-200 grid grid-cols-5 p-1 font-mono">
 				<p>Order_ID</p>
