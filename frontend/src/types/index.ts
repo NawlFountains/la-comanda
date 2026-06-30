@@ -75,3 +75,5 @@ export interface Order {
 	status: OrderStatus,
 	order_items: OrderItem[]
 }
+
+export type CreateItemPayload = Omit<Item, "id" | "business_id">

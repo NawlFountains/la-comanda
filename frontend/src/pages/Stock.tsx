@@ -1,40 +1,32 @@
-import {useEffect, useState} from "react"
 import ScreenLayout from "../layouts/ScreenLayout"
-import type { Item } from "../types"
-import { getStock } from "../api/items"
 import EditableStockTable from "../components/EditableStockTable"
+import { useItems } from "../hooks/useItems"
 import {buttonVariants} from "../components/ButtonStyles"
+import {useState} from "react"
+import AddItemModal from "../components/AddItemModal"
 
-export default function Stoc() {
-	const [allItems, setAllItems] = useState<Item[]>([])
-	const [searchQuery, setSearchQuery] = useState("")
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
-
-	useEffect(() => {
-		async function loadItems() {
-			try {
-				setLoading(true)
-				const data = await getStock()
-				setAllItems(data)
-			} catch (err) {
-				setError(err)
-			} finally {
-				setLoading(false)
-			}
-		}
-		loadItems()
-	}, [])
-
-	const visibleItems = allItems.filter(item =>
-					     item.name.toLowerCase().includes(searchQuery.toLowerCase()))
+export default function Stock() {
+	const { items, searchQuery, setSearchQuery, handleItemCreate, handleItemDelete, handleItemUpdate, loading, error } = useItems()
+	const [showModal, setShowModal] = useState(false)
 
 	if (loading) return (<div className="text-center p-12">Loading items...</div>)
-	if (error) return (<div className="text-center text-red-500">{error}</div>)
+	if (error) return (
+		<div className="text-center text-red-500">
+		{error instanceof Error ? error.message : "Error sycning with server."}
+		</div>
+	)
 
 	return (
 		<ScreenLayout>
 			<div className="flex flex-col w-full gap-2 mt-2">
+
+			{/* Modals */}
+
+			{showModal && (
+				<AddItemModal 
+					onClose={() => setShowModal(false)}
+					onCreate={handleItemCreate}/>
+			)}
 
 			{/* Search and creation tab */}
 			<div className="flex flex-row sm:flex-row justify-between mx-2 gap-2">
@@ -46,14 +38,17 @@ export default function Stoc() {
 					onChange={(e) => setSearchQuery(e.target.value)}
 					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
 				<button
+					onClick={() => setShowModal(prev => !prev)}
 					className={buttonVariants.secondary}>
 				+ Add item
 				</button>
-
 			</div>
 
 			{/* Items table */}
-			<EditableStockTable items={visibleItems}/>
+			<EditableStockTable 
+				onEdit={handleItemUpdate}
+				onDelete={handleItemDelete}
+				items={items}/>
 			</div>
 		</ScreenLayout>
 	)
