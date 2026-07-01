@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { deleteItem, getStock } from '../api/items'
+import { deleteItem, getStock, updateItem } from '../api/items'
 import type { Item, CreateItemPayload } from '../types'
 import { createItem } from '../api/items'
+import { itemCreateSchema, itemUpdateSchema } from '../schemas/item'
 
 export const useItems = () => {
 	const [items, setItems] = useState<Item[]>([])
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
+	const [errors, setErrors] = useState<{ name?: string, unit?: string, current_stock?: string, low_stock_threshold?: string }>({})
 	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -30,16 +32,29 @@ export const useItems = () => {
 		)
 	}, [items, searchQuery])
 
-	const handleItemCreate = useCallback( async (itemData: CreateItemPayload) => {
+	const handleItemCreate = useCallback( async (itemData: CreateItemPayload): Promise<boolean> => {
+		const result = itemCreateSchema.safeParse(itemData)
+		if (!result.success) {
+			const newErrors: typeof errors = {}
+			for (const issue of result.error.issues) {
+				const field = issue.path[0] as keyof typeof newErrors
+				if (!newErrors[field]) newErrors[field] = issue.message
+			}
+			setErrors(newErrors)
+			return false
+		}
+		setErrors({})		
 		setLoading(true)
 		setError(null)
 		try {
 			const newItem: Item= await createItem(itemData)
 
 			setItems((prevItems) => [...prevItems, newItem])
+			return true
 		} catch (err) {
 			setError(err)
 			console.error("Failed to create item:", err)
+			return false
 		} finally {
 			setLoading(false)
 		}
@@ -60,9 +75,32 @@ export const useItems = () => {
 		}
 	}
 
-	const handleItemUpdate = async(id: string, updatedData: Partial<CreateItemPayload>) => {
-
-	}
+	const handleItemUpdate = useCallback( async (id: string, itemData: Partial<CreateItemPayload>): Promise<boolean> => {
+		const result = itemUpdateSchema.safeParse(itemData)
+		if (!result.success) {
+			const newErrors: typeof errors = {}
+			for (const issue of result.error.issues) {
+				const field = issue.path[0] as keyof typeof newErrors
+				if (!newErrors[field]) newErrors[field] = issue.message
+			}
+			setErrors(newErrors)
+			return false
+		}
+		setErrors({})		
+		setLoading(true)
+		setError(null)
+		try {
+			const updatedItem: Item= await updateItem(id, itemData)
+			setItems((prevItems) => prevItems.map((item) => item.id === id ? updatedItem : item))
+			return true
+		} catch (err) {
+			setError(err)
+			console.error("Failed to create item:", err)
+			return false
+		} finally {
+			setLoading(false)
+		}
+	}, [])
 
 	return {
 		items: visibleItems,
@@ -72,6 +110,7 @@ export const useItems = () => {
 		searchQuery,
 		setSearchQuery,
 		loading,
-		error
+		error,
+		errors
 	}
 }

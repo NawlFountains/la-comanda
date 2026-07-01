@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useRevalidator } from 'react-router-dom'
 import { supabase } from '../supabase/supabaseClient'
+import { loginSchema } from '../schemas/auth'
 
 export function useLogin() {
 	const [email, setEmail] = useState('')
@@ -11,19 +12,18 @@ export function useLogin() {
 	const revalidator = useRevalidator()
 
 	function validate() {
-
-		const newErrors: { email?: string, password?: string } = {}
-		
-		// TODO more validations required
-		if (!email.trim()) {
-		    newErrors.email = 'Email is required'
-		} 
-
-		if (!password.trim()) {
-		    newErrors.password = 'Password is required'
-		} 
-		setErrors(newErrors)
-		return Object.keys(newErrors).length == 0
+		const result = loginSchema.safeParse({ email, password })
+		if (!result.success) {
+			const newErrors: { email?: string, password?: string } = {}
+			for (const issue of result.error.issues) {
+				const field = issue.path[0] as 'email' | 'password'
+				if (!newErrors[field]) newErrors[field] = issue.message
+			}
+			setErrors(newErrors)
+			return false
+		}
+		setErrors({})
+		return true
 	}
 
 

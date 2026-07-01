@@ -3,24 +3,25 @@ import InputModal from '../components/InputModal.tsx'
 import ErrorMessage from "./ErrorMessage.tsx"
 import { buttonVariants } from '../components/ButtonStyles.ts'
 import { cardVariants } from '../components/CardStyles'
-import type { CreateItemPayload } from '../types'
+import type { Item, CreateItemPayload } from '../types'
 import type {ItemErrors} from "../schemas/item.ts"
 
-interface AddItemModalProps {
+interface EditItemModalProps {
 	onClose: () => void
-	onCreate: (data: CreateItemPayload) => Promise<boolean>
+	onEdit: (id: string, data: Partial<CreateItemPayload>) => Promise<boolean>
 	errors: ItemErrors
+	item: Item
 }
 
-export default function AddItemModal( { onClose, onCreate, errors } : AddItemModalProps) {
-	const [name, setName] = useState('')
-	const [currentStock, setCurrentStock] = useState<string>('')
-	const [unit, setUnit] = useState('kg')
-	const [lowStockThreshold, setLowStockThreshold] = useState<string>('')
-	const [notes, setNotes] = useState('')
+export default function EditItemModal( { onClose, onEdit, errors, item } : EditItemModalProps) {
+	const [name, setName] = useState(item.name)
+	const [currentStock, setCurrentStock] = useState<string>(item.current_stock)
+	const [unit, setUnit] = useState(item.unit)
+	const [lowStockThreshold, setLowStockThreshold] = useState<string>(item.low_stock_threshold)
+	const [notes, setNotes] = useState(item.notes ?? '')
 	
 	const handleSubmit = async () => {
-		const success = await onCreate({
+		const success = await onEdit(item.id, {
 			name,
 			current_stock: currentStock,
 			unit,
@@ -37,7 +38,7 @@ export default function AddItemModal( { onClose, onCreate, errors } : AddItemMod
 				onClick={(e) => e.stopPropagation()}
 				className={`${cardVariants.base} gap-4 p-4 w-full md:w-fit shadow-lg`}>
 				<h2 className="text-center text-xl font-mono p-2">
-				Add item
+				Edit item <span className="font-medium">{item.name}</span>
 				</h2>
 				<div className="flex flex-col">
 				<InputModal
@@ -92,7 +93,7 @@ export default function AddItemModal( { onClose, onCreate, errors } : AddItemMod
 					<button 
 						onClick={handleSubmit}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-					Add
+						Edit
 					</button>
 				</div>
 			</div>

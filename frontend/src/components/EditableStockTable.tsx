@@ -3,14 +3,17 @@ import { PenIcon, TrashIcon } from '../components/Icons'
 import type { CreateItemPayload, Item } from '../types'
 import {cardVariants} from './CardStyles'
 import ConfirmDeletionModal from './ConfirmDeletionModal'
+import EditItemModal from './EditItemModal'
+import type {ItemErrors} from '../schemas/item'
 
 interface EditableStockTableProps {
 	items: Item[],
 	onEdit: (id: string, updateData: Partial<CreateItemPayload>) => void,
 	onDelete: (id: string) => void,
+	errors: ItemErrors
 }
 
-export default function EditableStockTable({ items, onEdit, onDelete }: EditableStockTableProps) {
+export default function EditableStockTable({ items, onEdit, onDelete, errors}: EditableStockTableProps) {
 
 	if (items.length == 0) return (<div> No stock </div>)
 
@@ -35,6 +38,7 @@ export default function EditableStockTable({ items, onEdit, onDelete }: Editable
 					item={item}
 					onEdit={onEdit}
 					onDelete={onDelete}
+					errors={errors}
 				/>
 				
 			))}
@@ -47,9 +51,10 @@ interface StockRowProps {
 	item: Item,
 	onEdit: EditableStockTableProps['onEdit']
 	onDelete: EditableStockTableProps['onDelete']
+	errors: EditableStockTableProps['errors']
 }
 
-function StockRow({ item, onEdit, onDelete }: StockRowProps) {
+function StockRow({ item, onEdit, onDelete, errors }: StockRowProps) {
 	const [showDeleteMenu, setShowDeleteMenu] = useState<boolean>(false)
 	const [showEditMenu, setShowEditMenu] = useState<boolean>(false)
 	return (
@@ -73,6 +78,17 @@ function StockRow({ item, onEdit, onDelete }: StockRowProps) {
 					className='cursor-pointer text-red-500 hover:scale-110'>
 					<TrashIcon className='w-6 h-6' />
 				</button>
+
+				{/* Modals */}
+
+				{showEditMenu && (
+					<EditItemModal 
+						onClose={() => setShowEditMenu(false)}
+						onEdit={onEdit}
+						errors={errors}
+						item={item}
+					/>
+				)}
 
 				{showDeleteMenu && (
 					<ConfirmDeletionModal

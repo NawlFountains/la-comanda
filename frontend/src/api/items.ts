@@ -7,12 +7,31 @@ export async function createItem(itemData: CreateItemPayload): Promise<Item> {
 	const { data, error } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
-	console.log(JSON.stringify(itemData))
 	if (!token) {
 		throw new Error('User is not authenticated')
 	}
 	const response = await fetch(`${API_URL}/items`, {
 		method: "POST",
+		headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-type': 'application/json'
+		},
+		body: JSON.stringify(itemData)
+	})
+
+	if (!response.ok) throw new Error(`Error when creating item: ${response.text}`)
+	return response.json()
+}
+
+export async function updateItem(itemId: string, itemData: Partial<CreateItemPayload>): Promise<Item> {
+	const { data, error } = await supabase.auth.getSession()
+	const token = data.session?.access_token
+
+	if (!token) {
+		throw new Error('User is not authenticated')
+	}
+	const response = await fetch(`${API_URL}/items/${itemId}`, {
+		method: "PATCH",
 		headers: {
 			'Authorization': `Bearer ${token}`,
 			'Content-type': 'application/json'

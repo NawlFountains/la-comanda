@@ -6,13 +6,13 @@ import {useState} from "react"
 import AddItemModal from "../components/AddItemModal"
 
 export default function Stock() {
-	const { items, searchQuery, setSearchQuery, handleItemCreate, handleItemDelete, handleItemUpdate, loading, error } = useItems()
+	const { items, searchQuery, setSearchQuery, handleItemCreate, handleItemDelete, handleItemUpdate, loading, error, errors } = useItems()
 	const [showModal, setShowModal] = useState(false)
 
 	if (loading) return (<div className="text-center p-12">Loading items...</div>)
 	if (error) return (
 		<div className="text-center text-red-500">
-		{error instanceof Error ? error.message : "Error sycning with server."}
+		{error}
 		</div>
 	)
 
@@ -25,7 +25,8 @@ export default function Stock() {
 			{showModal && (
 				<AddItemModal 
 					onClose={() => setShowModal(false)}
-					onCreate={handleItemCreate}/>
+					onCreate={handleItemCreate}
+					errors={errors}/>
 			)}
 
 			{/* Search and creation tab */}
@@ -48,7 +49,8 @@ export default function Stock() {
 			<EditableStockTable 
 				onEdit={handleItemUpdate}
 				onDelete={handleItemDelete}
-				items={items}/>
+				items={items}
+				errors={errors}/>
 			</div>
 		</ScreenLayout>
 	)
