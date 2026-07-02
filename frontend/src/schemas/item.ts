@@ -1,11 +1,5 @@
 import { z } from "zod"
-import { idSchema } from "./common"
-
-const decimalStringSchema = z
-	.string()
-	.min(1, "This field is required")
-	.refine((val) => !isNaN(Number(val)), { message: "Must be a valid number" })
-	.refine((val) => Number(val) >= 0, { message: "Must be zero or greater" })
+import { decimalStringSchema } from "./common"
 
 export const itemCreateSchema = z.object({
 	name: z.string().min(1, "Name is required").max(100),
