@@ -77,3 +77,21 @@ export interface Order {
 }
 
 export type CreateItemPayload = Omit<Item, "id" | "business_id">
+export type CreateRestockItemPayload = Omit<RestockItem, "id" | "restock_id">
+
+export interface CreateRestockPayload {
+	supplier: string
+	notes: string
+	restock_date: string
+	restock_items: CreateRestockItemPayload[]
+}
+
+export type CreateOrderItemPayload = Omit<OrderItem, "id" | "order_id" | "unit_price">
+
+export interface CreateOrderPayload {
+	customer_id: string
+	status: OrderStatus
+	order_items: CreateOrderItemPayload[]
+}
+
+export type CreateCustomerPayload = Omit<Customer, "id" | "business_id">
