@@ -39,7 +39,7 @@ export async function updateItem(itemId: string, itemData: Partial<CreateItemPay
 		body: JSON.stringify(itemData)
 	})
 
-	if (!response.ok) throw new Error(`Error when creating item: ${response.text}`)
+	if (!response.ok) throw new Error(`Error when updating item: ${response.text}`)
 	return response.json()
 }
 
@@ -58,7 +58,7 @@ export async function deleteItem(itemId: string): Promise<void> {
 		}
 	})
 
-	if (!response.ok) throw new Error(`Error when creating item: ${response.text}`)
+	if (!response.ok) throw new Error(`Error when deleting item: ${response.text}`)
 }
 
 export async function getStock(): Promise<Item []> {
