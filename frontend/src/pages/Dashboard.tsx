@@ -1,31 +1,50 @@
 import ScreenLayout from "../layouts/ScreenLayout"
 import LowStockItemsCard from "../components/LowStockItemsCard"
 import PendingOrdersCard from "../components/PendingOrdersCard"
+import LatestRestockCard from '../components/LatestsRestocksCard'
 import { useState, useEffect } from "react"
 import type { Order, Item } from "../types"
 import { getOrderByStatus } from "../api/orders"
-import {getLowStockItems} from "../api/items"
+import { getStock, getLowStockItems } from "../api/items"
 import {buttonVariants} from "../components/ButtonStyles"
+import AddRestockModal from "../components/AddRestockModal"
+import {useRestocks} from "../hooks/useRestock"
+import {useCustomer} from "../hooks/useCustomers"
+import { useOrders } from "../hooks/useOrders"
+import AddOrderModal from "../components/AddOrderModal"
+import {useProducts} from "../hooks/useProducts"
 
 export default function Dashboard() {
-	const [orders, setOrders] = useState<Order[]>([])
+	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
+	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
+
+	const { orders, submitting: orderSubmitting, handleOrderCreate, errors: orderErrors} = useOrders()
+	const { products } = useProducts()
+
 	const [items, setItems] = useState<Item[]>([])
+	const [lowStockItems, setLowStockItems] = useState<Item[]>([])
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState<string | null>(null)
 
+	const [showAddRestockMenu, setShowAddRestockMenu] = useState<boolean>(false)
+	const [showAddOrderMenu, setShowAddOrderMenu] = useState<boolean>(false)
+
+	const { restocks, submitting: restockSubmitting, handleRestockCreate, errors: restockErrors } = useRestocks()
+
 	useEffect(() => {
 		async function loadDashboardData() {
-			// TODO change backend to retrive customer names and avoid doing it here
 			try {
 				setLoading(true)
-				const [ordersData, itemsData] = await Promise.all([
+				const [ordersData, itemsData, lowStockItemsData] = await Promise.all([
 					getOrderByStatus('pending'),
-					getLowStockItems()
+					getStock(),
+					getLowStockItems(),
 				])
-				setOrders(ordersData)
+				setPendingOrders(ordersData)
 				setItems(itemsData)
+				setLowStockItems(lowStockItemsData)
 			} catch (err) {
-				setError('Failed to fetch data')
+				setError('Failed to fetch data '+err.message)
 			} finally {
 				setLoading(false)
 			}
@@ -38,16 +57,46 @@ export default function Dashboard() {
 
 	return (
 		<ScreenLayout>
-			<div className="flex flex-col items-center gap-4">
+			<div className="flex flex-col w-full sm:w-5/6 items-center gap-4">
+
+			{/* Modals */}
+			{showAddRestockMenu && (
+				<AddRestockModal 
+					onClose={() => setShowAddRestockMenu(false)} 
+					onCreate={handleRestockCreate}
+					items={items}
+					submitting={restockSubmitting}
+					errors={restockErrors}/>
+			)}
+
+			{showAddOrderMenu && (
+				<AddOrderModal 
+					onClose={() => setShowAddOrderMenu(false)}
+					onCreate={handleOrderCreate}
+					onCreateCustomer={handleCustomerCreate}
+					products={products}
+					customers={customers}
+					submitting={orderSubmitting}
+					orderErrors={orderErrors}
+					customerErrors={customerErrors}
+				/>
+			)}
+			<div className="items-center">
 				<h1 className="text-xl py-4 font-mono">
 				Quick actions
 				</h1>
+			</div>
 
-			<div className="flex flex-col md:grid md:grid-cols-3 w-full md:w-2/3 xl:w-1/3 gap-4 mb-4">
-				<button className={`${buttonVariants.secondary} rounded-xl`}>
+
+			<div className="flex flex-col md:grid md:grid-cols-3 w-full md:w-2/3 max-w-xl gap-4 mb-4">
+				<button 
+					onClick={() => setShowAddOrderMenu(true)}
+					className={`${buttonVariants.secondary} rounded-xl`}>
 					+ Add Order
 				</button>
-				<button className={`${buttonVariants.secondary} rounded-xl`}>
+				<button 
+					onClick={() => setShowAddRestockMenu(true)}
+					className={`${buttonVariants.secondary} rounded-xl`}>
 					+ Add Restock 
 				</button>
 				<button className={`${buttonVariants.secondary} rounded-xl`}>
@@ -59,10 +108,13 @@ export default function Dashboard() {
 				General status
 				</h1>
 
-			<div className="flex flex-col md:grid md:grid-cols-2 w-full sm:w-5/6 gap-8">
-				<PendingOrdersCard orders={orders}/>
-				<LowStockItemsCard items={items}/>
+			<div className="flex flex-col md:grid md:grid-cols-2 gap-4">
+				<PendingOrdersCard orders={pendingOrders} customers={customers}/>
+				<LowStockItemsCard items={lowStockItems}/>
 			</div>
+
+			{/* Latest restocks */}
+			<LatestRestockCard restocks={restocks} items={items} />
 			</div>
 		</ScreenLayout>
 	)

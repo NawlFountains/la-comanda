@@ -1,35 +1,33 @@
 import {useEffect, useState} from "react"
 import ScreenLayout from "../layouts/ScreenLayout"
 import type { Order, OrderStatus } from "../types"
-import { getOrders } from "../api/orders"
 import EditableOrdersTable from "../components/EditableOrdersTable"
 import {TrashIcon} from "../components/Icons"
 import { buttonVariants } from "../components/ButtonStyles"
+import { useOrders } from "../hooks/useOrders"
+import {useCustomer} from "../hooks/useCustomers"
+import AddOrderModal from "../components/AddOrderModal"
+import {useProducts} from "../hooks/useProducts"
 
 export default function Orders() {
-	const [allOrders, setAllOrders] = useState<Order[]>([])
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState<string | null>(null)
-	const [filterStatus, setFilterStatus] = useState<OrderStatus | "">("")
+	const { orders,
+		visibleOrders,
+		filterStatus,
+		searchQuery,
+		setSearchQuery,
+		setFilterStatus,
+		handleOrderCreate,
+		handleOrderUpdate,
+		handleOrderDelete,
+		loading,
+		submitting,
+		errors: orderErrors,
+		error } = useOrders()
 
-	useEffect(() => {
-		async function loadOrders() {
-			try {
-				setLoading(true)
-				const data = await getOrders()
-				setAllOrders(data)
-			} catch (err) {
-				setError(err)
-			} finally {
-				setLoading(false)
-			}
-		}
-		loadOrders()
-	}, [])
+	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
+	const { products } = useProducts()
 
-	const visibleOrders = filterStatus
-		? allOrders.filter(order => order.status== filterStatus)
-		: allOrders
+	const [ showMenu, setShowMenu ] = useState<boolean>(false)
 
 	if (loading) return (<div className="text-center p-12">Loading orders...</div>)
 	if (error) return (<div className="text-center text-red-500">{error}</div>)
@@ -38,11 +36,26 @@ export default function Orders() {
 		<ScreenLayout>
 			<div className="flex flex-col w-full gap-2 mt-2">
 
+			{showMenu && (
+				<AddOrderModal 
+					onCreate={handleOrderCreate}
+					onCreateCustomer={handleCustomerCreate}
+					onClose={() => setShowMenu(false)}
+					products={products}
+					customers={customers}
+					submitting={submitting}
+					orderErrors={orderErrors}
+					customerErrors={customerErrors}
+				/>
+			)}
+
 			{/* Search and filter tab */}
 			<div className="flex flex-col sm:flex-row justify-between mx-2 gap-2">
 				{/* Search filter */}
 				<input
-					placeholder="Search"
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
+					placeholder="Search by date"
 					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
 
 				{/* Drop down filters */}
@@ -56,7 +69,7 @@ export default function Orders() {
 					<option value="" disabled hidden>Filter by status</option>
 					<option value="pending">Pending</option>
 					<option value="cancelled">Cancelled</option>
-					<option value="confirmed">Confirmed</option>
+					<option value="delivered">Delivered</option>
 					<option value="confirmed">Confirmed</option>
 				</select>
 
@@ -69,13 +82,21 @@ export default function Orders() {
 				</button>
 
 				<button
+					onClick={() => setShowMenu(true)}
 					className={buttonVariants.secondary}>
 				+ Add order
 				</button>
 				</div>
 			</div>
 			{/* Orders table */}
-			<EditableOrdersTable orders={visibleOrders}/>
+			<EditableOrdersTable 
+				orders={visibleOrders}
+				customers={customers}
+				onEdit={handleOrderUpdate}
+				onDelete={handleOrderDelete}
+				submitting={submitting}
+				errors={orderErrors}
+				/>
 			</div>
 		</ScreenLayout>
 	)

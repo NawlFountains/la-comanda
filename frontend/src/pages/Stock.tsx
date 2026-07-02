@@ -4,53 +4,124 @@ import { useItems } from "../hooks/useItems"
 import {buttonVariants} from "../components/ButtonStyles"
 import {useState} from "react"
 import AddItemModal from "../components/AddItemModal"
+import EditableRestockTable from "../components/EditableRestockTable"
+import {useRestocks} from "../hooks/useRestock"
+import AddRestockModal from "../components/AddRestockModal"
 
 export default function Stock() {
-	const { items, searchQuery, setSearchQuery, handleItemCreate, handleItemDelete, handleItemUpdate, loading, error, errors } = useItems()
-	const [showModal, setShowModal] = useState(false)
+	const { 
+		items, 
+		visibleItems, 
+		searchQuery: itemSearchQuery, 
+		setSearchQuery: setItemSearchQuery, 
+		handleItemCreate, 
+		handleItemDelete, 
+		handleItemUpdate, 
+		loading: itemLoading, 
+		submitting: itemSubmitting,
+		error: itemError, 
+		errors: itemErrors } = useItems()
 
-	if (loading) return (<div className="text-center p-12">Loading items...</div>)
-	if (error) return (
+	const { restocks, 
+		visibleRestocks, 
+		loading: restockLoading,
+		submitting: restockSubmitting,
+		searchQuery: restockSearchQuery,
+		setSearchQuery: setRestockSearchQuery,
+		handleRestockCreate, 
+		handleRestockDelete, 
+		handleRestockUpdate, 
+		errors: restockErrors } = useRestocks()
+
+	const [showAddItemModal, setShowAddItemModal] = useState(false)
+	const [showAddRestockModal, setShowAddRestockModal] = useState(false)
+
+	if (itemLoading || restockLoading) return (<div className="text-center p-12">Loading items and restocks...</div>)
+	if (itemError) return (
 		<div className="text-center text-red-500">
-		{error}
+		{itemError}
 		</div>
 	)
 
 	return (
 		<ScreenLayout>
-			<div className="flex flex-col w-full gap-2 mt-2">
+			<div className="flex flex-col w-full gap-8 mt-2">
 
-			{/* Modals */}
+				{/* Modals */}
 
-			{showModal && (
-				<AddItemModal 
-					onClose={() => setShowModal(false)}
-					onCreate={handleItemCreate}
-					errors={errors}/>
-			)}
+				{showAddItemModal && (
+					<AddItemModal 
+						onClose={() => setShowAddItemModal(false)}
+						onCreate={handleItemCreate}
+						submitting={itemSubmitting}
+						errors={itemErrors}/>
+				)}
 
-			{/* Search and creation tab */}
-			<div className="flex flex-row sm:flex-row justify-between mx-2 gap-2">
-				{/* Search filter */}
-				<input
-					placeholder="Search by item name"
-					type="text"
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
-				<button
-					onClick={() => setShowModal(prev => !prev)}
-					className={buttonVariants.secondary}>
-				+ Add item
-				</button>
-			</div>
+				{showAddRestockModal && (
+					<AddRestockModal 
+						onClose={() => setShowAddRestockModal(false)}
+						onCreate={handleRestockCreate}
+						items={items}
+						submitting={restockSubmitting}
+						errors={restockErrors}/>
+				)}
 
-			{/* Items table */}
-			<EditableStockTable 
-				onEdit={handleItemUpdate}
-				onDelete={handleItemDelete}
-				items={items}
-				errors={errors}/>
+				<div className="flex flex-col gap-3">
+					{/* Search and creation tab */}
+					<div className="flex flex-row justify-between mx-2 gap-2">
+						{/* Search filter */}
+						<input
+							name="search-item"
+							placeholder="Search by item name"
+							type="text"
+							value={itemSearchQuery}
+							onChange={(e) => setItemSearchQuery(e.target.value)}
+							className="bg-neutral-300 px-3 min-w-32 w-full h-10 rounded-sm"/>	
+						<button
+							onClick={() => setShowAddItemModal(true)}
+							className={buttonVariants.secondary}>
+						+ Add item
+						</button>
+					</div>
+
+					{/* Items table */}
+					<EditableStockTable 
+						onEdit={handleItemUpdate}
+						onDelete={handleItemDelete}
+						submitting={itemSubmitting}
+						items={visibleItems}
+						errors={itemErrors}/>
+				</div>
+
+				<div className="flex flex-col gap-3">
+					<div className="flex flex-row justify-between mx-2 gap-2">
+						{/* Search filter */}
+						<input
+							name="search-supplier"
+							placeholder="Search by supplier name"
+							type="text"
+							value={restockSearchQuery}
+							onChange={(e) => setRestockSearchQuery(e.target.value)}
+							className="bg-neutral-300 px-3 min-w-32 w-full h-10 rounded-sm"/>	
+						<button
+							onClick={() => setShowAddRestockModal(true)}
+							className={buttonVariants.secondary}>
+						+ Add Restock 
+						</button>
+					</div>
+
+
+
+					{/* Restock table */}
+					<EditableRestockTable 
+						onEdit={handleRestockUpdate}
+						onDelete={handleRestockDelete}
+						submitting={restockSubmitting}
+						items={items}
+						restocks={visibleRestocks}
+						errors={restockErrors}
+						/>
+				</div>
 			</div>
 		</ScreenLayout>
 	)
