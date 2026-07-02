@@ -2,17 +2,18 @@ import React, {useState} from "react"
 import InputModal from '../components/InputModal.tsx'
 import ErrorMessage from "./ErrorMessage.tsx"
 import { buttonVariants } from '../components/ButtonStyles.ts'
-import { cardVariants } from '../components/CardStyles'
 import type { CreateItemPayload } from '../types'
 import type {ItemErrors} from "../schemas/item.ts"
+import ModalLayout from "../layouts/ModalLayout.tsx"
 
 interface AddItemModalProps {
 	onClose: () => void
 	onCreate: (data: CreateItemPayload) => Promise<boolean>
+	submitting: boolean
 	errors: ItemErrors
 }
 
-export default function AddItemModal( { onClose, onCreate, errors } : AddItemModalProps) {
+export default function AddItemModal( { onClose, onCreate, submitting, errors } : AddItemModalProps) {
 	const [name, setName] = useState('')
 	const [currentStock, setCurrentStock] = useState<string>('')
 	const [unit, setUnit] = useState('kg')
@@ -30,39 +31,33 @@ export default function AddItemModal( { onClose, onCreate, errors } : AddItemMod
 		if (success) onClose()
 	}
 	return (
-		<div 
-			onClick={onClose}
-			className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-			<div
-				onClick={(e) => e.stopPropagation()}
-				className={`${cardVariants.base} gap-4 p-4 w-full md:w-fit shadow-lg`}>
-				<h2 className="text-center text-xl font-mono p-2">
+		<ModalLayout onClose={onClose}>
+						<h2 className="text-center text-xl font-mono p-2">
 				Add item
 				</h2>
 				<div className="flex flex-col">
 				<InputModal
 					value={name}
 					onChange={(e) => setName(e.target.value)}
-					placeholder="Name">
-				</InputModal>
+					placeholder="Name"/>
 				{errors.name && (<ErrorMessage message={errors.name} />)}
 				</div>
 				<div className="flex flex-col sm:flex-row gap-4 ">
-					<div className="flex flex-col">
+					<div className="flex-2 flex flex-col">
 					<InputModal
 						value={currentStock}
 						type="number"
+						className="w-full"
 						onChange={(e) => setCurrentStock(e.target.value)}
-						placeholder="Current Stock">
-					</InputModal>
+						placeholder="Current Stock"/>
 					{errors.current_stock && (<ErrorMessage message={errors.current_stock} />)}
 					</div>
-					<div className="flex flex-col">
+					<div className="flex-1 flex flex-col">
 					<InputModal
 						value={unit}
 						onChange={(e) => setUnit(e.target.value)}
-						placeholder="Unit">
-					</InputModal>
+						className="w-full"
+						placeholder="Unit"/>
 					{errors.unit && (<ErrorMessage message={errors.unit} />)}
 					</div>
 				</div>
@@ -91,11 +86,11 @@ export default function AddItemModal( { onClose, onCreate, errors } : AddItemMod
 					</button>
 					<button 
 						onClick={handleSubmit}
+						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-					Add
+						{ submitting ? 'Adding' : 'Add'}
 					</button>
 				</div>
-			</div>
-		</div>
+		</ModalLayout>
 	)
 }

@@ -2,18 +2,19 @@ import React, {useState} from "react"
 import InputModal from '../components/InputModal.tsx'
 import ErrorMessage from "./ErrorMessage.tsx"
 import { buttonVariants } from '../components/ButtonStyles.ts'
-import { cardVariants } from '../components/CardStyles'
 import type { Item, CreateItemPayload } from '../types'
 import type {ItemErrors} from "../schemas/item.ts"
+import ModalLayout from "../layouts/ModalLayout.tsx"
 
 interface EditItemModalProps {
 	onClose: () => void
 	onEdit: (id: string, data: Partial<CreateItemPayload>) => Promise<boolean>
+	submitting: boolean
 	errors: ItemErrors
 	item: Item
 }
 
-export default function EditItemModal( { onClose, onEdit, errors, item } : EditItemModalProps) {
+export default function EditItemModal( { onClose, onEdit, submitting, errors, item } : EditItemModalProps) {
 	const [name, setName] = useState(item.name)
 	const [currentStock, setCurrentStock] = useState<string>(item.current_stock)
 	const [unit, setUnit] = useState(item.unit)
@@ -31,12 +32,7 @@ export default function EditItemModal( { onClose, onEdit, errors, item } : EditI
 		if (success) onClose()
 	}
 	return (
-		<div 
-			onClick={onClose}
-			className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-			<div
-				onClick={(e) => e.stopPropagation()}
-				className={`${cardVariants.base} gap-4 p-4 w-full md:w-fit shadow-lg`}>
+			<ModalLayout onClose={onClose}>
 				<h2 className="text-center text-xl font-mono p-2">
 				Edit item <span className="font-medium">{item.name}</span>
 				</h2>
@@ -92,11 +88,11 @@ export default function EditItemModal( { onClose, onEdit, errors, item } : EditI
 					</button>
 					<button 
 						onClick={handleSubmit}
+						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						Edit
+						{submitting ? 'Editing...' : 'Edit'}
 					</button>
 				</div>
-			</div>
-		</div>
+			</ModalLayout>
 	)
 }

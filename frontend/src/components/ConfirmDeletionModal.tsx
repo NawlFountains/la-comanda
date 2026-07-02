@@ -6,9 +6,10 @@ interface ConfirmDeletionModalProps {
 	name: string,
 	onClose: () => void,
 	onConfirm: () => void
+	submitting: boolean
 }
 
-export default function ConfirmDeletionModal( {name, onClose, onConfirm }: ConfirmDeletionModalProps) {
+export default function ConfirmDeletionModal( { name, onClose, onConfirm, submitting }: ConfirmDeletionModalProps) {
 	return (
 		<div 
 			onClick={onClose}
@@ -26,8 +27,9 @@ export default function ConfirmDeletionModal( {name, onClose, onConfirm }: Confi
 					</button>
 					<button 
 						onClick={onConfirm}
+						disabled={submitting}
 						className={buttonVariants.danger}>
-						Delete
+						{submitting ? 'Deleting...' : 'Delete'}
 					</button>
 				</div>
 			</div>

@@ -8,12 +8,13 @@ import type {ItemErrors} from '../schemas/item'
 
 interface EditableStockTableProps {
 	items: Item[],
-	onEdit: (id: string, updateData: Partial<CreateItemPayload>) => void,
+	onEdit: (id: string, updateData: Partial<CreateItemPayload>) => Promise<boolean>,
 	onDelete: (id: string) => void,
+	submitting: boolean
 	errors: ItemErrors
 }
 
-export default function EditableStockTable({ items, onEdit, onDelete, errors}: EditableStockTableProps) {
+export default function EditableStockTable({ items, onEdit, onDelete, submitting, errors }: EditableStockTableProps) {
 
 	if (items.length == 0) return (<div> No stock </div>)
 
@@ -38,6 +39,7 @@ export default function EditableStockTable({ items, onEdit, onDelete, errors}: E
 					item={item}
 					onEdit={onEdit}
 					onDelete={onDelete}
+					submitting={submitting}
 					errors={errors}
 				/>
 				
@@ -51,10 +53,11 @@ interface StockRowProps {
 	item: Item,
 	onEdit: EditableStockTableProps['onEdit']
 	onDelete: EditableStockTableProps['onDelete']
+	submitting: EditableStockTableProps['submitting']
 	errors: EditableStockTableProps['errors']
 }
 
-function StockRow({ item, onEdit, onDelete, errors }: StockRowProps) {
+function StockRow({ item, onEdit, onDelete, submitting, errors }: StockRowProps) {
 	const [showDeleteMenu, setShowDeleteMenu] = useState<boolean>(false)
 	const [showEditMenu, setShowEditMenu] = useState<boolean>(false)
 	return (
@@ -85,6 +88,7 @@ function StockRow({ item, onEdit, onDelete, errors }: StockRowProps) {
 					<EditItemModal 
 						onClose={() => setShowEditMenu(false)}
 						onEdit={onEdit}
+						submitting={submitting}
 						errors={errors}
 						item={item}
 					/>
@@ -98,6 +102,7 @@ function StockRow({ item, onEdit, onDelete, errors }: StockRowProps) {
 							onDelete(item.id)
 							setShowDeleteMenu(false)
 						}}	
+						submitting={submitting}
 						/>
 				)}
 			</div>
