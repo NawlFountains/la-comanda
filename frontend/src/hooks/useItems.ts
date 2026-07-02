@@ -8,6 +8,7 @@ export const useItems = () => {
 	const [items, setItems] = useState<Item[]>([])
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
+	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [errors, setErrors] = useState<{ name?: string, unit?: string, current_stock?: string, low_stock_threshold?: string }>({})
 	const [error, setError] = useState<string | null>(null)
 
@@ -44,7 +45,7 @@ export const useItems = () => {
 			return false
 		}
 		setErrors({})		
-		setLoading(true)
+		setSubmitting(true)
 		setError(null)
 		try {
 			const newItem: Item= await createItem(itemData)
@@ -56,12 +57,12 @@ export const useItems = () => {
 			console.error("Failed to create item:", err)
 			return false
 		} finally {
-			setLoading(false)
+			setSubmitting(false)
 		}
 	}, [])
 
 	const handleItemDelete = async(id: string) => {
-		setLoading(true)
+		setSubmitting(true)
 		setError(null)
 		try {
 			await deleteItem(id)
@@ -69,9 +70,9 @@ export const useItems = () => {
 			setItems((prevItems) => prevItems.filter((item) => item.id !== id))
 		} catch (err) {
 			setError(err)
-			console.error("Failed to create item:", err)
+			console.error("Failed to delete item:", err)
 		} finally {
-			setLoading(false)
+			setSubmitting(false)
 		}
 	}
 
@@ -87,7 +88,7 @@ export const useItems = () => {
 			return false
 		}
 		setErrors({})		
-		setLoading(true)
+		setSubmitting(true)
 		setError(null)
 		try {
 			const updatedItem: Item= await updateItem(id, itemData)
@@ -95,21 +96,23 @@ export const useItems = () => {
 			return true
 		} catch (err) {
 			setError(err)
-			console.error("Failed to create item:", err)
+			console.error("Failed to update item:", err)
 			return false
 		} finally {
-			setLoading(false)
+			setSubmitting(false)
 		}
 	}, [])
 
 	return {
-		items: visibleItems,
+		items,
+		visibleItems,
 		handleItemCreate,
 		handleItemDelete,
 		handleItemUpdate,
 		searchQuery,
 		setSearchQuery,
 		loading,
+		submitting,
 		error,
 		errors
 	}
