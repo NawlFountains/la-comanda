@@ -1,13 +1,14 @@
 import {useCallback, useEffect, useState} from "react"
 import { createCustomer, getCustomers } from '../api/customers'
 import type { CreateCustomerPayload, Customer } from '../types'
-import {customerCreateSchema, type CustomerCreateData} from "../schemas/customer"
+import {customerCreateSchema, type CustomerErrors} from "../schemas/customer"
+import {parseZodErrors} from "../utils/parseZodErrors"
 
 export const useCustomer = () => {
 	const [ customers, setCustomers ] = useState<Customer[]>([])
 	const [ loading, setLoading ] = useState<boolean>(false)
 	const [ submitting, setSubmitting] = useState<boolean>(false)
-	const [ errors, setErrors ] = useState<{ name?: string, phone?: string }>({})
+	const [ errors, setErrors ] = useState<CustomerErrors>({})
 	const [ error, setError ] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -28,11 +29,7 @@ export const useCustomer = () => {
 	const handleCustomerCreate = useCallback( async (customerData: CreateCustomerPayload): Promise<string | null> => {
 		const result = customerCreateSchema.safeParse(customerData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<CustomerErrors>(result.error)
 			setErrors(newErrors)
 			return null 
 		}

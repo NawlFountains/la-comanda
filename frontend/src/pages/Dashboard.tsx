@@ -17,10 +17,32 @@ import AddProductModal from "../components/AddProductModal"
 
 export default function Dashboard() {
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
-	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
+	const {
+		customers, 
+		handleCustomerCreate, 
+		errors: customerErrors 
+	} = useCustomer()
 
-	const { orders, submitting: orderSubmitting, handleOrderCreate, errors: orderErrors} = useOrders()
-	const { products, submitting: productSubmitting, handleProductCreate, errors: productErrors} = useProducts()
+	const {
+		orders,
+		submitting: orderSubmitting,
+		handleOrderCreate, 
+		errors: orderErrors
+	} = useOrders()
+
+	const {
+		products, 
+		submitting: productSubmitting,
+		handleProductCreate, 
+		errors: productErrors
+	} = useProducts()
+
+	const { 
+		restocks,
+		submitting: restockSubmitting,
+		handleRestockCreate, 
+		errors: restockErrors 
+	} = useRestocks()
 
 	const [items, setItems] = useState<Item[]>([])
 	const [lowStockItems, setLowStockItems] = useState<Item[]>([])
@@ -31,7 +53,6 @@ export default function Dashboard() {
 	const [showAddOrderMenu, setShowAddOrderMenu] = useState<boolean>(false)
 	const [showAddProductMenu, setShowAddProductMenu] = useState<boolean>(false)
 
-	const { restocks, submitting: restockSubmitting, handleRestockCreate, errors: restockErrors } = useRestocks()
 
 	useEffect(() => {
 		async function loadDashboardData() {

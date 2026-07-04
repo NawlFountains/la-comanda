@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct } from '../api/products'
-import { productCreateSchema, productUpdateSchema } from '../schemas/product'
+import { productCreateSchema, productUpdateSchema, type ProductErrors } from '../schemas/product'
 import type { PriceHistory, RecipeItem, CreateProductPayload, Product } from '../types'
+import {parseZodErrors} from '../utils/parseZodErrors'
 
 export const useProducts = () => {
 	const [products, setProducts] = useState<Product[]>([])
@@ -11,7 +12,7 @@ export const useProducts = () => {
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
-	const [errors, setErrors] = useState<{ name?: string }>({})
+	const [errors, setErrors] = useState<ProductErrors>({})
 	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -53,11 +54,7 @@ export const useProducts = () => {
 	const handleProductCreate = useCallback( async (productData: CreateProductPayload): Promise<boolean> => {
 		const result = productCreateSchema.safeParse(productData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<ProductErrors>(result.error)
 			setErrors(newErrors)
 			return false
 		}
@@ -81,11 +78,7 @@ export const useProducts = () => {
 	const handleProductUpdate = useCallback( async (id: string, productData: Partial<CreateProductPayload>): Promise<boolean> => {
 		const result = productUpdateSchema.safeParse(productData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<ProductErrors>(result.error)
 			setErrors(newErrors)
 			return false
 		}

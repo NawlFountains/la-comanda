@@ -1,24 +1,21 @@
 import { useState } from 'react'
 import { useNavigate, useRevalidator } from 'react-router-dom'
 import { supabase } from '../supabase/supabaseClient'
-import { loginSchema } from '../schemas/auth'
+import { loginSchema, type LoginErrors } from '../schemas/auth'
+import {parseZodErrors} from '../utils/parseZodErrors'
 
 export function useLogin() {
 	const [email, setEmail] = useState('')
 	const [password, setPassword] = useState('')
 	const [loading, setLoading] = useState(false)
-	const [errors, setErrors] = useState<{ email?: string, password?: string }>({})
+	const [errors, setErrors] = useState<LoginErrors>({})
 	const navigate = useNavigate()
 	const revalidator = useRevalidator()
 
 	function validate() {
 		const result = loginSchema.safeParse({ email, password })
 		if (!result.success) {
-			const newErrors: { email?: string, password?: string } = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as 'email' | 'password'
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors: LoginErrors = parseZodErrors<LoginErrors>(result.error)
 			setErrors(newErrors)
 			return false
 		}

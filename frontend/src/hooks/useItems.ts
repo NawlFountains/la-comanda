@@ -2,14 +2,15 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { deleteItem, getStock, updateItem } from '../api/items'
 import type { Item, CreateItemPayload } from '../types'
 import { createItem } from '../api/items'
-import { itemCreateSchema, itemUpdateSchema } from '../schemas/item'
+import { itemCreateSchema, itemUpdateSchema, type ItemErrors } from '../schemas/item'
+import {parseZodErrors} from '../utils/parseZodErrors'
 
 export const useItems = () => {
 	const [items, setItems] = useState<Item[]>([])
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
-	const [errors, setErrors] = useState<{ name?: string, unit?: string, current_stock?: string, low_stock_threshold?: string }>({})
+	const [errors, setErrors] = useState<ItemErrors>({})
 	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -36,11 +37,7 @@ export const useItems = () => {
 	const handleItemCreate = useCallback( async (itemData: CreateItemPayload): Promise<boolean> => {
 		const result = itemCreateSchema.safeParse(itemData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<ItemErrors>(result.error)
 			setErrors(newErrors)
 			return false
 		}
@@ -79,11 +76,7 @@ export const useItems = () => {
 	const handleItemUpdate = useCallback( async (id: string, itemData: Partial<CreateItemPayload>): Promise<boolean> => {
 		const result = itemUpdateSchema.safeParse(itemData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<ItemErrors>(result.error)	
 			setErrors(newErrors)
 			return false
 		}

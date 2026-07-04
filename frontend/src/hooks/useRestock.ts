@@ -1,15 +1,16 @@
 import {useCallback, useEffect, useMemo, useState} from "react"
 import { deleteRestock, getRestocks, updateRestock } from '../api/restocks'
 import type { CreateRestockPayload, Restock } from '../types'
-import { restockCreateSchema, restockUpdateSchema } from '../schemas/restock'
+import { restockCreateSchema, restockUpdateSchema, type RestockErrors } from '../schemas/restock'
 import { createRestock } from "../api/restocks"
+import {parseZodErrors} from "../utils/parseZodErrors"
 
 export const useRestocks = () => {
 	const [restocks, setRestocks] = useState<Restock[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [searchQuery, setSearchQuery] = useState('')
-	const [errors, setErrors ] = useState<{ supplier?: string, restock_items?: string }>({})
+	const [errors, setErrors ] = useState<RestockErrors>({})
 	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
@@ -36,11 +37,7 @@ export const useRestocks = () => {
 	const handleRestockCreate = useCallback( async (restockData: CreateRestockPayload): Promise<boolean> => {
 		const result = restockCreateSchema.safeParse(restockData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<RestockErrors>(result.error)
 			setErrors(newErrors)
 			return false
 		}
@@ -81,11 +78,7 @@ export const useRestocks = () => {
 	const handleRestockUpdate = useCallback( async (id: string, itemData: Partial<CreateRestockPayload>): Promise<boolean> => {
 		const result = restockUpdateSchema.safeParse(itemData)
 		if (!result.success) {
-			const newErrors: typeof errors = {}
-			for (const issue of result.error.issues) {
-				const field = issue.path[0] as keyof typeof newErrors
-				if (!newErrors[field]) newErrors[field] = issue.message
-			}
+			const newErrors = parseZodErrors<RestockErrors>(result.error)
 			setErrors(newErrors)
 			return false
 		}
@@ -117,6 +110,7 @@ export const useRestocks = () => {
 		handleRestockCreate,
 		handleRestockDelete,
 		handleRestockUpdate,
-		errors
+		errors,
+		error
 	}
 }
