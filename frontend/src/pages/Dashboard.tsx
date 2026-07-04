@@ -13,13 +13,14 @@ import {useCustomer} from "../hooks/useCustomers"
 import { useOrders } from "../hooks/useOrders"
 import AddOrderModal from "../components/AddOrderModal"
 import {useProducts} from "../hooks/useProducts"
+import AddProductModal from "../components/AddProductModal"
 
 export default function Dashboard() {
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
 	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
 
 	const { orders, submitting: orderSubmitting, handleOrderCreate, errors: orderErrors} = useOrders()
-	const { products } = useProducts()
+	const { products, submitting: productSubmitting, handleProductCreate, errors: productErrors} = useProducts()
 
 	const [items, setItems] = useState<Item[]>([])
 	const [lowStockItems, setLowStockItems] = useState<Item[]>([])
@@ -28,6 +29,7 @@ export default function Dashboard() {
 
 	const [showAddRestockMenu, setShowAddRestockMenu] = useState<boolean>(false)
 	const [showAddOrderMenu, setShowAddOrderMenu] = useState<boolean>(false)
+	const [showAddProductMenu, setShowAddProductMenu] = useState<boolean>(false)
 
 	const { restocks, submitting: restockSubmitting, handleRestockCreate, errors: restockErrors } = useRestocks()
 
@@ -81,12 +83,24 @@ export default function Dashboard() {
 					customerErrors={customerErrors}
 				/>
 			)}
+
+			{showAddProductMenu && (
+				<AddProductModal 
+					onClose={() => setShowAddProductMenu(false)}
+					onCreate={handleProductCreate}
+					submitting={productSubmitting}
+					errors={productErrors}
+				/>
+			)}
+
 			<div className="items-center">
 				<h1 className="text-xl py-4 font-mono">
 				Quick actions
 				</h1>
 			</div>
 
+
+			{/* Quick actions */}
 
 			<div className="flex flex-col md:grid md:grid-cols-3 w-full md:w-2/3 max-w-xl gap-4 mb-4">
 				<button 
@@ -99,10 +113,14 @@ export default function Dashboard() {
 					className={`${buttonVariants.secondary} rounded-xl`}>
 					+ Add Restock 
 				</button>
-				<button className={`${buttonVariants.secondary} rounded-xl`}>
+				<button 
+					onClick={() => setShowAddProductMenu(true)}
+					className={`${buttonVariants.secondary} rounded-xl`}>
 					+ Add Product 
 				</button>
 			</div>
+
+			{/* General status */}
 
 				<h1 className="text-xl py-4 font-mono">
 				General status
@@ -113,9 +131,9 @@ export default function Dashboard() {
 				<LowStockItemsCard items={lowStockItems}/>
 			</div>
 
-			{/* Latest restocks */}
 			<LatestRestockCard restocks={restocks} items={items} />
 			</div>
+
 		</ScreenLayout>
 	)
 }
