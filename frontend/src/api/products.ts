@@ -1,5 +1,5 @@
 import {supabase} from '../supabase/supabaseClient'
-import type { CreateProductPayload, Product } from '../types'
+import type { CreateProductPayload, PriceHistory, Product, RecipeItem } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -77,3 +77,41 @@ export async function getProducts(): Promise<Product []> {
 	if (!response.ok) throw new Error('Products not found')
 	return response.json()
 }
+
+export async function getProductPriceHistory(productId: string): Promise<PriceHistory[]> {
+	const { data, error } = await supabase.auth.getSession()
+	const token = data.session?.access_token
+
+	if (!token) {
+		throw new Error('User is not authenticated')
+	}
+	const response = await fetch(`${API_URL}/products/${productId}/prices`, {
+		headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-type': 'application/json'
+		}
+	})
+
+	if (!response.ok) throw new Error(`Error when fetching product prices: ${response.text}`)
+	return response.json()
+}
+
+export async function getProductRecipeItems(productId: string): Promise<RecipeItem[]> {
+	const { data, error } = await supabase.auth.getSession()
+	const token = data.session?.access_token
+
+	if (!token) {
+		throw new Error('User is not authenticated')
+	}
+	const response = await fetch(`${API_URL}/products/${productId}/recipe`, {
+		headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-type': 'application/json'
+		}
+	})
+
+	if (!response.ok) throw new Error(`Error when fetching product recipe: ${response.text}`)
+	return response.json()
+}
+
+

@@ -1,15 +1,23 @@
 import ScreenLayout from "../layouts/ScreenLayout"
-import EditableProductsTable from "../components/EditableProductsTable"
-import EditableProductsRow from "../components/EditableProductsRow"
+import ProductsTable from "../components/ProductsTable"
+import ProductsRow from "../components/ProductsRow"
 import {buttonVariants} from "../components/ButtonStyles"
 import {useState} from "react"
 import { useProducts } from '../hooks/useProducts'
 import AddProductModal from "../components/AddProductModal"
+import EditProductModal from "../components/EditProductModal"
+import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
+import InfoProductModal from "../components/InfoProductModal"
+import {useItems} from "../hooks/useItems"
+
+type ActiveModal = { mode: 'info' | 'edit' | 'delete'; productId: string } | null
 
 export default function Products() {
 	const { 
 		products,
 		visibleProducts,
+		prices,
+		recipeItems,
 		searchQuery,
 		setSearchQuery, 
 		handleProductCreate,
@@ -19,7 +27,13 @@ export default function Products() {
 		submitting,
 		errors, 
 		error } = useProducts() 
-	const [ showModal, setShowModal ] = useState(false)
+
+	const { items } = useItems()
+
+	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
+	const activeProduct = products.find(p => p.id === activeModal?.productId)
+	const [ createProductModal, setCreateProductModal ] = useState(false)
+
 
 	if (loading) return (<div className="text-center p-12">Loading products...</div>)
 	if (error) return (
@@ -32,16 +46,7 @@ export default function Products() {
 		<ScreenLayout>
 			<div className="flex flex-col w-full gap-2 mt-2">
 
-			{/* Modals */}
-
-			{showModal && (
-				<AddProductModal 
-					onClose={() => setShowModal(false)}
-					onCreate={handleProductCreate}
-					submitting={submitting}
-					errors={errors}
-				/>
-			)}
+			
 
 			{/* Search and creation tab */}
 			<div className="flex flex-row sm:flex-row justify-between mx-2 gap-2">
@@ -54,27 +59,71 @@ export default function Products() {
 					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
 				{/* Create product */}
 				<button
-					onClick={() => setShowModal(true)}
+					onClick={() => setCreateProductModal(true)}
 					className={buttonVariants.secondary}>
 				+ Add product 
 				</button>
 			</div>
 
 			{/* Products table */}
-			<EditableProductsTable> 
+			<ProductsTable> 
 				{visibleProducts.map(product => 
-					<EditableProductsRow
+					<ProductsRow
 						key={product.id}
-						onEdit={handleProductUpdate}
-						onDelete={handleProductDelete}
+						onTriggerEdit={() => setActiveModal({ mode: "edit", productId: product.id })}
+						onTriggerInfo={() => setActiveModal({ mode: "info", productId: product.id })}
+						onTriggerDelete={() => setActiveModal({ mode: "delete", productId: product.id })}
 						product={product}
-						submitting={submitting}
-						errors={errors}
 					/>
 				)}
 				
-			</EditableProductsTable>
+			</ProductsTable>
+
+
+			{/* Modals */}
+
+			{createProductModal && (
+				<AddProductModal 
+					onClose={() => setCreateProductModal(false)}
+					onCreate={handleProductCreate}
+					submitting={submitting}
+					errors={errors}
+				/>
+			)}
+
+			{activeModal?.mode === "info" && activeProduct && (
+				<InfoProductModal 
+					onClose={() => setActiveModal(null)}
+					product={activeProduct}
+					prices={prices}
+					recipeItems={recipeItems}
+					items={items}
+				/>
+			)}
+
+			{activeModal?.mode === "edit" && activeProduct && (
+				<EditProductModal 
+					onClose={() => setActiveModal(null)}
+					onEdit={handleProductUpdate}
+					product={activeProduct}
+					submitting={submitting}
+					errors={errors}
+				/>
+			)}
+
+			{activeModal?.mode === "delete" && activeProduct && (
+				<ConfirmDeletionModal
+					name={activeProduct.name}
+					onClose={() => setActiveModal(null)}
+					onConfirm={() => {
+						handleProductDelete(activeProduct.id)
+						setActiveModal(null)
+					}}	
+					submitting={submitting}
+					/>
+			)}
 			</div>
+
 		</ScreenLayout>
 	)
 }

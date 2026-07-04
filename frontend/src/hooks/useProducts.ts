@@ -1,10 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createProduct, deleteProduct, getProducts, updateProduct } from '../api/products'
+import { createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct } from '../api/products'
 import { productCreateSchema, productUpdateSchema } from '../schemas/product'
-import type { CreateProductPayload, Product } from '../types'
+import type { PriceHistory, RecipeItem, CreateProductPayload, Product } from '../types'
 
 export const useProducts = () => {
 	const [products, setProducts] = useState<Product[]>([])
+	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+	const [prices, setPrices] = useState<PriceHistory[]>([])
+	const [recipeItems, setRecipeItems] = useState<RecipeItem[]>([])
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
@@ -26,6 +29,26 @@ export const useProducts = () => {
 		}
 		loadProducts()
 	}, [])
+
+	useEffect(() => {
+		if (!selectedProduct) return
+
+		async function loadProductDetails() {
+			try {
+				const [prices, recipe] = await Promise.all([
+					getProductPriceHistory(selectedProduct.id),
+					getProductRecipeItems(selectedProduct.id)
+				])
+
+				setPrices(prices)
+				setRecipeItems(recipe)
+			} catch (err) {
+				setError(err instanceof Error ? err.message : "Unkown error")
+			}
+		}
+		
+		loadProductDetails()
+	}, [selectedProduct])
 
 	const handleProductCreate = useCallback( async (productData: CreateProductPayload): Promise<boolean> => {
 		const result = productCreateSchema.safeParse(productData)
@@ -106,6 +129,10 @@ export const useProducts = () => {
 	return {
 		products,
 		visibleProducts,
+		selectedProduct,
+		setSelectedProduct,
+		prices,
+		recipeItems,
 		searchQuery,
 		setSearchQuery,
 		handleProductCreate,
