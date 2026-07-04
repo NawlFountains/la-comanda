@@ -95,3 +95,5 @@ export interface CreateOrderPayload {
 }
 
 export type CreateCustomerPayload = Omit<Customer, "id" | "business_id">
+
+export type CreateProductPayload = Omit<Product, "id" | "business_id">

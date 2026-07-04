@@ -1,11 +1,24 @@
 import ScreenLayout from "../layouts/ScreenLayout"
 import EditableProductsTable from "../components/EditableProductsTable"
+import EditableProductsRow from "../components/EditableProductsRow"
 import {buttonVariants} from "../components/ButtonStyles"
 import {useState} from "react"
 import { useProducts } from '../hooks/useProducts'
+import AddProductModal from "../components/AddProductModal"
 
 export default function Products() {
-	const { products, searchQuery, setSearchQuery, loading, errors, error } = useProducts() 
+	const { 
+		products,
+		visibleProducts,
+		searchQuery,
+		setSearchQuery, 
+		handleProductCreate,
+		handleProductUpdate,
+		handleProductDelete,
+		loading,
+		submitting,
+		errors, 
+		error } = useProducts() 
 	const [ showModal, setShowModal ] = useState(false)
 
 	if (loading) return (<div className="text-center p-12">Loading products...</div>)
@@ -21,6 +34,15 @@ export default function Products() {
 
 			{/* Modals */}
 
+			{showModal && (
+				<AddProductModal 
+					onClose={() => setShowModal(false)}
+					onCreate={handleProductCreate}
+					submitting={submitting}
+					errors={errors}
+				/>
+			)}
+
 			{/* Search and creation tab */}
 			<div className="flex flex-row sm:flex-row justify-between mx-2 gap-2">
 				{/* Search filter */}
@@ -32,16 +54,26 @@ export default function Products() {
 					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
 				{/* Create product */}
 				<button
-					onClick={() => setShowModal(prev => !prev)}
+					onClick={() => setShowModal(true)}
 					className={buttonVariants.secondary}>
 				+ Add product 
 				</button>
 			</div>
 
 			{/* Products table */}
-			<EditableProductsTable 
-				products={products}
-				/>
+			<EditableProductsTable> 
+				{visibleProducts.map(product => 
+					<EditableProductsRow
+						key={product.id}
+						onEdit={handleProductUpdate}
+						onDelete={handleProductDelete}
+						product={product}
+						submitting={submitting}
+						errors={errors}
+					/>
+				)}
+				
+			</EditableProductsTable>
 			</div>
 		</ScreenLayout>
 	)
