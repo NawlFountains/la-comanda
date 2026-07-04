@@ -9,8 +9,7 @@ import EditProductModal from "../components/EditProductModal"
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 import InfoProductModal from "../components/InfoProductModal"
 import {useItems} from "../hooks/useItems"
-
-type ActiveModal = { mode: 'info' | 'edit' | 'delete'; productId: string } | null
+import type { ActiveModal } from "../types"
 
 export default function Products() {
 	const { 
@@ -31,7 +30,7 @@ export default function Products() {
 	const { items } = useItems()
 
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
-	const activeProduct = products.find(p => p.id === activeModal?.productId)
+	const activeProduct = products.find(p => p.id === activeModal?.id)
 	const [ createProductModal, setCreateProductModal ] = useState(false)
 
 
@@ -70,9 +69,9 @@ export default function Products() {
 				{visibleProducts.map(product => 
 					<ProductsRow
 						key={product.id}
-						onTriggerEdit={() => setActiveModal({ mode: "edit", productId: product.id })}
-						onTriggerInfo={() => setActiveModal({ mode: "info", productId: product.id })}
-						onTriggerDelete={() => setActiveModal({ mode: "delete", productId: product.id })}
+						onTriggerEdit={() => setActiveModal({ mode: "edit", id: product.id })}
+						onTriggerInfo={() => setActiveModal({ mode: "info", id: product.id })}
+						onTriggerDelete={() => setActiveModal({ mode: "delete", id: product.id })}
 						product={product}
 					/>
 				)}

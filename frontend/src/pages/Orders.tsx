@@ -1,14 +1,16 @@
-import {useEffect, useState} from "react"
+import {useMemo, useState} from "react"
 import ScreenLayout from "../layouts/ScreenLayout"
-import type { Order, OrderStatus } from "../types"
-import EditableOrdersTable from "../components/EditableOrdersTable"
-import {TrashIcon} from "../components/Icons"
+import type { ActiveModal, Order, OrderStatus } from "../types"
+import OrdersTable from "../components/OrdersTable"
+import OrdersRow from "../components/OrdersRow"
+import { TrashIcon } from "../components/Icons"
 import { buttonVariants } from "../components/ButtonStyles"
 import { useOrders } from "../hooks/useOrders"
 import {useCustomer} from "../hooks/useCustomers"
-import AddOrderModal from "../components/AddOrderModal"
 import {useProducts} from "../hooks/useProducts"
-import EditableOrdersRow from "../components/EditableOrdersRow"
+import AddOrderModal from "../components/AddOrderModal"
+import EditOrderModal from "../components/EditOrderModal" 
+import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 
 export default function Orders() {
 	const { orders,
@@ -24,11 +26,16 @@ export default function Orders() {
 		submitting,
 		errors: orderErrors,
 		error } = useOrders()
-
 	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
 	const { products } = useProducts()
 
-	const [ showMenu, setShowMenu ] = useState<boolean>(false)
+	const customerById = useMemo(() => {
+		return Object.fromEntries(customers.map(customer => [customer.id, customer]))
+	}, [customers])
+
+	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
+	const [ showCreateOrderModal, setShowCreateOrderModal ] = useState<boolean>(false)
+	const activeOrder = orders.find(o => o.id === activeModal?.id)
 
 	if (loading) return (<div className="text-center p-12">Loading orders...</div>)
 	if (error) return (<div className="text-center text-red-500">{error}</div>)
@@ -36,19 +43,6 @@ export default function Orders() {
 	return (
 		<ScreenLayout>
 			<div className="flex flex-col w-full gap-2 mt-2">
-
-			{showMenu && (
-				<AddOrderModal 
-					onCreate={handleOrderCreate}
-					onCreateCustomer={handleCustomerCreate}
-					onClose={() => setShowMenu(false)}
-					products={products}
-					customers={customers}
-					submitting={submitting}
-					orderErrors={orderErrors}
-					customerErrors={customerErrors}
-				/>
-			)}
 
 			{/* Search and filter tab */}
 			<div className="flex flex-col sm:flex-row justify-between mx-2 gap-2">
@@ -83,7 +77,7 @@ export default function Orders() {
 				</button>
 
 				<button
-					onClick={() => setShowMenu(true)}
+					onClick={() => setShowCreateOrderModal(true)}
 					className={buttonVariants.secondary}>
 				+ Add order
 				</button>
@@ -91,20 +85,57 @@ export default function Orders() {
 			</div>
 
 			{/* Orders table */}
-			<EditableOrdersTable> 
-				{visibleOrders.map(order => (
-					<EditableOrdersRow 
+			<OrdersTable> 
+				{visibleOrders.map((order, idx) => (
+					<OrdersRow 
+						key={idx}
 						order={order}
-						customers={customers}
-						onEdit={handleOrderUpdate}
-						onDelete={handleOrderDelete}
-						submitting={submitting}
-						errors={orderErrors}
+						customer={customerById[order.customer_id]}
+						onTriggerEdit={() => setActiveModal({ mode: 'edit', id: order.id })}
+						onTriggerDelete={() => setActiveModal({ mode: 'delete', id: order.id })}
 						/>
 
 				))}
-			</EditableOrdersTable>
+			</OrdersTable>
 			</div>
+
+			{/* Modals */}
+			{showCreateOrderModal && (
+				<AddOrderModal 
+					onCreate={handleOrderCreate}
+					onCreateCustomer={handleCustomerCreate}
+					onClose={() => setShowCreateOrderModal(false)}
+					products={products}
+					customers={customers}
+					submitting={submitting}
+					orderErrors={orderErrors}
+					customerErrors={customerErrors}
+				/>
+			)}
+
+			{activeModal?.mode === 'edit' && activeOrder && (
+				<EditOrderModal 
+					onClose={() => setActiveModal(null)}
+					onEdit={handleOrderUpdate}
+					submitting={submitting}
+					order={activeOrder}
+					customer={customerById[activeOrder.customer_id]}
+					errors={orderErrors}
+				/> 
+			)}
+
+			{activeModal?.mode === 'delete' && activeOrder && (
+				<ConfirmDeletionModal
+					name={`order for ${customerById[activeOrder.customer_id].name}`}
+					onClose={() => setActiveModal(null)}
+					onConfirm={() => {
+						handleOrderDelete(activeOrder.id)
+						setActiveModal(null)
+					}}	
+					submitting={submitting}
+					/>
+			)}
+
 		</ScreenLayout>
 	)
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import {cardVariants} from './CardStyles'
 
-export default function EditableOrdersTable({ children }: { children: React.ReactNode }) {
+export default function OrdersTable({ children }: { children: React.ReactNode }) {
 	return (
 	<div className={`${cardVariants.table} sm:mx-2`}>
 		<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">

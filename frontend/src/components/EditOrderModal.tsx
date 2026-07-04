@@ -29,9 +29,7 @@ export default function EditOrderModal({ onClose, onEdit, order, customer, submi
 	return (
 		<ModalLayout onClose={onClose}>
 			<div className='flex flex-col'>
-				<div>
-				<h1>Edit Order</h1>
-				</div>
+				<h1 className='font-mono font-lg text-center'>Edit Order</h1>
 			</div>
 			<div className='w-full flex-1'>
 				<h2 className=''>Change status order for <span className='font-mono font-medium'>{customer.name}</span> created at <span className='font-medium'>{formatDatetime(order.created_at)}</span></h2>

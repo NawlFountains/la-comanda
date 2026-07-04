@@ -65,6 +65,8 @@ export interface OrderItem {
 	unit_price: string
 }
 
+export type ActiveModal = { mode: 'info' | 'edit' | 'delete'; id: string } | null
+
 export type OrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled'
 
 export interface Order {
