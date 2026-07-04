@@ -8,6 +8,7 @@ import { useOrders } from "../hooks/useOrders"
 import {useCustomer} from "../hooks/useCustomers"
 import AddOrderModal from "../components/AddOrderModal"
 import {useProducts} from "../hooks/useProducts"
+import EditableOrdersRow from "../components/EditableOrdersRow"
 
 export default function Orders() {
 	const { orders,
@@ -88,15 +89,21 @@ export default function Orders() {
 				</button>
 				</div>
 			</div>
+
 			{/* Orders table */}
-			<EditableOrdersTable 
-				orders={visibleOrders}
-				customers={customers}
-				onEdit={handleOrderUpdate}
-				onDelete={handleOrderDelete}
-				submitting={submitting}
-				errors={orderErrors}
-				/>
+			<EditableOrdersTable> 
+				{visibleOrders.map(order => (
+					<EditableOrdersRow 
+						order={order}
+						customers={customers}
+						onEdit={handleOrderUpdate}
+						onDelete={handleOrderDelete}
+						submitting={submitting}
+						errors={orderErrors}
+						/>
+
+				))}
+			</EditableOrdersTable>
 			</div>
 		</ScreenLayout>
 	)

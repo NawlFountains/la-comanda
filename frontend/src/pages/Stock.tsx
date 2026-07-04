@@ -1,10 +1,12 @@
 import ScreenLayout from "../layouts/ScreenLayout"
 import EditableStockTable from "../components/EditableStockTable"
+import EditableStockRow from "../components/EditableStockRow"
 import { useItems } from "../hooks/useItems"
 import {buttonVariants} from "../components/ButtonStyles"
 import {useState} from "react"
 import AddItemModal from "../components/AddItemModal"
 import EditableRestockTable from "../components/EditableRestockTable"
+import EditableRestockRow from "../components/EditableRestockRow"
 import {useRestocks} from "../hooks/useRestock"
 import AddRestockModal from "../components/AddRestockModal"
 
@@ -85,12 +87,16 @@ export default function Stock() {
 					</div>
 
 					{/* Items table */}
-					<EditableStockTable 
-						onEdit={handleItemUpdate}
-						onDelete={handleItemDelete}
-						submitting={itemSubmitting}
-						items={visibleItems}
-						errors={itemErrors}/>
+					<EditableStockTable>
+						{visibleItems.map( item => (
+							<EditableStockRow	
+								onEdit={handleItemUpdate}
+								onDelete={handleItemDelete}
+								submitting={itemSubmitting}
+								item={item}
+								errors={itemErrors}/>
+						))}
+					</EditableStockTable>
 				</div>
 
 				<div className="flex flex-col gap-3">
@@ -113,14 +119,18 @@ export default function Stock() {
 
 
 					{/* Restock table */}
-					<EditableRestockTable 
-						onEdit={handleRestockUpdate}
-						onDelete={handleRestockDelete}
-						submitting={restockSubmitting}
-						items={items}
-						restocks={visibleRestocks}
-						errors={restockErrors}
-						/>
+					<EditableRestockTable >
+						{visibleRestocks.map( restock => (
+							<EditableRestockRow
+								onEdit={handleRestockUpdate}
+								onDelete={handleRestockDelete}
+								submitting={restockSubmitting}
+								items={items}
+								restock={restock}
+								errors={restockErrors}
+								/>
+						))}
+					</EditableRestockTable>
 				</div>
 			</div>
 		</ScreenLayout>
