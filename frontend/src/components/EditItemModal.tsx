@@ -45,18 +45,20 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, it
 				{errors.name && (<ErrorMessage message={errors.name} />)}
 				</div>
 				<div className="flex flex-col sm:flex-row gap-4 ">
-					<div className="flex flex-col">
+					<div className="flex-2 flex flex-col">
 					<InputModal
 						value={currentStock}
 						type="number"
+						className="w-full"
 						onChange={(e) => setCurrentStock(e.target.value)}
 						placeholder="Current Stock">
 					</InputModal>
 					{errors.current_stock && (<ErrorMessage message={errors.current_stock} />)}
 					</div>
-					<div className="flex flex-col">
+					<div className="flex-1 flex flex-col">
 					<InputModal
 						value={unit}
+						className="w-full"
 						onChange={(e) => setUnit(e.target.value)}
 						placeholder="Unit">
 					</InputModal>
