@@ -12,6 +12,7 @@ import {useItems} from "../hooks/useItems"
 import type { ActiveModal } from "../types"
 
 export default function Products() {
+	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
 	const { 
 		products,
 		visibleProducts,
@@ -25,11 +26,10 @@ export default function Products() {
 		loading,
 		submitting,
 		errors, 
-		error } = useProducts() 
+		error } = useProducts(activeModal?.id) 
 
 	const { items } = useItems()
 
-	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
 	const activeProduct = products.find(p => p.id === activeModal?.id)
 	const [ createProductModal, setCreateProductModal ] = useState(false)
 

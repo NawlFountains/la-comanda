@@ -40,8 +40,6 @@ export default function AddOrderModal({ onClose, onCreate, onCreateCustomer, pro
 			finalCustomerId = newId
 		}
 
-		if (!finalCustomerId) return
-
 		const success = await onCreate({
 			customer_id: finalCustomerId,
 			status,
@@ -135,7 +133,7 @@ export default function AddOrderModal({ onClose, onCreate, onCreateCustomer, pro
 				</select>
 			</div>
 			 <div className='flex flex-col gap-2'>
-				<h2 className='text-center text-xl font-mono'>Restock items</h2>
+				<h2 className='text-center text-xl font-mono'>Products ordered</h2>
 				{orderItems.map((item, index) => (
 					<div key={index} className='flex flex-row gap-2 items-center pb-2'>
 

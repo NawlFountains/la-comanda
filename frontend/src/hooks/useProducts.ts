@@ -4,9 +4,8 @@ import { productCreateSchema, productUpdateSchema, type ProductErrors } from '..
 import type { PriceHistory, RecipeItem, CreateProductPayload, Product } from '../types'
 import {parseZodErrors} from '../utils/parseZodErrors'
 
-export const useProducts = () => {
+export const useProducts = (activeProductId?: string | null) => {
 	const [products, setProducts] = useState<Product[]>([])
-	const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 	const [prices, setPrices] = useState<PriceHistory[]>([])
 	const [recipeItems, setRecipeItems] = useState<RecipeItem[]>([])
 	const [searchQuery, setSearchQuery] = useState("")
@@ -32,13 +31,13 @@ export const useProducts = () => {
 	}, [])
 
 	useEffect(() => {
-		if (!selectedProduct) return
+		if (!activeProductId) return
 
 		async function loadProductDetails() {
 			try {
 				const [prices, recipe] = await Promise.all([
-					getProductPriceHistory(selectedProduct.id),
-					getProductRecipeItems(selectedProduct.id)
+					getProductPriceHistory(activeProductId),
+					getProductRecipeItems(activeProductId)
 				])
 
 				setPrices(prices)
@@ -49,7 +48,7 @@ export const useProducts = () => {
 		}
 		
 		loadProductDetails()
-	}, [selectedProduct])
+	}, [activeProductId])
 
 	const handleProductCreate = useCallback( async (productData: CreateProductPayload): Promise<boolean> => {
 		const result = productCreateSchema.safeParse(productData)
@@ -122,8 +121,6 @@ export const useProducts = () => {
 	return {
 		products,
 		visibleProducts,
-		selectedProduct,
-		setSelectedProduct,
 		prices,
 		recipeItems,
 		searchQuery,
