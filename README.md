@@ -15,7 +15,7 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
   + [x] Stock Screen
   + [x] Dashboard Screen
   + [ ] Home Screen
-  + [ ] Products Screen
+  + [x] Products Screen
   + [ ] Dark theme
   + [ ] Error handling
 + [ ] Modify endpoint:
