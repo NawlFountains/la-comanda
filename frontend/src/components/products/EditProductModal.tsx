@@ -8,6 +8,7 @@ import type { ProductErrors } from '../../schemas/product'
 import {LoadingSpinner, PenIcon, TrashIcon} from '../styles/Icons'
 import type {PriceHistoryErrors} from '../../schemas/price_history'
 import type {RecipeItemErrors} from '../../schemas/recipe_item'
+import PriceSection from './PriceSection'
 
 interface EditProductModalProps {
 	onClose: () => void
@@ -45,14 +46,7 @@ export default function EditProductModal({
 	recipeErrors
 }: EditProductModalProps) {
 	const [name, setName] = useState(product?.name || '')
-	const [showPastPrices, setShowPastPrices] = useState(false)
-
-	const [createPrice, setCreatePrice] = useState(false)
-	const [price, setPrice] = useState<string>('')
-	const [validFrom, setValidFrom] = useState<string>( () => {
-		return new Date().toISOString().split('T')[0]
-	})
-
+	
 	const [newRecipeItems, setNewRecipeItems] = useState<CreateRecipeItemPayload[]>([])
 
 	const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null)	
@@ -86,13 +80,7 @@ export default function EditProductModal({
 	}, [items])
 
 	const handleSubmit = async () => {
-		if (createPrice) { 
-			const successPrice = await onAddPrice(product.id, {
-				price,
-				valid_from: validFrom
-			})
-			if (!successPrice) return
-		}
+		
 		if (newRecipeItems && newRecipeItems.length > 0) {
 			try {
 				const recipePromises = newRecipeItems.map((recipeItem) =>
@@ -179,92 +167,13 @@ export default function EditProductModal({
 				</div>
 			) : (
 				<>
-				<div className='flex flex-col text-center gap-3'>
-					{/* Current price */}
-
-					{/* Past prices */}
-					{prices && prices.length > 0 && (
-						<table>
-						<thead>
-							<tr className='text-lg font-mono bg-neutral-200'>
-							<td>Price</td>
-							<td>From</td>
-							</tr>
-						</thead>
-						<tbody>
-						{(showPastPrices ? prices : prices.slice(0, 1)).map(( price, idx) => (
-							<tr key={idx}>
-								<td className='w-1/2 p-2'>${price.price}</td>
-								<td className='w-1/2'>{price.valid_from}</td>
-							</tr>
-						))}
-						{createPrice && (
-							<tr>
-								<td className='flex flex-row items-center gap-2 px-4'>
-								<p className=''>
-								$
-								</p>
-								<InputModal
-									className='w-full'
-									value={price}
-									placeholder="price"
-									type='number'
-									onChange={(e) => setPrice(e.target.value)}
-									/>
-
-								</td>
-								<td className='px-4'>
-								<InputModal
-									className='w-full'
-									value={validFrom}
-									placeholder="valid from (YYYY-MM-DD)"
-									onChange={(e) => setValidFrom(e.target.value)}
-									/>
-								</td>
-								<td>
-								<button
-									onClick={() => setCreatePrice(false)}
-								      className="p-2 text-gray-400 hover:text-red-500 text-sm"
-								      title="Close create price">
-								✕
-
-								</button>
-								</td>
-							</tr>
-						)}
-
-						{priceErrors && (
-							<tr>
-								<td>
-								{priceErrors.price && (<ErrorMessage message={priceErrors.price}/>)}
-								</td>
-								<td>
-								{priceErrors.valid_from && (<ErrorMessage message={priceErrors.valid_from}/>)}
-								</td>
-							</tr>
-						)}
-						</tbody>
-						</table>
-					)}
-
-					{prices && prices.length > 1 && (
-						<button 
-							onClick={() => setShowPastPrices(!showPastPrices)}
-							className="text-sm text-neutral-600 underline cursor-pointer hover:text-neutral-800"
-						>
-							{showPastPrices? "Hide History" : `Show History (${prices.length - 1} more)`}
-						</button>
-					)}
-
-					{!createPrice && (
-						<button
-							onClick={() => setCreatePrice(true)}
-							className={`${buttonVariants.secondary}`}>
-							Add Price
-						</button>
-					)}
-				</div>
-
+				<PriceSection 
+					onAddPrice={onAddPrice}
+					product={product}
+					prices={prices}
+					priceErrors={priceErrors}
+					
+				/>
 				{/* Recipe items */}
 				<div className='flex flex-col text-center gap-3'>
 					{(recipeItems && recipeItems.length > 0) || (newRecipeItems && newRecipeItems.length > 0) ? (
