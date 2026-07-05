@@ -11,10 +11,17 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
 - [x] Order endpoints 
 - [ ] React + TypeScript frontend
   + [x] Login Screen
-  + [ ] Orders Screen
-  + [ ] Stock Screen
-  + [ ] Dashboard Screen
+  + [x] Orders Screen
+  + [x] Stock Screen
+  + [x] Dashboard Screen
   + [ ] Home Screen
+  + [ ] Products Screen
+  + [ ] Dark theme
+  + [ ] Error handling
++ [ ] Modify endpoint:
+  + [ ] Allow pagination and more queries on each endpoint
+  + [ ] Add product endpoint with full details using join (PriceHistory and RecipeItems)
++ [ ] Playwright testing E2E each page
 - [ ] Deploy to Railway + Vercel
 
 ## Testing
