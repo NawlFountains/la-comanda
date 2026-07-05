@@ -1,16 +1,16 @@
 import ScreenLayout from "../layouts/ScreenLayout"
-import ProductsTable from "../components/ProductsTable"
-import ProductsRow from "../components/ProductsRow"
-import {buttonVariants} from "../components/ButtonStyles"
+import ProductsTable from "../components/products/ProductsTable"
+import ProductsRow from "../components/products/ProductsRow"
+import {buttonVariants} from "../components/styles/ButtonStyles"
 import {useState} from "react"
 import { useProducts } from '../hooks/useProducts'
-import AddProductModal from "../components/AddProductModal"
-import EditProductModal from "../components/EditProductModal"
+import AddProductModal from "../components/products/AddProductModal"
+import EditProductModal from "../components/products/EditProductModal"
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
-import InfoProductModal from "../components/InfoProductModal"
+import InfoProductModal from "../components/products/InfoProductModal"
 import {useItems} from "../hooks/useItems"
 import type { ActiveModal } from "../types"
-import TableSkeleton from "../components/TableSkeleton"
+import TableSkeleton from "../components/skeletons/TableSkeleton"
 
 export default function Products() {
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)

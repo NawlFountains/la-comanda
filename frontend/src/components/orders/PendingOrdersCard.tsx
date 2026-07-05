@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import type { Order, Customer } from '../types'
-import {cardVariants} from './CardStyles'
-import { formatDatetime } from '../utils/date'
+import type { Order, Customer } from '../../types'
+import {cardVariants} from '../styles/CardStyles'
+import { formatDatetime } from '../../utils/date'
 
 interface PendingOrdersCardProps {
 	orders: Order[]

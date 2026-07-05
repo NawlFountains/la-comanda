@@ -2,7 +2,7 @@ import { NavLink, useRouteLoaderData } from "react-router-dom"
 import type { User } from '@supabase/supabase-js'
 import useLogout from "../hooks/useLogout"
 import { useState } from "react"
-import { buttonVariants } from "./ButtonStyles"
+import { buttonVariants } from "./styles/ButtonStyles"
 import type {Business} from "../types"
 
 interface NavBarProps {

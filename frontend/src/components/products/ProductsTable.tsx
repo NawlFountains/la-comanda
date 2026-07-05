@@ -1,5 +1,5 @@
 import React from 'react'
-import {cardVariants} from './CardStyles'
+import {cardVariants} from '../styles/CardStyles'
 
 export default function ProductsTable({ children }: { children : React.ReactNode} ) {
 	return (

@@ -1,7 +1,7 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
-import { buttonVariants } from '../components/ButtonStyles'
-import {cardVariants} from './CardStyles'
+import { buttonVariants } from './styles/ButtonStyles'
+import {cardVariants} from './styles/CardStyles'
 
 interface HomePillarCardProps {
 	title: string,

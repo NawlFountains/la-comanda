@@ -1,5 +1,5 @@
-import type { Item } from '../types'
-import {cardVariants} from './CardStyles'
+import type { Item } from '../../types'
+import {cardVariants} from '../styles/CardStyles'
 
 interface LowStockItemsCardProps {
 	items: Item[]

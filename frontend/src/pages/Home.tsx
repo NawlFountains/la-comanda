@@ -1,5 +1,5 @@
-import {buttonVariants} from "../components/ButtonStyles";
-import {cardVariants} from "../components/CardStyles";
+import {buttonVariants} from "../components/styles/ButtonStyles";
+import {cardVariants} from "../components/styles/CardStyles";
 import HomePillarCard from "../components/HomePillarCard";
 import ScreenLayout from "../layouts/ScreenLayout";
 

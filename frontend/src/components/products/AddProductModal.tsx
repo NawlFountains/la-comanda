@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
-import ModalLayout from '../layouts/ModalLayout'
-import { buttonVariants } from '../components/ButtonStyles'
-import InputModal from '../components/InputModal'
-import ErrorMessage from '../components/ErrorMessage'
-import type { CreateProductPayload } from '../types'
-import type { ProductErrors } from '../schemas/product'
+import ModalLayout from '../../layouts/ModalLayout'
+import { buttonVariants } from '../styles/ButtonStyles'
+import InputModal from '../InputModal'
+import ErrorMessage from '../errors/ErrorMessage'
+import type { CreateProductPayload } from '../../types'
+import type { ProductErrors } from '../../schemas/product'
 
 interface AddProductModalProps {
 	onClose: () => void

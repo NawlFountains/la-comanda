@@ -1,6 +1,6 @@
 import React from 'react'
-import CardSkeleton from '../components/CardSkeleton'
-import { buttonVariants } from './ButtonStyles'
+import CardSkeleton from '../skeletons/CardSkeleton'
+import { buttonVariants } from '../styles/ButtonStyles'
 
 export default function DashboardSkeleton() {
 	return (

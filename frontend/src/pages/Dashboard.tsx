@@ -1,20 +1,20 @@
 import ScreenLayout from "../layouts/ScreenLayout"
-import LowStockItemsCard from "../components/LowStockItemsCard"
-import PendingOrdersCard from "../components/PendingOrdersCard"
-import LatestRestockCard from '../components/LatestsRestocksCard'
+import LowStockItemsCard from "../components/items/LowStockItemsCard"
+import PendingOrdersCard from "../components/orders/PendingOrdersCard"
+import LatestRestockCard from '../components/restocks/LatestsRestocksCard'
 import { useState, useEffect } from "react"
 import type { Order, Item } from "../types"
 import { getOrderByStatus } from "../api/orders"
 import { getStock, getLowStockItems } from "../api/items"
-import {buttonVariants} from "../components/ButtonStyles"
-import AddRestockModal from "../components/AddRestockModal"
+import {buttonVariants} from "../components/styles/ButtonStyles"
+import AddRestockModal from "../components/restocks/AddRestockModal"
 import {useRestocks} from "../hooks/useRestock"
 import {useCustomer} from "../hooks/useCustomers"
 import { useOrders } from "../hooks/useOrders"
-import AddOrderModal from "../components/AddOrderModal"
+import AddOrderModal from "../components/orders/AddOrderModal"
 import {useProducts} from "../hooks/useProducts"
-import AddProductModal from "../components/AddProductModal"
-import DashboardSkeleton from "../components/DashboardSkeleton"
+import AddProductModal from "../components/products/AddProductModal"
+import DashboardSkeleton from "../components/skeletons/DashboardSkeleton"
 
 export default function Dashboard() {
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])

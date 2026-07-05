@@ -1,8 +1,8 @@
 import React from 'react'
 import { useRouteError, isRouteErrorResponse, Link } from 'react-router-dom'
-import ScreenLayout from '../layouts/ScreenLayout'
-import errorImage from '../assets/loading-cat.jpg'
-import { buttonVariants } from './ButtonStyles'
+import ScreenLayout from '../../layouts/ScreenLayout'
+import errorImage from '../../assets/loading-cat.jpg'
+import { buttonVariants } from '../styles/ButtonStyles'
 
 export default function ErrorFallback() {
 	const error = useRouteError()

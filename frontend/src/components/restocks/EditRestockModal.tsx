@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import ModalLayout from '../layouts/ModalLayout'
-import InputModal from '../components/InputModal'
-import ErrorMessage from '../components/ErrorMessage'
-import { buttonVariants } from '../components/ButtonStyles'
-import type { RestockErrors } from '../schemas/restock'
-import type { Restock, CreateRestockPayload } from '../types'
+import ModalLayout from '../../layouts/ModalLayout'
+import InputModal from '../InputModal'
+import ErrorMessage from '../errors/ErrorMessage'
+import { buttonVariants } from '../styles/ButtonStyles'
+import type { RestockErrors } from '../../schemas/restock'
+import type { Restock, CreateRestockPayload } from '../../types'
 
 interface EditRestockModalProps {
 	onClose: () => void,

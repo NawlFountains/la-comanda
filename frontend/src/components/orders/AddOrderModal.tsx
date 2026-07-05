@@ -1,11 +1,11 @@
 import {useState} from 'react'
-import type { OrderErrors } from '../schemas/order'
-import type { Product, Customer, CreateOrderPayload, OrderStatus, CreateOrderItemPayload, CreateCustomerPayload } from '../types'
-import { buttonVariants } from '../components/ButtonStyles'
-import ModalLayout from '../layouts/ModalLayout'
-import InputModal from './InputModal'
-import ErrorMessage from './ErrorMessage'
-import type {CustomerErrors} from '../schemas/customer'
+import type { OrderErrors } from '../../schemas/order'
+import type { Product, Customer, CreateOrderPayload, OrderStatus, CreateOrderItemPayload, CreateCustomerPayload } from '../../types'
+import { buttonVariants } from '../styles/ButtonStyles'
+import ModalLayout from '../../layouts/ModalLayout'
+import InputModal from '../InputModal'
+import ErrorMessage from '../errors/ErrorMessage'
+import type {CustomerErrors} from '../../schemas/customer'
 
 interface AddOrderModalProps {
 	onClose: () => void

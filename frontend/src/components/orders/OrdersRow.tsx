@@ -1,7 +1,7 @@
 import React from 'react'
-import { PenIcon, TrashIcon } from '../components/Icons'
-import { formatDatetime } from '../utils/date'
-import type { Order, Customer } from '../types'
+import { PenIcon, TrashIcon } from '../styles/Icons'
+import { formatDatetime } from '../../utils/date'
+import type { Order, Customer } from '../../types'
 
 interface OrdersRowProps {
 	order: Order

@@ -1,5 +1,5 @@
 import React from 'react'
-import { cardVariants } from '../components/CardStyles'
+import { cardVariants } from '../components/styles/CardStyles'
 
 interface ModalLayoutProps {
 	onClose: () => void

@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
-import ModalLayout from '../layouts/ModalLayout'
-import ErrorMessage from './ErrorMessage'
-import { buttonVariants } from './ButtonStyles'
-import { formatDatetime } from '../utils/date'
-import type { OrderErrors } from '../schemas/order'
-import type { Customer, Order, CreateOrderPayload, OrderStatus } from '../types'
+import ModalLayout from '../../layouts/ModalLayout'
+import ErrorMessage from '../errors/ErrorMessage'
+import { buttonVariants } from '../styles/ButtonStyles'
+import { formatDatetime } from '../../utils/date'
+import type { OrderErrors } from '../../schemas/order'
+import type { Customer, Order, CreateOrderPayload, OrderStatus } from '../../types'
 
 interface EditOrderModalProps {
 	onClose: () => void,

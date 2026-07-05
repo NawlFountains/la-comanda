@@ -1,9 +1,9 @@
-import {buttonVariants} from "../components/ButtonStyles"
-import ErrorMessage from "../components/ErrorMessage"
+import {buttonVariants} from "../components/styles/ButtonStyles"
+import ErrorMessage from "../components/errors/ErrorMessage"
 import { useLogin } from "../hooks/useLogin"
 import { useState } from "react"
 import ScreenLayout from "../layouts/ScreenLayout"
-import {EyeIcon, EyeSlashIcon} from "../components/Icons"
+import {EyeIcon, EyeSlashIcon} from "../components/styles/Icons"
 import { Link } from "react-router-dom"
 
 export default function Login() {

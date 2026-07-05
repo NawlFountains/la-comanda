@@ -1,5 +1,5 @@
 import React from 'react'
-import {cardVariants} from '../components/CardStyles'
+import {cardVariants} from '../styles/CardStyles'
 
 export default function CardSkeleton({ rows = 3 }) {
 	return (

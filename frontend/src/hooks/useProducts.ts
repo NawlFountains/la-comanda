@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct, deletePrice, createRecipeItem, deleteRecipeItem } from '../api/products'
+import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct, createRecipeItem, deleteRecipeItem, updateRecipeItem } from '../api/products'
 import { productCreateSchema, productUpdateSchema, type ProductErrors } from '../schemas/product'
 import type { PriceHistory, RecipeItem, CreateProductPayload, Product, CreatePriceHistoryPayload, CreateRecipeItemPayload } from '../types'
 import {parseZodErrors} from '../utils/parseZodErrors'
 import {priceHistoryCreateSchema, type PriceHistoryErrors } from '../schemas/price_history'
-import {recipeItemCreateSchema, type RecipeItemErrors} from '../schemas/recipe_item'
+import {recipeItemCreateSchema, recipeItemUpdateSchema, type RecipeItemErrors} from '../schemas/recipe_item'
 
 export const useProducts = (activeProductId?: string | null) => {
 	const [products, setProducts] = useState<Product[]>([])
@@ -149,7 +149,6 @@ export const useProducts = (activeProductId?: string | null) => {
 		const result = recipeItemCreateSchema.safeParse(recipeItemData)
 		if (!result.success) {
 			const newErrors = parseZodErrors<RecipeItemErrors>(result.error)
-			console.log('[DEBUG] Failed parsing : ', newErrors)
 			setRecipeErrors(newErrors)
 			return false
 		}
@@ -157,9 +156,7 @@ export const useProducts = (activeProductId?: string | null) => {
 		setSubmitting(true)
 		setError(null)
 		try {
-			console.log('[DEBUG] On try recipe item create')
 			const newRecipeItem: RecipeItem = await createRecipeItem(productId, recipeItemData)
-
 			setRecipeItems((prevRecipeItems) => [...prevRecipeItems, newRecipeItem])
 			return true
 		} catch (err) {
@@ -171,9 +168,28 @@ export const useProducts = (activeProductId?: string | null) => {
 		}
 	}, []) 
 
-	const handleRecipeItemUpdate = useCallback( async (id: string, priceData: Partial<CreateRecipeItemPayload> ): Promise<boolean> => {
-		return true
-	}, []) 
+	const handleRecipeItemUpdate = useCallback( async (productId: string, recipeId: string, recipeItemData: Partial<CreateRecipeItemPayload> ): Promise<boolean> => {
+		const result = recipeItemUpdateSchema.safeParse(recipeItemData)
+		if (!result.success) {
+			const newErrors = parseZodErrors<RecipeItemErrors>(result.error)
+			setRecipeErrors(newErrors)
+			return false
+		}
+		setRecipeErrors({})		
+		setSubmitting(true)
+		setError(null)
+		try {
+			const updatedRecipeItem: RecipeItem = await updateRecipeItem(productId, recipeId, recipeItemData)
+			setRecipeItems((prevRecipeItems) => prevRecipeItems.map((recipeItem) => recipeItem.id === recipeId ? updatedRecipeItem: recipeItem))
+			return true
+		} catch (err) {
+			setError(err)
+			return false
+		} finally {
+			setSubmitting(false)
+		}
+	} , [])
+
 
 	const handleRecipeItemDelete = async ( productId: string, id: string) => {
 		setSubmitting(true)

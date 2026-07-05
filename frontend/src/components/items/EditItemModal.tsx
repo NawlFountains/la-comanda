@@ -1,10 +1,10 @@
 import React, {useState} from "react"
-import InputModal from '../components/InputModal.tsx'
-import ErrorMessage from "./ErrorMessage.tsx"
-import { buttonVariants } from '../components/ButtonStyles.ts'
-import type { Item, CreateItemPayload } from '../types'
-import type {ItemErrors} from "../schemas/item.ts"
-import ModalLayout from "../layouts/ModalLayout.tsx"
+import InputModal from '../InputModal.tsx'
+import ErrorMessage from "../errors/ErrorMessage"
+import { buttonVariants } from '../styles/ButtonStyles'
+import type { Item, CreateItemPayload } from '../../types'
+import type {ItemErrors} from "../../schemas/item.ts"
+import ModalLayout from "../../layouts/ModalLayout.tsx"
 
 interface EditItemModalProps {
 	onClose: () => void

@@ -1,7 +1,7 @@
 import React, {useMemo} from 'react'
-import type { Restock, Item } from '../types'
-import {cardVariants} from './CardStyles'
-import { formatDate } from '../utils/date'
+import type { Restock, Item } from '../../types'
+import {cardVariants} from '../styles/CardStyles'
+import { formatDate } from '../../utils/date'
 
 interface LatestRestockCardProps {
 	restocks: Restock[]

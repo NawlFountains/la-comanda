@@ -1,5 +1,5 @@
 import React from 'react'
-import { cardVariants } from '../components/CardStyles.ts'
+import { cardVariants } from '../styles/CardStyles.ts'
 
 export default function TableSkeleton({ rows = 4, cols = 4 }) {
 	return (

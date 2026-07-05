@@ -9,7 +9,7 @@ import Orders from './pages/Orders'
 import Login from './pages/Login'
 import Stock from './pages/Stock'
 import Products from './pages/Products'
-import ErrorFallback from './components/ErrorFallback'
+import ErrorFallback from './components/errors/ErrorFallback'
 
 const router = createBrowserRouter([
 	{

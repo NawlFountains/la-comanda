@@ -1,6 +1,6 @@
 import React from "react"
-import { cardVariants } from "./CardStyles"
-import {buttonVariants} from "./ButtonStyles"
+import { cardVariants } from "./styles/CardStyles"
+import {buttonVariants} from "./styles/ButtonStyles"
 
 interface ConfirmDeletionModalProps {
 	name: string,

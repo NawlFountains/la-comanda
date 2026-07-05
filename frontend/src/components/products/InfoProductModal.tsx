@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react'
-import ModalLayout from '../layouts/ModalLayout'
-import { buttonVariants } from '../components/ButtonStyles.ts'
-import type { PriceHistory, Product, RecipeItem, Item } from '../types'
-import { LoadingSpinner } from './Icons.tsx'
+import ModalLayout from '../../layouts/ModalLayout'
+import { buttonVariants } from '../styles/ButtonStyles'
+import type { PriceHistory, Product, RecipeItem, Item } from '../../types'
+import { LoadingSpinner } from '../styles/Icons'
 
 interface InfoProductModalProps {
 	onClose: () => void

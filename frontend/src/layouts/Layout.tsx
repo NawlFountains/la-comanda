@@ -4,7 +4,7 @@ import type {Business} from '../types'
 import { useEffect, useState } from 'react'
 import {supabase} from '../supabase/supabaseClient'
 import {getMyBusiness} from '../api/business'
-import {LoadingSpinner} from '../components/Icons'
+import {LoadingSpinner} from '../components/styles/Icons'
 import ScreenLayout from './ScreenLayout'
 
 export interface LayoutContextType {

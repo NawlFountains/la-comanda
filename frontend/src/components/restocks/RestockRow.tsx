@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react'
-import { PenIcon, TrashIcon } from '../components/Icons'
-import type { Item } from '../types'
-import type { Restock } from '../types'
-import {formatDate} from '../utils/date'
+import { PenIcon, TrashIcon } from '../styles/Icons'
+import type { Item, Restock } from '../../types'
+import {formatDate} from '../../utils/date'
 
 
 interface RestockRowProps {

@@ -85,6 +85,28 @@ export async function updateProduct(productId: string, productData: Partial<Crea
 	return response.json()
 }
 
+export async function updateRecipeItem(productId: string, recipeId: string, recipeItemData: Partial<CreateRecipeItemPayload>): Promise<RecipeItem> {
+	const { data, error } = await supabase.auth.getSession()
+	const token = data.session?.access_token
+
+	if (!token) {
+		throw new Error('User is not authenticated')
+	}
+	const response = await fetch(`${API_URL}/products/${productId}/recipe/${recipeId}`, {
+		method: "PATCH",
+		headers: {
+			'Authorization': `Bearer ${token}`,
+			'Content-type': 'application/json'
+		},
+		body: JSON.stringify(recipeItemData)
+	})
+
+	if (!response.ok) throw new Error(`Error when updating recipe item: ${response.text}`)
+	return response.json()
+}
+
+
+
 export async function deleteProduct(productId: string) {
 	const { data, error } = await supabase.auth.getSession()
 	const token = data.session?.access_token

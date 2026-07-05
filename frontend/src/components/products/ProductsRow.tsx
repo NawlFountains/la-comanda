@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
-import { InfoIcon, PenIcon, TrashIcon } from '../components/Icons'
-import type { Product } from '../types'
+import { InfoIcon, PenIcon, TrashIcon } from '../styles/Icons'
+import type { Product } from '../../types'
 
 interface ProductsRowProps {
 	product: Product

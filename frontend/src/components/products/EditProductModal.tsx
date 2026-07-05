@@ -1,20 +1,20 @@
 import React, { useState, useMemo } from 'react'
-import ModalLayout from '../layouts/ModalLayout'
-import InputModal from '../components/InputModal.tsx'
-import ErrorMessage from "./ErrorMessage.tsx"
-import { buttonVariants } from '../components/ButtonStyles.ts'
-import type { Product, CreateProductPayload, CreatePriceHistoryPayload, CreateRecipeItemPayload, PriceHistory, RecipeItem, Item } from '../types'
-import type { ProductErrors } from '../schemas/product'
-import {LoadingSpinner, PenIcon, TrashIcon} from './Icons.tsx'
-import type {PriceHistoryErrors} from '../schemas/price_history.ts'
-import type {RecipeItemErrors} from '../schemas/recipe_item.ts'
+import ModalLayout from '../../layouts/ModalLayout'
+import InputModal from '../InputModal.tsx'
+import ErrorMessage from "../errors/ErrorMessage"
+import { buttonVariants } from '../styles/ButtonStyles'
+import type { Product, CreateProductPayload, CreatePriceHistoryPayload, CreateRecipeItemPayload, PriceHistory, RecipeItem, Item } from '../../types'
+import type { ProductErrors } from '../../schemas/product'
+import {LoadingSpinner, PenIcon, TrashIcon} from '../styles/Icons'
+import type {PriceHistoryErrors} from '../../schemas/price_history'
+import type {RecipeItemErrors} from '../../schemas/recipe_item'
 
 interface EditProductModalProps {
 	onClose: () => void
 	onEdit: (id: string, data: Partial<CreateProductPayload>) => Promise<boolean>
 	onAddPrice: (productId: string, data: CreatePriceHistoryPayload) => Promise<boolean>
 	onAddRecipeItem: (productId: string, data: CreateRecipeItemPayload) => Promise<boolean>
-	onEditRecipeItem: (id: string, data: Partial<CreateRecipeItemPayload>) => Promise<boolean>
+	onEditRecipeItem: (productId: string, id: string, data: Partial<CreateRecipeItemPayload>) => Promise<boolean>
 	onDeleteRecipeItem: (productId: string, id: string) => void
 	product: Product
 	prices: PriceHistory[]
@@ -55,7 +55,31 @@ export default function EditProductModal({
 
 	const [newRecipeItems, setNewRecipeItems] = useState<CreateRecipeItemPayload[]>([])
 
-	const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null)
+	const [editingRecipeId, setEditingRecipeId] = useState<string | null>(null)	
+	const [editedRecipeItems, setEditedRecipeItems] = useState<Record<string, Partial<CreateRecipeItemPayload>>>({})
+
+	const handleRecipeItemChange = (id: string, field: keyof CreateRecipeItemPayload, value: string) => {
+	    setEditedRecipeItems(prev => {
+		const current = prev[id] || {}
+		const updated: Partial<CreateRecipeItemPayload> = {
+		    ...current,
+		    [field]: value
+		}
+
+		// auto-update unit when item_id changes
+		if (field === 'item_id') {
+		    const selectedItem = items.find(i => i.id === value)
+		    if (selectedItem) {
+			updated.unit = selectedItem.unit
+		    }
+		}
+
+		return {
+		    ...prev,
+		    [id]: updated
+		}
+	    })
+	}
 
 	const itemById = useMemo(() => {
 		return Object.fromEntries(items.map(item => [item.id, item]))
@@ -87,8 +111,25 @@ export default function EditProductModal({
 					return
 				}
 			} catch (err) {
-				console.log("Recipe items update encountered an error:", err)
+				console.log("Recipe items addition encountered an error:", err)
 				return
+			}
+		}
+		if (Object.keys(editedRecipeItems).length > 0) {
+			try {
+				const editPromises = Object.entries(editedRecipeItems).map(([id, data]) =>
+					   onEditRecipeItem(product.id, id, data)
+					  )
+
+				  const editResults = await Promise.all(editPromises)
+
+				const allRecipeEdited = editResults.every(res => res === true)
+				if (!allRecipeEdited) {
+					console.warn("Some recipe items failed to save.")
+					return
+				}
+			} catch (err) {
+				console.log("Recipe items update encounter an error:", err)
 			}
 		}
 
@@ -133,7 +174,9 @@ export default function EditProductModal({
 
 			{/* Price History*/}
 			{ loading ? (
+				<div className='mx-auto p-5'>
 				<LoadingSpinner />
+				</div>
 			) : (
 				<>
 				<div className='flex flex-col text-center gap-3'>
@@ -242,19 +285,10 @@ export default function EditProductModal({
 								<tr key={item.id || idx}>
 									{isEditing ? (
 										<>
-									{/* EDIT MODE: Dropdown selection */}
-									<td>
-										<select
-											className='w-2/3 border border-neutral-700 rounded-lg py-1 px-2 text-center'
-											value={item.item_id}
-											onChange={(e) => onEditRecipeItem(item.id, { item_id: e.target.value })}
-										>
-											{items.map((validItem) => (
-												<option key={validItem.id} value={validItem.id}>
-													{validItem.name}
-												</option>
-											))}
-										</select>
+									<td
+										onClick={() => setEditingRecipeId(item.id)}
+										className='w-2/5'>
+										{itemById[item.item_id]?.name}
 									</td>
 									
 									{/* EDIT MODE: Quantity Input */}
@@ -263,9 +297,9 @@ export default function EditProductModal({
 											className='w-1/3'
 											placeholder='Quantity'
 											type='number'
-											value={item.quantity || ''}
+											value={editedRecipeItems[item.id]?.quantity ?? item.quantity}
 											step="any"
-											onChange={(e) => onEditRecipeItem(item.id, { quantity: e.target.value })}
+											onChange={(e) => handleRecipeItemChange(item.id, 'quantity', e.target.value) }
 										/>
 										<span className='p-1'>{selectedItem?.unit}</span>
 									</td>
@@ -284,10 +318,14 @@ export default function EditProductModal({
 									<>
 										<td 
 											onClick={() => setEditingRecipeId(item.id)}
-											className='w-2/5'>{itemById[item.item_id].name}</td>
+											className='w-2/5'>
+											{itemById[item.item_id]?.name}
+											</td>
 										<td 
 											onClick={() => setEditingRecipeId(item.id)}
-											className='w-2/5'>{item.quantity} {item.unit}</td>
+											className='w-2/5'>
+											{editedRecipeItems[item.id]?.quantity ?? item.quantity} {item.unit}
+											 </td>
 										<td className='flex flex-row justify-center gap-2 p-2'>
 											<button 
 												onClick={() => setEditingRecipeId(item.id)}
