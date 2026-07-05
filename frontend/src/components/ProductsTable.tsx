@@ -8,7 +8,7 @@ export default function ProductsTable({ children }: { children : React.ReactNode
 
 			{/* Header */}
 			<div className="bg-neutral-200 grid grid-cols-3 p-2 font-mono">
-				<p className='hidden sm:block'>Product_ID</p>
+				<p>Product_ID</p>
 				<p>Name</p>
 				<p>Actions</p>
 			</div>

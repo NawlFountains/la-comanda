@@ -10,6 +10,7 @@ import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 import InfoProductModal from "../components/InfoProductModal"
 import {useItems} from "../hooks/useItems"
 import type { ActiveModal } from "../types"
+import TableSkeleton from "../components/TableSkeleton"
 
 export default function Products() {
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
@@ -24,6 +25,7 @@ export default function Products() {
 		handleProductUpdate,
 		handleProductDelete,
 		loading,
+		loadingDetails,
 		submitting,
 		errors, 
 		error } = useProducts(activeModal?.id) 
@@ -34,7 +36,7 @@ export default function Products() {
 	const [ createProductModal, setCreateProductModal ] = useState(false)
 
 
-	if (loading) return (<div className="text-center p-12">Loading products...</div>)
+	if (loading) return (<ScreenLayout> <TableSkeleton cols={3} /> </ScreenLayout>)
 	if (error) return (
 		<div className="text-center text-red-500">
 		{error}
@@ -93,6 +95,7 @@ export default function Products() {
 			{activeModal?.mode === "info" && activeProduct && (
 				<InfoProductModal 
 					onClose={() => setActiveModal(null)}
+					loading={loadingDetails}
 					product={activeProduct}
 					prices={prices}
 					recipeItems={recipeItems}

@@ -4,6 +4,8 @@ import type {Business} from '../types'
 import { useEffect, useState } from 'react'
 import {supabase} from '../supabase/supabaseClient'
 import {getMyBusiness} from '../api/business'
+import {LoadingSpinner} from '../components/Icons'
+import ScreenLayout from './ScreenLayout'
 
 export interface LayoutContextType {
 	business: Business | null
@@ -37,9 +39,11 @@ export default function Layout() {
 
 	if (loading && !isHomePage) {
 		return (
-			<div>
-				<p>Loading business ...</p>
-			</div>
+			<ScreenLayout>
+				<div className='m-auto'>
+				<LoadingSpinner size={50}/>
+				</div>
+			</ScreenLayout>
 		)
 	}
 

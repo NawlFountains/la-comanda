@@ -11,6 +11,7 @@ import {useProducts} from "../hooks/useProducts"
 import AddOrderModal from "../components/AddOrderModal"
 import EditOrderModal from "../components/EditOrderModal" 
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
+import TableSkeleton from "../components/TableSkeleton"
 
 export default function Orders() {
 	const { orders,
@@ -37,7 +38,11 @@ export default function Orders() {
 	const [ showCreateOrderModal, setShowCreateOrderModal ] = useState<boolean>(false)
 	const activeOrder = orders.find(o => o.id === activeModal?.id)
 
-	if (loading) return (<div className="text-center p-12">Loading orders...</div>)
+	if (loading) return (
+		<ScreenLayout> 
+			<TableSkeleton cols={5} />
+		</ScreenLayout>
+	)
 	if (error) return (<div className="text-center text-red-500">{error}</div>)
 
 	return (

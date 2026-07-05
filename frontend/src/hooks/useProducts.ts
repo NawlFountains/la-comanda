@@ -10,6 +10,7 @@ export const useProducts = (activeProductId?: string | null) => {
 	const [recipeItems, setRecipeItems] = useState<RecipeItem[]>([])
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
+	const [loadingDetails, setLoadingDetails] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [errors, setErrors] = useState<ProductErrors>({})
 	const [error, setError] = useState<string | null>(null)
@@ -35,6 +36,7 @@ export const useProducts = (activeProductId?: string | null) => {
 
 		async function loadProductDetails() {
 			try {
+				setLoadingDetails(true)
 				const [prices, recipe] = await Promise.all([
 					getProductPriceHistory(activeProductId),
 					getProductRecipeItems(activeProductId)
@@ -44,6 +46,8 @@ export const useProducts = (activeProductId?: string | null) => {
 				setRecipeItems(recipe)
 			} catch (err) {
 				setError(err instanceof Error ? err.message : "Unkown error")
+			} finally {
+				setLoadingDetails(false)
 			}
 		}
 		
@@ -129,6 +133,7 @@ export const useProducts = (activeProductId?: string | null) => {
 		handleProductUpdate,
 		handleProductDelete,
 		loading,
+		loadingDetails,
 		submitting,
 		errors,
 		error

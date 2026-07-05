@@ -12,6 +12,7 @@ import AddRestockModal from "../components/AddRestockModal"
 import EditItemModal from "../components/EditItemModal"
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 import EditRestockModal from "../components/EditRestockModal"
+import TableSkeleton from "../components/TableSkeleton"
 
 type MultiActiveModal = 
 
@@ -57,7 +58,12 @@ export default function Stock() {
 	const [showAddItemModal, setShowAddItemModal] = useState(false)
 	const [showAddRestockModal, setShowAddRestockModal] = useState(false)
 
-	if (itemLoading || restockLoading) return (<div className="text-center p-12">Loading items and restocks...</div>)
+	if (itemLoading || restockLoading) return (
+		<ScreenLayout> 
+			<TableSkeleton cols={5} />
+		</ScreenLayout>
+	)
+
 	if (itemError) return (
 		<div className="text-center text-red-500">
 		{itemError}
@@ -122,8 +128,9 @@ export default function Stock() {
 
 					{/* Restock table */}
 					<RestockTable >
-						{visibleRestocks.map( restock => (
+						{visibleRestocks.map((restock, idx) => (
 							<RestockRow
+								key={idx}
 								items={items}
 								restock={restock}
 								onTriggerEdit={() => setActiveModal({ target: 'restock', mode: 'edit', restockId: restock.id })}

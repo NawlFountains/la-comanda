@@ -58,10 +58,47 @@ export function TrashIcon({ className = "w-5 h-5" }) {
 
 export function InfoIcon({ className = "w-5 h-5" }) {
 	return (
-		<svg xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className={className}>
+		<svg xmlns="http://w3.org" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
 		  <circle cx="12" cy="12" r="10" />
 		  <path d="M12 16v-4" />
 		  <path d="M12 8h.01" />
 		</svg>
 	)
 }
+
+export const LoadingSpinner = ({ className = "",  size = 24, color = '#3498db' }) => {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      style={{
+        animation: 'spin 1s linear infinite',
+      }}
+    >
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        fill="none"
+        stroke="#e5e7eb"
+        strokeWidth="3"
+      />
+      <path
+        d="M12 2a10 10 0 0 1 10 10"
+        fill="none"
+        stroke={color}
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};

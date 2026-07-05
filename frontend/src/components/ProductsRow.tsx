@@ -14,7 +14,7 @@ export default function ProductsRow({ product, onTriggerEdit, onTriggerInfo, onT
 		<div 
 			key={product.id} 
 			className="grid grid-cols-3 p-2 gap-4">
-			<p className="font-mono hidden sm:block">{product.id}</p>
+			<p className="font-mono">{product.id}</p>
 			<p>{product.name}</p>
 			<div className='space-x-3'>
 				<button

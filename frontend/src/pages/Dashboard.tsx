@@ -14,6 +14,7 @@ import { useOrders } from "../hooks/useOrders"
 import AddOrderModal from "../components/AddOrderModal"
 import {useProducts} from "../hooks/useProducts"
 import AddProductModal from "../components/AddProductModal"
+import DashboardSkeleton from "../components/DashboardSkeleton"
 
 export default function Dashboard() {
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
@@ -75,7 +76,11 @@ export default function Dashboard() {
 		loadDashboardData()
 	}, [])
 
-	if (loading) return (<div className="text-center text-xl p-12">Loading your dashboard...</div>)
+	if (loading) return (
+		<ScreenLayout>
+			<DashboardSkeleton />
+		</ScreenLayout>
+	)
 	if (error) return (<div className="text-center text-red-500">{error}</div>)
 
 	return (
