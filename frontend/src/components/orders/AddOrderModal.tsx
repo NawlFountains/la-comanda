@@ -38,6 +38,7 @@ export default function AddOrderModal({ onClose, onCreate, onCreateCustomer, pro
 			if (!newId) return
 
 			finalCustomerId = newId
+			setCustomerId(newId)
 		}
 
 		const success = await onCreate({
