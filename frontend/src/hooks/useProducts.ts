@@ -1,8 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct } from '../api/products'
+import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct, deletePrice, createRecipeItem, deleteRecipeItem } from '../api/products'
 import { productCreateSchema, productUpdateSchema, type ProductErrors } from '../schemas/product'
-import type { PriceHistory, RecipeItem, CreateProductPayload, Product } from '../types'
+import type { PriceHistory, RecipeItem, CreateProductPayload, Product, CreatePriceHistoryPayload, CreateRecipeItemPayload } from '../types'
 import {parseZodErrors} from '../utils/parseZodErrors'
+import {priceHistoryCreateSchema, type PriceHistoryErrors } from '../schemas/price_history'
+import {recipeItemCreateSchema, type RecipeItemErrors} from '../schemas/recipe_item'
 
 export const useProducts = (activeProductId?: string | null) => {
 	const [products, setProducts] = useState<Product[]>([])
@@ -13,10 +15,13 @@ export const useProducts = (activeProductId?: string | null) => {
 	const [loadingDetails, setLoadingDetails] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [errors, setErrors] = useState<ProductErrors>({})
+	const [priceErrors, setPriceErrors] = useState<PriceHistoryErrors>({})
+	const [recipeErrors, setRecipeErrors] = useState<RecipeItemErrors>({})
+
 	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
-		// TODO change backend to add recipes and prices
+		// TODO change backend to retrive full product with recipes and prices `products/full`
 		async function loadProducts() {
 			try {
 				setLoading(true)
@@ -116,6 +121,75 @@ export const useProducts = (activeProductId?: string | null) => {
 		}
 	}
 
+	const handlePriceCreate = useCallback( async (productId: string, priceData: CreatePriceHistoryPayload): Promise<boolean> => {
+		const result = priceHistoryCreateSchema.safeParse(priceData)
+		if (!result.success) {
+			const newErrors = parseZodErrors<PriceHistoryErrors>(result.error)
+			setPriceErrors(newErrors)
+			return false
+		}
+		setPriceErrors({})		
+		setSubmitting(true)
+		setError(null)
+		try {
+			const newPrice: PriceHistory = await createPriceProduct(productId, priceData)
+
+			setPrices((prevPrices) => [...prevPrices, newPrice])
+			return true
+		} catch (err) {
+			setError(err)
+			console.error("Failed to create price:", err)
+			return false
+		} finally {
+			setSubmitting(false)
+		}
+	}, [])
+
+	const handleRecipeItemCreate = useCallback( async (productId: string, recipeItemData: CreateRecipeItemPayload ): Promise<boolean> => {
+		const result = recipeItemCreateSchema.safeParse(recipeItemData)
+		if (!result.success) {
+			const newErrors = parseZodErrors<RecipeItemErrors>(result.error)
+			console.log('[DEBUG] Failed parsing : ', newErrors)
+			setRecipeErrors(newErrors)
+			return false
+		}
+		setPriceErrors({})		
+		setSubmitting(true)
+		setError(null)
+		try {
+			console.log('[DEBUG] On try recipe item create')
+			const newRecipeItem: RecipeItem = await createRecipeItem(productId, recipeItemData)
+
+			setRecipeItems((prevRecipeItems) => [...prevRecipeItems, newRecipeItem])
+			return true
+		} catch (err) {
+			setError(err)
+			console.error("Failed to create recipe item:", err)
+			return false
+		} finally {
+			setSubmitting(false)
+		}
+	}, []) 
+
+	const handleRecipeItemUpdate = useCallback( async (id: string, priceData: Partial<CreateRecipeItemPayload> ): Promise<boolean> => {
+		return true
+	}, []) 
+
+	const handleRecipeItemDelete = async ( productId: string, id: string) => {
+		setSubmitting(true)
+		setError(null)
+		try {
+			await deleteRecipeItem(productId, id)
+
+			setRecipeItems((prevRecipeItems) => prevRecipeItems.filter((recipeItem) => recipeItem.id !== id))
+		} catch (err) {
+			setError(err)
+			console.error("Failed to delete product:", err)
+		} finally {
+			setSubmitting(false)
+		}
+	}
+
 	const visibleProducts = useMemo(() => {
 		return products.filter(product=>
 			product.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -132,10 +206,16 @@ export const useProducts = (activeProductId?: string | null) => {
 		handleProductCreate,
 		handleProductUpdate,
 		handleProductDelete,
+		handlePriceCreate,
+		handleRecipeItemCreate,
+		handleRecipeItemUpdate,
+		handleRecipeItemDelete,
 		loading,
 		loadingDetails,
 		submitting,
 		errors,
+		priceErrors,
+		recipeErrors,
 		error
 	}
 }

@@ -24,10 +24,16 @@ export default function Products() {
 		handleProductCreate,
 		handleProductUpdate,
 		handleProductDelete,
+		handlePriceCreate,
+		handleRecipeItemCreate,
+		handleRecipeItemUpdate,
+		handleRecipeItemDelete,
 		loading,
 		loadingDetails,
 		submitting,
 		errors, 
+		priceErrors,
+		recipeErrors,
 		error } = useProducts(activeModal?.id) 
 
 	const { items } = useItems()
@@ -46,8 +52,6 @@ export default function Products() {
 	return (
 		<ScreenLayout>
 			<div className="flex flex-col w-full gap-2 mt-2">
-
-			
 
 			{/* Search and creation tab */}
 			<div className="flex flex-row sm:flex-row justify-between mx-2 gap-2">
@@ -107,9 +111,19 @@ export default function Products() {
 				<EditProductModal 
 					onClose={() => setActiveModal(null)}
 					onEdit={handleProductUpdate}
+					onAddPrice={handlePriceCreate}
+					onAddRecipeItem={handleRecipeItemCreate}
+					onEditRecipeItem={handleRecipeItemUpdate}
+					onDeleteRecipeItem={handleRecipeItemDelete}
 					product={activeProduct}
+					prices={prices}
+					recipeItems={recipeItems}
+					items={items}
 					submitting={submitting}
+					loading={loadingDetails}
 					errors={errors}
+					priceErrors={priceErrors}
+					recipeErrors={recipeErrors}
 				/>
 			)}
 
