@@ -2,6 +2,7 @@ import React, {useMemo} from 'react'
 import type { Restock, Item } from '../../types'
 import {cardVariants} from '../styles/CardStyles'
 import { formatDate } from '../../utils/date'
+import EmptyRow from '../EmptyRow'
 
 interface LatestRestockCardProps {
 	restocks: Restock[]
@@ -25,22 +26,26 @@ export default function LatestRestockCard({ restocks, items }: LatestRestockCard
 						<p>Supplier</p>
 						<p>Restock items</p>
 				</div>
-				{restocks.map(restock => (
-					<div 
-						key={restock.id} 
-						className="grid grid-cols-3 p-1">
-						<p>{formatDate(restock.restock_date)}</p>
-						<p>{restock.supplier}</p>
-						<p>
-						{restock.restock_items.map((ri, idx) => {
-							const item = itemById[ri.item_id]
-							return (
-								<span key={idx}>{item.name} {ri.quantity} {item.unit}{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
-							)
-						})}
-						</p>
-					</div>
-				))}
+				{restocks.length > 0 ? (
+					restocks.map(restock => (
+						<div 
+							key={restock.id} 
+							className="grid grid-cols-3 p-1">
+							<p>{formatDate(restock.restock_date)}</p>
+							<p>{restock.supplier}</p>
+							<p>
+							{restock.restock_items.map((ri, idx) => {
+								const item = itemById[ri.item_id]
+								return (
+									<span key={idx}>{item.name} {ri.quantity} {item.unit}{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
+								)
+							})}
+							</p>
+						</div>
+					))
+				): (
+					<EmptyRow message='No latest restocks' />
+				)}
 			</div>
 		</div>
 	)

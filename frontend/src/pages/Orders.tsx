@@ -12,6 +12,7 @@ import AddOrderModal from "../components/orders/AddOrderModal"
 import EditOrderModal from "../components/orders/EditOrderModal" 
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 import TableSkeleton from "../components/skeletons/TableSkeleton"
+import EmptyRow from "../components/EmptyRow"
 
 export default function Orders() {
 	const { orders,
@@ -91,16 +92,20 @@ export default function Orders() {
 
 			{/* Orders table */}
 			<OrdersTable> 
-				{visibleOrders.map((order, idx) => (
-					<OrdersRow 
-						key={idx}
-						order={order}
-						customer={customerById[order.customer_id]}
-						onTriggerEdit={() => setActiveModal({ mode: 'edit', id: order.id })}
-						onTriggerDelete={() => setActiveModal({ mode: 'delete', id: order.id })}
-						/>
+				{visibleOrders.length > 0 ? (
+					visibleOrders.map((order, idx) => (
+						<OrdersRow 
+							key={idx}
+							order={order}
+							customer={customerById[order.customer_id]}
+							onTriggerEdit={() => setActiveModal({ mode: 'edit', id: order.id })}
+							onTriggerDelete={() => setActiveModal({ mode: 'delete', id: order.id })}
+							/>
 
-				))}
+					))
+				): (
+					<EmptyRow message={`No ${(searchQuery || filterStatus) ? 'matching' : '' } orders`} />
+				)}
 			</OrdersTable>
 			</div>
 

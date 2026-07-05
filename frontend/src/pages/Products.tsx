@@ -11,6 +11,7 @@ import InfoProductModal from "../components/products/InfoProductModal"
 import {useItems} from "../hooks/useItems"
 import type { ActiveModal } from "../types"
 import TableSkeleton from "../components/skeletons/TableSkeleton"
+import EmptyRow from "../components/EmptyRow"
 
 export default function Products() {
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
@@ -40,7 +41,6 @@ export default function Products() {
 
 	const activeProduct = products.find(p => p.id === activeModal?.id)
 	const [ createProductModal, setCreateProductModal ] = useState(false)
-
 
 	if (loading) return (<ScreenLayout> <TableSkeleton cols={3} /> </ScreenLayout>)
 	if (error) return (
@@ -72,15 +72,20 @@ export default function Products() {
 
 			{/* Products table */}
 			<ProductsTable> 
-				{visibleProducts.map(product => 
-					<ProductsRow
-						key={product.id}
-						onTriggerEdit={() => setActiveModal({ mode: "edit", id: product.id })}
-						onTriggerInfo={() => setActiveModal({ mode: "info", id: product.id })}
-						onTriggerDelete={() => setActiveModal({ mode: "delete", id: product.id })}
-						product={product}
-					/>
+				{visibleProducts.length > 0 ? (
+					visibleProducts.map(product => 
+						<ProductsRow
+							key={product.id}
+							onTriggerEdit={() => setActiveModal({ mode: "edit", id: product.id })}
+							onTriggerInfo={() => setActiveModal({ mode: "info", id: product.id })}
+							onTriggerDelete={() => setActiveModal({ mode: "delete", id: product.id })}
+							product={product}
+						/>
+					)
+				): (
+					<EmptyRow message={`No ${searchQuery ? 'matching' : ''} products`} />
 				)}
+				
 				
 			</ProductsTable>
 

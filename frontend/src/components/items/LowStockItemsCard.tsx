@@ -1,5 +1,6 @@
 import type { Item } from '../../types'
 import {cardVariants} from '../styles/CardStyles'
+import EmptyRow from '../EmptyRow'
 
 interface LowStockItemsCardProps {
 	items: Item[]
@@ -17,15 +18,19 @@ export default function LowStockItemsCard({ items } : LowStockItemsCardProps) {
 						<p>Current stock</p>
 						<p>Low stock threshold</p>
 				</div>
-				{items.map(item => (
-					<div 
-						key={item.id} 
-						className='grid grid-cols-3 p-1'>
-						<p>{item.name}</p>
-						<p>{item.current_stock} {item.unit}</p>
-						<p>{item.low_stock_threshold} {item.unit}</p>
-					</div>
-				))}
+				{items.length > 0 ? (
+					items.map(item => (
+						<div 
+							key={item.id} 
+							className='grid grid-cols-3 p-1'>
+							<p>{item.name}</p>
+							<p>{item.current_stock} {item.unit}</p>
+							<p>{item.low_stock_threshold} {item.unit}</p>
+						</div>
+					))
+				): (
+					<EmptyRow message='No items running low' />
+				)}
 			</div>
 		</div>
 	)

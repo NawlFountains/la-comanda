@@ -13,6 +13,7 @@ import EditItemModal from "../components/items/EditItemModal"
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 import EditRestockModal from "../components/restocks/EditRestockModal"
 import TableSkeleton from "../components/skeletons/TableSkeleton"
+import EmptyRow from "../components/EmptyRow"
 
 type MultiActiveModal = 
 
@@ -96,14 +97,18 @@ export default function Stock() {
 
 					{/* Items table */}
 					<StockTable>
-						{visibleItems.map((item, idx) => (
-							<StockRow	
-								key={idx}
-								item={item}
-								onTriggerEdit={() => setActiveModal({ target: 'item', mode: 'edit', itemId: item.id })}
-								onTriggerDelete={() => setActiveModal({ target: 'item', mode: 'delete', itemId: item.id })}
-								/>
-						))}
+						{visibleItems.length > 0 ? (
+							visibleItems.map((item, idx) => (
+								<StockRow	
+									key={idx}
+									item={item}
+									onTriggerEdit={() => setActiveModal({ target: 'item', mode: 'edit', itemId: item.id })}
+									onTriggerDelete={() => setActiveModal({ target: 'item', mode: 'delete', itemId: item.id })}
+									/>
+							))
+						): (
+							<EmptyRow message={`No ${itemSearchQuery ? 'matching' : ''} items`} />
+						)}
 					</StockTable>
 				</div>
 
@@ -128,15 +133,19 @@ export default function Stock() {
 
 					{/* Restock table */}
 					<RestockTable >
-						{visibleRestocks.map((restock, idx) => (
-							<RestockRow
-								key={idx}
-								items={items}
-								restock={restock}
-								onTriggerEdit={() => setActiveModal({ target: 'restock', mode: 'edit', restockId: restock.id })}
-								onTriggerDelete={() => setActiveModal({ target: 'restock', mode: 'delete', restockId: restock.id })}
-								/>
-						))}
+						{visibleRestocks.length > 0 ? (
+							visibleRestocks.map((restock, idx) => (
+								<RestockRow
+									key={idx}
+									items={items}
+									restock={restock}
+									onTriggerEdit={() => setActiveModal({ target: 'restock', mode: 'edit', restockId: restock.id })}
+									onTriggerDelete={() => setActiveModal({ target: 'restock', mode: 'delete', restockId: restock.id })}
+									/>
+							))
+						): (
+							<EmptyRow message={`No ${restockSearchQuery ? 'matching' : ''} restocks`} />
+						)}
 					</RestockTable>
 				</div>
 
