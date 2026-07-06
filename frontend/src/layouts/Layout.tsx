@@ -6,6 +6,7 @@ import {supabase} from '../supabase/supabaseClient'
 import {getMyBusiness} from '../api/business'
 import {LoadingSpinner} from '../components/styles/Icons'
 import ScreenLayout from './ScreenLayout'
+import Footer from '../components/Footer'
 
 export interface LayoutContextType {
 	business: Business | null

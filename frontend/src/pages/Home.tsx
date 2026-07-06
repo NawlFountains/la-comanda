@@ -2,6 +2,7 @@ import {buttonVariants} from "../components/styles/ButtonStyles";
 import {cardVariants} from "../components/styles/CardStyles";
 import HomePillarCard from "../components/HomePillarCard";
 import ScreenLayout from "../layouts/ScreenLayout";
+import demo_ui from '../assets/demo_ui.png'
 
 export default function Home() {
 	const pillars = [
@@ -23,15 +24,20 @@ export default function Home() {
 	]
 	return (
 		<ScreenLayout>
+			<div className="flex flex-col gap-5 items-center">
 			{/* Introduction */}
 			<div className="flex flex-col items-center p-5 gap-4">
 				<h1 className="text-xl font-mono">Stop guessing your inventory. Focus on what matters</h1>
 				<p className="text-lg text-neutral-700">Streamline your stock, automate restock alerts, manage customer
 				orders all from one centralized dashbord.</p>
 
-			<img
-				alt="demo_ui">
-			</img>
+			<div
+				className="w-2/3 shadow-lg shadow-zinc-600 rounded-xl overflow-hidden">
+				<img
+					src={demo_ui}
+					alt="demo_ui">
+				</img>
+			</div>
 			</div>
 
 			{/* Pillars */}
@@ -51,7 +57,7 @@ export default function Home() {
 			{/* Problem & Solution */}
 
 			<div
-				className={`${cardVariants.base} flex flex-col w-full md:w-2/3`}>
+				className={`${cardVariants.base} shadow-lg flex flex-col w-full md:w-2/3`}>
 				<div
 					className="flex flex-col md:odd:flex-row-reverse items-center">
 					<div className="w-full md:w-1/2">
@@ -102,6 +108,7 @@ export default function Home() {
 			{/* Footer */}
 
 
+			</div>
 		</ScreenLayout>
 	)
 }
