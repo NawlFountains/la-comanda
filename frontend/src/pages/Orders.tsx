@@ -13,6 +13,7 @@ import EditOrderModal from "../components/orders/EditOrderModal"
 import ConfirmDeletionModal from "../components/ConfirmDeletionModal"
 import TableSkeleton from "../components/skeletons/TableSkeleton"
 import EmptyRow from "../components/EmptyRow"
+import InfoOrderModal from "../components/orders/InfoOrderModal"
 
 export default function Orders() {
 	const { orders,
@@ -27,7 +28,9 @@ export default function Orders() {
 		loading,
 		submitting,
 		errors: orderErrors,
-		error } = useOrders()
+		loadError,
+		submitError
+	} = useOrders()
 	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
 	const { products } = useProducts()
 
@@ -44,7 +47,7 @@ export default function Orders() {
 			<TableSkeleton cols={5} />
 		</ScreenLayout>
 	)
-	if (error) return (<div className="text-center text-red-500">{error}</div>)
+	if (loadError) return (<div className="text-center text-red-500">{loadError}</div>)
 
 	return (
 		<ScreenLayout>
@@ -98,6 +101,7 @@ export default function Orders() {
 							key={idx}
 							order={order}
 							customer={customerById[order.customer_id]}
+							onTriggerInfo={() => setActiveModal({  mode: 'info', id: order.id})}
 							onTriggerEdit={() => setActiveModal({ mode: 'edit', id: order.id })}
 							onTriggerDelete={() => setActiveModal({ mode: 'delete', id: order.id })}
 							/>
@@ -120,7 +124,17 @@ export default function Orders() {
 					submitting={submitting}
 					orderErrors={orderErrors}
 					customerErrors={customerErrors}
+					submitError={submitError}
 				/>
+			)}
+
+			{activeModal?.mode === 'info' && activeOrder && (
+				<InfoOrderModal
+					onClose={() => setActiveModal(null)}
+					order={activeOrder}
+					customer={customerById[activeOrder.customer_id]}
+					products={products}
+				/> 
 			)}
 
 			{activeModal?.mode === 'edit' && activeOrder && (
@@ -131,6 +145,7 @@ export default function Orders() {
 					order={activeOrder}
 					customer={customerById[activeOrder.customer_id]}
 					errors={orderErrors}
+					submitError={submitError}
 				/> 
 			)}
 
@@ -143,6 +158,7 @@ export default function Orders() {
 						setActiveModal(null)
 					}}	
 					submitting={submitting}
+					submitError={submitError}
 					/>
 			)}
 
