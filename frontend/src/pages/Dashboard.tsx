@@ -28,21 +28,24 @@ export default function Dashboard() {
 		orders,
 		submitting: orderSubmitting,
 		handleOrderCreate, 
-		errors: orderErrors
+		errors: orderErrors,
+		submitError: orderSubmitError
 	} = useOrders()
 
 	const {
 		products, 
 		submitting: productSubmitting,
 		handleProductCreate, 
-		errors: productErrors
+		errors: productErrors,
+		submitError: productSubmitError
 	} = useProducts()
 
 	const { 
 		restocks,
 		submitting: restockSubmitting,
 		handleRestockCreate, 
-		errors: restockErrors 
+		errors: restockErrors,
+		submitError: restockSubmitError
 	} = useRestocks()
 
 	const [items, setItems] = useState<Item[]>([])
@@ -94,6 +97,7 @@ export default function Dashboard() {
 					onCreate={handleRestockCreate}
 					items={items}
 					submitting={restockSubmitting}
+					submitError={restockSubmitError}
 					errors={restockErrors}/>
 			)}
 
@@ -107,6 +111,7 @@ export default function Dashboard() {
 					submitting={orderSubmitting}
 					orderErrors={orderErrors}
 					customerErrors={customerErrors}
+					submitError={orderSubmitError}
 				/>
 			)}
 
@@ -116,6 +121,7 @@ export default function Dashboard() {
 					onCreate={handleProductCreate}
 					submitting={productSubmitting}
 					errors={productErrors}
+					submitError={productSubmitError}
 				/>
 			)}
 

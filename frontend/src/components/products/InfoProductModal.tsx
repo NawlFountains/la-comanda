@@ -97,14 +97,6 @@ export default function InfoProductModal({ onClose, loading, product, prices, re
 				
 				<LoadingSpinner className='mx-auto'/>
 			)}
-			
-			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
-					<button
-						onClick={onClose}
-						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						Cancel
-					</button>
-				</div>
 		</ModalLayout>
 	)
 }

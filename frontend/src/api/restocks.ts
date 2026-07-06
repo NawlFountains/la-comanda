@@ -18,8 +18,10 @@ export async function createRestock(restockData: CreateRestockPayload): Promise<
 		},
 		body: JSON.stringify(restockData)
 	})
-
-	if (!response.ok) throw new Error(`Error when creating item: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -38,8 +40,10 @@ export async function updateRestock(id: string, itemData: Partial<CreateRestockP
 		},
 		body: JSON.stringify(itemData)
 	})
-
-	if (!response.ok) throw new Error(`Error when updating restock: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -57,8 +61,10 @@ export async function deleteRestock(id: string): Promise<void> {
 			'Content-type': 'application/json'
 		}
 	})
-
-	if (!response.ok) throw new Error(`Error when deleting restock: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 }
 
 
@@ -75,8 +81,10 @@ export async function getRestocks(): Promise<Restock []> {
 			'Authorization': `Bearer ${token}`
 		}
 	})
-
-	if (!response.ok) throw new Error('Restocks not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 

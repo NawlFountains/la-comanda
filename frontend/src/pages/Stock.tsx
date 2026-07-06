@@ -32,7 +32,8 @@ export default function Stock() {
 		handleItemUpdate, 
 		loading: itemLoading, 
 		submitting: itemSubmitting,
-		error: itemError, 
+		loadError: itemLoadError, 
+		submitError: itemSubmitError,
 		errors: itemErrors } = useItems()
 
 	const { restocks, 
@@ -44,7 +45,11 @@ export default function Stock() {
 		handleRestockUpdate, 
 		loading: restockLoading,
 		submitting: restockSubmitting,
-		errors: restockErrors } = useRestocks()
+		errors: restockErrors,
+		loadError: restockLoadError, 
+		submitError: restockSubmitError,
+
+	} = useRestocks()
 
 	const [ activeModal, setActiveModal ] = useState<MultiActiveModal>(null)
 
@@ -65,9 +70,9 @@ export default function Stock() {
 		</ScreenLayout>
 	)
 
-	if (itemError) return (
+	if (itemLoadError || restockLoadError) return (
 		<div className="text-center text-red-500">
-		{itemError}
+		{itemLoadError ?? restockLoadError}
 		</div>
 	)
 
@@ -155,6 +160,7 @@ export default function Stock() {
 						onClose={() => setShowAddItemModal(false)}
 						onCreate={handleItemCreate}
 						submitting={itemSubmitting}
+						submitError={itemSubmitError}
 						errors={itemErrors}/>
 				)}
 
@@ -165,6 +171,7 @@ export default function Stock() {
 						submitting={itemSubmitting}
 						errors={itemErrors}
 						item={activeItem}
+						submitError={itemSubmitError}
 					/>
 				)}
 
@@ -177,6 +184,7 @@ export default function Stock() {
 							setActiveModal(null)
 						}}	
 						submitting={itemSubmitting}
+						submitError={itemSubmitError}
 						/>
 				)}
 				
@@ -187,6 +195,7 @@ export default function Stock() {
 						onCreate={handleRestockCreate}
 						items={items}
 						submitting={restockSubmitting}
+						submitError={restockSubmitError}
 						errors={restockErrors}/>
 				)}
 
@@ -195,6 +204,7 @@ export default function Stock() {
 						onClose={() => setActiveModal(null)}
 						onEdit={handleRestockUpdate}
 						submitting={restockSubmitting}
+						submitError={restockSubmitError}
 						errors={restockErrors}
 						restock={activeRestock}
 					/>
@@ -209,6 +219,7 @@ export default function Stock() {
 							setActiveModal(null)
 						}}	
 						submitting={restockSubmitting}
+						submitError={restockSubmitError}
 						/>
 				)}
 			</div>

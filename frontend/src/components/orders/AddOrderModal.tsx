@@ -16,9 +16,20 @@ interface AddOrderModalProps {
 	submitting: boolean
 	orderErrors: OrderErrors
 	customerErrors: CustomerErrors 
+	submitError: string | null
 }
 
-export default function AddOrderModal({ onClose, onCreate, onCreateCustomer, products, customers, submitting, orderErrors, customerErrors }: AddOrderModalProps) {
+export default function AddOrderModal({
+	onClose, 
+	onCreate, 
+	onCreateCustomer, 
+	products, 
+	customers, 
+	submitting, 
+	orderErrors, 
+	customerErrors,
+	submitError
+}: AddOrderModalProps) {
 	const [customerId, setCustomerId] = useState('')
 	const [status, setStatus] = useState<OrderStatus>('pending')
 	const [orderItems, setOrderItems] = useState<CreateOrderItemPayload[]>([])
@@ -179,12 +190,14 @@ export default function AddOrderModal({ onClose, onCreate, onCreateCustomer, pro
 				<button
 					onClick={() => handleAddOrderItem()}
 					className={buttonVariants.secondary}>
-					+ Add item
+					+ Add product 
 				</button>
 				{orderErrors.order_items && (<ErrorMessage message={orderErrors.order_items} /> )}
 				</div>
 
+			{submitError && ( <ErrorMessage message={submitError} />) }
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
+
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>

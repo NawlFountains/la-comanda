@@ -13,9 +13,18 @@ interface EditOrderModalProps {
 	customer: Customer,
 	submitting: boolean
 	errors: OrderErrors
+	submitError: string | null
 }
 
-export default function EditOrderModal({ onClose, onEdit, order, customer, submitting, errors }: EditOrderModalProps ) {
+export default function EditOrderModal({ 
+	onClose, 
+	onEdit,
+	order, 
+	customer, 
+	submitting, 
+	errors,
+	submitError
+}: EditOrderModalProps ) {
 	const [ status, setStatus ] = useState<OrderStatus>(order?.status || 'pending' as OrderStatus)
 
 	const handleSubmit = async () => {
@@ -51,6 +60,8 @@ export default function EditOrderModal({ onClose, onEdit, order, customer, submi
 				)}
 				{errors.status && (<ErrorMessage message={errors.status}/>)}
 			</div>
+
+			{submitError && (<ErrorMessage message={submitError} />)}
 
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button

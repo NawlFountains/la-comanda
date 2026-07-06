@@ -11,10 +11,11 @@ interface AddRestockModalProps {
 	onCreate: (data: CreateRestockPayload) => Promise<boolean>
 	items: Item[]
 	submitting: boolean
+	submitError: string | null
 	errors: RestockErrors
 }
 
-export default function AddRestockModal({ onClose, onCreate, items, submitting, errors }: AddRestockModalProps) {
+export default function AddRestockModal({ onClose, onCreate, items, submitError, submitting, errors }: AddRestockModalProps) {
 	const [supplier, setSupplier] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
 	const [restockDate, setRestockDate] = useState<string>( () => {
@@ -117,7 +118,7 @@ export default function AddRestockModal({ onClose, onCreate, items, submitting, 
 					    step="any"
 					    onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
 				    />
-				    <span className='p-1'>{selectedItem.unit}</span>
+				    <span className='p-1'>{selectedItem?.unit}</span>
 				    </div>
 
 				    {/* Remove item button */}
@@ -139,6 +140,8 @@ export default function AddRestockModal({ onClose, onCreate, items, submitting, 
 				</button>
 				{errors.restock_items && (<ErrorMessage message={errors.restock_items} /> )}
 				</div>
+
+			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

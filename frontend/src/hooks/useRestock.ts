@@ -11,7 +11,8 @@ export const useRestocks = () => {
 	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [searchQuery, setSearchQuery] = useState('')
 	const [errors, setErrors ] = useState<RestockErrors>({})
-	const [error, setError] = useState<string | null>(null)
+	const [loadError, setLoadError] = useState<string | null>(null)
+	const [submitError, setSubmitError] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function loadRestocks() {
@@ -21,7 +22,7 @@ export const useRestocks = () => {
 
 				setRestocks(data)
 			} catch (err) {
-				setError(err)
+				setLoadError(err)
 			} finally {
 				setLoading(false)
 			}
@@ -43,15 +44,15 @@ export const useRestocks = () => {
 		}
 		setErrors({})		
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const newRestock: Restock = await createRestock(restockData)
 
 			setRestocks((prevRestocks) => [...prevRestocks, newRestock])
 			return true
 		} catch (err) {
-			setError(err)
-			console.error("Failed to create restock:", err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
+			console.error("Failed to create restock :", err)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -61,14 +62,15 @@ export const useRestocks = () => {
 	
 	const handleRestockDelete = async(id: string) => {
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			await deleteRestock(id)
 
 			setRestocks((prevRestocks) => prevRestocks.filter((restock) => restock.id !== id))
 		} catch (err) {
-			setError(err)
-			console.error("Failed to delete restock:", err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
+			console.error("Failed to delete restock :", err)
+			return false
 		} finally {
 			setSubmitting(false)
 		}
@@ -84,14 +86,14 @@ export const useRestocks = () => {
 		}
 		setErrors({})		
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const updatedRestock: Restock = await updateRestock(id, itemData)
 			setRestocks((prevRestocks) => prevRestocks.map((restock) => restock.id === id ? updatedRestock: restock))
 			return true
 		} catch (err) {
-			setError(err)
-			console.error("Failed to update restock:", err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
+			console.error("Failed to update restock :", err)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -111,6 +113,7 @@ export const useRestocks = () => {
 		handleRestockDelete,
 		handleRestockUpdate,
 		errors,
-		error
+		loadError,
+		submitError
 	}
 }

@@ -12,9 +12,10 @@ interface EditRestockModalProps {
 	submitting: boolean
 	restock: Restock,
 	errors: RestockErrors
+	submitError: string | null
 }
 
-export default function EditRestockModal( { onClose, onEdit, submitting, restock, errors }: EditRestockModalProps ) {
+export default function EditRestockModal( { onClose, onEdit, submitting, restock, errors, submitError }: EditRestockModalProps ) {
 	const [supplier, setSupplier] = useState<string>(restock?.supplier || '')
 	const [notes, setNotes] = useState<string>(restock?.notes || '')
 	const [restockDate, setRestockDate] = useState<string>(restock?.restock_date || '')
@@ -57,6 +58,7 @@ export default function EditRestockModal( { onClose, onEdit, submitting, restock
 					</div>
 					
 				</div>
+			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 				<button
 					onClick={onClose}

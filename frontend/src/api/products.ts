@@ -18,8 +18,10 @@ export async function createProduct(productData: CreateProductPayload): Promise<
 		},
 		body: JSON.stringify(productData)
 	})
-
-	if (!response.ok) throw new Error(`Error when creating product: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -39,8 +41,10 @@ export async function createPriceProduct(productId: string, priceData: CreatePri
 		body: JSON.stringify(priceData)
 	})
 
-
-	if (!response.ok) throw new Error(`Error when creating price: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -157,8 +161,10 @@ export async function deleteRecipeItem(productId: string, recipeId: string) {
 			'Content-type': 'application/json'
 		}
 	})
-
-	if (!response.ok) throw new Error(`Error when deleting recipe: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 }
 
 export async function getProducts(): Promise<Product []> {
@@ -173,8 +179,10 @@ export async function getProducts(): Promise<Product []> {
 			'Authorization': `Bearer ${token}`
 		}
 	})
-
-	if (!response.ok) throw new Error('Products not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -192,7 +200,10 @@ export async function getProductPriceHistory(productId: string): Promise<PriceHi
 		}
 	})
 
-	if (!response.ok) throw new Error(`Error when fetching product prices: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -209,8 +220,10 @@ export async function getProductRecipeItems(productId: string): Promise<RecipeIt
 			'Content-type': 'application/json'
 		}
 	})
-
-	if (!response.ok) throw new Error(`Error when fetching product recipe: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 

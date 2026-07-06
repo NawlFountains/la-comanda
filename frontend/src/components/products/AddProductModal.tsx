@@ -11,9 +11,10 @@ interface AddProductModalProps {
 	onCreate: (data: CreateProductPayload) => Promise<boolean>
 	submitting: boolean
 	errors: ProductErrors
+	submitError: string | null
 }
 
-export default function AddProductModal({ onClose, onCreate, submitting, errors }: AddProductModalProps) {
+export default function AddProductModal({ onClose, onCreate, submitting, errors, submitError }: AddProductModalProps) {
 	const [name, setName] = useState('')
 
 	const handleSubmit = async () => {
@@ -35,6 +36,7 @@ export default function AddProductModal({ onClose, onCreate, submitting, errors 
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
 			</div>
+			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

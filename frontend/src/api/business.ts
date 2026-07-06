@@ -9,6 +9,9 @@ export async function getMyBusiness(token: string): Promise<Business> {
 		}
 	})
 
-	if (!response.ok) throw new Error('Business not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }

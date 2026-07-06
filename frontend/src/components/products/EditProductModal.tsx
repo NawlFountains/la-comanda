@@ -26,6 +26,7 @@ interface EditProductModalProps {
 	errors: ProductErrors
 	priceErrors: PriceHistoryErrors
 	recipeErrors: RecipeItemErrors
+	submitError: string | null
 }
 
 export default function EditProductModal({
@@ -43,7 +44,8 @@ export default function EditProductModal({
 	loading,
 	errors,
 	priceErrors,
-	recipeErrors
+	recipeErrors,
+	submitError
 }: EditProductModalProps) {
 	const [name, setName] = useState(product?.name || '')
 	
@@ -323,6 +325,7 @@ export default function EditProductModal({
 				</div>
 				</>
 			)}
+			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

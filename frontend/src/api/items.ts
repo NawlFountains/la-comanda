@@ -19,7 +19,10 @@ export async function createItem(itemData: CreateItemPayload): Promise<Item> {
 		body: JSON.stringify(itemData)
 	})
 
-	if (!response.ok) throw new Error(`Error when creating item: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -39,7 +42,10 @@ export async function updateItem(itemId: string, itemData: Partial<CreateItemPay
 		body: JSON.stringify(itemData)
 	})
 
-	if (!response.ok) throw new Error(`Error when updating item: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -57,8 +63,10 @@ export async function deleteItem(itemId: string): Promise<void> {
 			'Content-type': 'application/json'
 		}
 	})
-
-	if (!response.ok) throw new Error(`Error when deleting item: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 }
 
 export async function getStock(): Promise<Item []> {
@@ -74,7 +82,10 @@ export async function getStock(): Promise<Item []> {
 		}
 	})
 
-	if (!response.ok) throw new Error('Items not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -91,6 +102,9 @@ export async function getLowStockItems(): Promise<Item []> {
 		}
 	})
 
-	if (!response.ok) throw new Error('Items not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }

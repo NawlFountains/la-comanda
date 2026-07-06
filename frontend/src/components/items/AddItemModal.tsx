@@ -11,9 +11,10 @@ interface AddItemModalProps {
 	onCreate: (data: CreateItemPayload) => Promise<boolean>
 	submitting: boolean
 	errors: ItemErrors
+	submitError: string | null
 }
 
-export default function AddItemModal( { onClose, onCreate, submitting, errors } : AddItemModalProps) {
+export default function AddItemModal( { onClose, onCreate, submitting, errors, submitError } : AddItemModalProps) {
 	const [name, setName] = useState('')
 	const [currentStock, setCurrentStock] = useState<string>('')
 	const [unit, setUnit] = useState('kg')
@@ -78,6 +79,7 @@ export default function AddItemModal( { onClose, onCreate, submitting, errors } 
 				{errors.notes && (<ErrorMessage message={errors.notes}/>)}
 				</div>
 
+				{submitError && (<ErrorMessage message={submitError} />)}
 				<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

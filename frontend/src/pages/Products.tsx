@@ -35,7 +35,9 @@ export default function Products() {
 		errors, 
 		priceErrors,
 		recipeErrors,
-		error } = useProducts(activeModal?.id) 
+		loadError,
+		submitError
+	} = useProducts(activeModal?.id) 
 
 	const { items } = useItems()
 
@@ -43,9 +45,9 @@ export default function Products() {
 	const [ createProductModal, setCreateProductModal ] = useState(false)
 
 	if (loading) return (<ScreenLayout> <TableSkeleton cols={3} /> </ScreenLayout>)
-	if (error) return (
+	if (loadError) return (
 		<div className="text-center text-red-500">
-		{error}
+		{loadError}
 		</div>
 	)
 
@@ -98,6 +100,7 @@ export default function Products() {
 					onCreate={handleProductCreate}
 					submitting={submitting}
 					errors={errors}
+					submitError={submitError}
 				/>
 			)}
 
@@ -129,6 +132,7 @@ export default function Products() {
 					errors={errors}
 					priceErrors={priceErrors}
 					recipeErrors={recipeErrors}
+					submitError={submitError}
 				/>
 			)}
 
@@ -141,6 +145,7 @@ export default function Products() {
 						setActiveModal(null)
 					}}	
 					submitting={submitting}
+					submitError={submitError}
 					/>
 			)}
 			</div>

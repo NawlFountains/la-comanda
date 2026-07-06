@@ -18,8 +18,10 @@ export async function createCustomer(customerData: CreateCustomerPayload): Promi
 		},
 		body: JSON.stringify(customerData)
 	})
-
-	if (!response.ok) throw new Error('Error when creating customer')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -35,8 +37,10 @@ export async function getCustomers(): Promise<Customer []> {
 			'Authorization': `Bearer ${token}`
 		}
 	})
-
-	if (!response.ok) throw new Error('Customers not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 

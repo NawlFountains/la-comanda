@@ -12,7 +12,8 @@ export const useOrders = () => {
 	const [ searchQuery, setSearchQuery ] = useState<string>('')
 	const [ filterStatus, setFilterStatus ] = useState<OrderStatus | ''>('')
 	const [ errors, setErrors ] = useState<OrderErrors>({})
-	const [ error, setError ] = useState<string | null>(null)
+	const [ loadError, setLoadError ] = useState<string | null>(null)
+	const [ submitError, setSubmitError ] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function loadOrders() {
@@ -21,7 +22,7 @@ export const useOrders = () => {
 				const data = await getOrders()
 				setOrders(data)
 			} catch (err) {
-				setError(err)
+				setLoadError(err)
 			} finally {
 				setLoading(false)
 			}
@@ -38,14 +39,14 @@ export const useOrders = () => {
 		}
 		setErrors({})		
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const newOrder: Order = await createOrder(orderData)
 
 			setOrders((prevOrders) => [...prevOrders, newOrder])
 			return true
 		} catch (err) {
-			setError(err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
 			console.error("Failed to create order:", err)
 			return false
 		} finally {
@@ -55,13 +56,13 @@ export const useOrders = () => {
 
 	const handleOrderDelete = async(id: string) => {
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const updatedOrder: Order = await updateOrder(id, { status: 'cancelled' as OrderStatus })
 			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
 			return true
 		} catch (err) {
-			setError(err)
+			setSubmitError(err)
 			console.error("Failed to update order:", err)
 			return false
 		} finally {
@@ -78,13 +79,13 @@ export const useOrders = () => {
 		}
 		setErrors({})		
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const updatedOrder: Order = await updateOrder(id, orderData)
 			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
 			return true
 		} catch (err) {
-			setError(err)
+			setSubmitError(err)
 			console.error("Failed to update order:", err)
 			return false
 		} finally {
@@ -116,7 +117,8 @@ export const useOrders = () => {
 		loading,
 		submitting,
 		errors,
-		error
+		loadError,
+		submitError
 	}
 
 }

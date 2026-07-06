@@ -11,10 +11,11 @@ interface EditItemModalProps {
 	onEdit: (id: string, data: Partial<CreateItemPayload>) => Promise<boolean>
 	submitting: boolean
 	errors: ItemErrors
+	submitError: string | null
 	item: Item
 }
 
-export default function EditItemModal( { onClose, onEdit, submitting, errors, item } : EditItemModalProps) {
+export default function EditItemModal( { onClose, onEdit, submitting, errors, submitError, item } : EditItemModalProps) {
 	const [name, setName] = useState(item.name)
 	const [currentStock, setCurrentStock] = useState<string>(item.current_stock)
 	const [unit, setUnit] = useState(item.unit)
@@ -82,6 +83,7 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, it
 				{errors.notes && (<ErrorMessage message={errors.notes}/>)}
 				</div>
 
+				{submitError && (<ErrorMessage message={submitError} />)}
 				<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

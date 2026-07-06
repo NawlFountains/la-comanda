@@ -19,7 +19,10 @@ export async function createOrder(orderData: CreateOrderPayload): Promise<Order>
 		body: JSON.stringify(orderData)
 	})
 
-	if (!response.ok) throw new Error(`Error when creating item: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -40,7 +43,10 @@ export async function updateOrder(id: string, orderData: Partial<CreateOrderPayl
 		body: JSON.stringify(orderData)
 	})
 
-	if (!response.ok) throw new Error(`Error when updating order: ${response.text}`)
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -58,7 +64,10 @@ export async function getOrders(): Promise<Order []> {
 		}
 	})
 
-	if (!response.ok) throw new Error('Items not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }
 
@@ -75,6 +84,9 @@ export async function getOrderByStatus(status: OrderStatus): Promise<Order []> {
 		}
 	})
 
-	if (!response.ok) throw new Error('Items not found')
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
 	return response.json()
 }

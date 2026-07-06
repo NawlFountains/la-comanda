@@ -11,7 +11,8 @@ export const useItems = () => {
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [errors, setErrors] = useState<ItemErrors>({})
-	const [error, setError] = useState<string | null>(null)
+	const [loadError, setLoadError] = useState<string | null>(null)
+	const [submitError, setSubmitError] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function loadItems() {
@@ -20,7 +21,7 @@ export const useItems = () => {
 				const data = await getStock()
 				setItems(data)
 			} catch (err) {
-				setError(err)
+				setLoadError(err)
 			} finally {
 				setLoading(false)
 			}
@@ -43,15 +44,15 @@ export const useItems = () => {
 		}
 		setErrors({})		
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const newItem: Item= await createItem(itemData)
 
 			setItems((prevItems) => [...prevItems, newItem])
 			return true
 		} catch (err) {
-			setError(err)
-			console.error("Failed to create item:", err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
+			console.error("Failed to create item :", err)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -60,14 +61,15 @@ export const useItems = () => {
 
 	const handleItemDelete = async(id: string) => {
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			await deleteItem(id)
 
 			setItems((prevItems) => prevItems.filter((item) => item.id !== id))
 		} catch (err) {
-			setError(err)
-			console.error("Failed to delete item:", err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
+			console.error("Failed to delete item :", err)
+			return false
 		} finally {
 			setSubmitting(false)
 		}
@@ -82,14 +84,14 @@ export const useItems = () => {
 		}
 		setErrors({})		
 		setSubmitting(true)
-		setError(null)
+		setSubmitError(null)
 		try {
 			const updatedItem: Item= await updateItem(id, itemData)
 			setItems((prevItems) => prevItems.map((item) => item.id === id ? updatedItem : item))
 			return true
 		} catch (err) {
-			setError(err)
-			console.error("Failed to update item:", err)
+			setSubmitError(err instanceof Error ? err.message : "Unknown error")
+			console.error("Failed to update item :", err)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -106,7 +108,8 @@ export const useItems = () => {
 		setSearchQuery,
 		loading,
 		submitting,
-		error,
-		errors
+		errors,
+		loadError,
+		submitError
 	}
 }
