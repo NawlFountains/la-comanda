@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import desc, select
+from sqlalchemy.orm import selectinload
+from sqlalchemy import desc, select, func
 from app.database import get_db
 from app.models import Product, Business, PriceHistory, RecipeItem, Item
-from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse
+from app.schemas.product import ProductCreate, ProductUpdate, ProductResponse, ProductFullResponse
 from app.schemas.price_history import PriceHistoryCreate, PriceHistoryResponse
 from app.schemas.recipe_item import RecipeItemCreate, RecipeItemUpdate, RecipeItemResponse
 from app.dependencies.auth import get_current_business
@@ -14,6 +15,78 @@ router = APIRouter(prefix="/products", tags=["products"])
 
 
 # --- Product endpoints ---
+
+@router.get("/full", response_model=list[ProductFullResponse])
+async def get_products_full(
+    business: Business = Depends(get_current_business),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Product)
+        .where(Product.business_id == business.id)
+        .options(selectinload(Product.recipe_items))
+    )
+    products = result.scalars().all()
+
+    # get latest price for each product in one query
+    product_ids = [p.id for p in products]
+    latest_price_sub = (
+        select(PriceHistory.product_id, func.max(PriceHistory.valid_from).label("max_date"))
+        .where(PriceHistory.product_id.in_(product_ids))
+        .group_by(PriceHistory.product_id)
+        .subquery()
+    )
+    price_result = await db.execute(
+        select(PriceHistory).join(
+            latest_price_sub,
+            (PriceHistory.product_id == latest_price_sub.c.product_id) &
+            (PriceHistory.valid_from == latest_price_sub.c.max_date)
+        )
+    )
+    prices_by_product = {p.product_id: p for p in price_result.scalars().all()}
+
+    return [
+        ProductFullResponse(
+            id=p.id,
+            business_id=p.business_id,
+            name=p.name,
+            latest_price=PriceHistoryResponse.model_validate(prices_by_product.get(p.id)) if prices_by_product.get(p.id) else None,
+            recipe_items=p.recipe_items
+        )
+        for p in products
+    ]
+
+@router.get("/{product_id}/full", response_model=ProductFullResponse)
+async def get_product_full(
+    product_id: uuid.UUID,
+    business: Business = Depends(get_current_business),
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(Product)
+        .where(Product.id == product_id, Product.business_id == business.id)
+        .options(selectinload(Product.recipe_items))
+    )
+    product = result.scalar_one_or_none()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    price_result = await db.execute(
+        select(PriceHistory)
+        .where(PriceHistory.product_id == product_id)
+        .order_by(desc(PriceHistory.valid_from))
+        .limit(1)
+    )
+    latest_price = price_result.scalar_one_or_none()
+
+    return ProductFullResponse(
+        id=product.id,
+        business_id=business.id,
+        name=product.name,
+        latest_price=PriceHistoryResponse.model_validate(latest_price) if latest_price else None,
+        recipe_items=[RecipeItemResponse.model_validate(ri) for ri in product.recipe_items]
+    )
+
 @router.get("/{product_id}", response_model=ProductResponse)
 async def get_product(
     product_id: uuid.UUID,
@@ -37,9 +110,9 @@ async def get_products(
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(
-        select(Product).where(
-                Product.business_id == business.id
-            )
+        select(Product)
+                .where(Product.business_id == business.id)
+
     )
     products = result.scalars().all()
 

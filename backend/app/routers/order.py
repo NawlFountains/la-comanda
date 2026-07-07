@@ -142,12 +142,16 @@ async def create_order(
 async def get_orders(
         status: Optional[OrderStatus] = Query(None, description="Filter orders by status"),
         business: Business = Depends(get_current_business),
-        db: AsyncSession = Depends(get_db)
+        db: AsyncSession = Depends(get_db),
+        limit: int = Query(20, ge=1, le=100),
+        offset: int = Query(0, ge=0)
 ):
     query = (
             select(Order)
             .where(Order.business_id == business.id)
             .options(selectinload(Order.order_items))
+            .limit(limit)
+            .offset(offset)
     )
 
     if status is not None:
