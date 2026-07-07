@@ -9,17 +9,23 @@ export const useOrders = () => {
 	const [ orders, setOrders ] = useState<Order[]>([])
 	const [ submitting, setSubmitting ] = useState<boolean>(false)
 	const [ loading, setLoading] = useState<boolean>(false)
-	const [ searchQuery, setSearchQuery ] = useState<string>('')
-	const [ filterStatus, setFilterStatus ] = useState<OrderStatus | ''>('')
+	const [ searchDate, setSearchDate ] = useState<string | null>(null)
+	const [ appliedDate, setAppliedDate ] = useState<string | null>(null)
+	const [ filterStatus, setFilterStatus ] = useState<OrderStatus | null>(null) 
 	const [ errors, setErrors ] = useState<OrderErrors>({})
 	const [ loadError, setLoadError ] = useState<string | null>(null)
 	const [ submitError, setSubmitError ] = useState<string | null>(null)
+
+	const [ page, setPage ] = useState<number>(1)
+	const LIMIT = 5
 
 	useEffect(() => {
 		async function loadOrders() {
 			try {
 				setLoading(true)
-				const data = await getOrders()
+				const offset = (page - 1) * LIMIT
+
+				const data = await getOrders({limit: LIMIT,offset, status: filterStatus, orderDate: appliedDate})
 				setOrders(data)
 			} catch (err) {
 				setLoadError(err)
@@ -28,7 +34,18 @@ export const useOrders = () => {
 			}
 		}
 		loadOrders()
-	}, [])
+	}, [page, filterStatus, appliedDate])
+
+	const handleStatusChange = (status: OrderStatus | null) => {
+		setFilterStatus(status)
+		setPage(1)
+	}
+
+	const handleDateChange = (dateString: string | null) => {
+		setSearchDate(dateString || null)
+		setAppliedDate(dateString || null)
+		setPage(1)
+	}
 
 	const handleOrderCreate = useCallback( async (orderData: CreateOrderPayload): Promise<boolean> => {
 		const result = orderCreateSchema.safeParse(orderData)
@@ -93,24 +110,16 @@ export const useOrders = () => {
 		}
 	}, [])
 
-
-
-	const visibleOrders = orders.filter( order => {
-		const matchesStatus = filterStatus ? order.status === filterStatus : true
-
-		const matchesSearch = searchQuery
-			? formatDatetime(order.created_at).includes(searchQuery.toLowerCase())
-			: true
-		return matchesSearch && matchesStatus
-	})
-
 	return {
 		orders,
-		visibleOrders,
+		page,
+		setPage,
+		limit: LIMIT,
 		filterStatus,
-		setFilterStatus,
-		searchQuery,
-		setSearchQuery,
+		setFilterStatus: handleStatusChange,
+		searchDate,
+		setSearchDate,
+		setAppliedDate: handleDateChange,
 		handleOrderCreate,
 		handleOrderUpdate,
 		handleOrderDelete,

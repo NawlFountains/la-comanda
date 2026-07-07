@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, updateProduct, createRecipeItem, deleteRecipeItem, updateRecipeItem, getProductsWithDetails } from '../api/products'
+import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, updateProduct, createRecipeItem, deleteRecipeItem, updateRecipeItem, getProductsWithDetails } from '../api/products'
 import { productCreateSchema, productUpdateSchema, type ProductErrors } from '../schemas/product'
 import type { PriceHistory, RecipeItem, CreateProductPayload, Product, CreatePriceHistoryPayload, CreateRecipeItemPayload, ProductWithDetails } from '../types'
 import {parseZodErrors} from '../utils/parseZodErrors'

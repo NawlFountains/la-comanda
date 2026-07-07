@@ -3,8 +3,8 @@ import LowStockItemsCard from "../components/items/LowStockItemsCard"
 import PendingOrdersCard from "../components/orders/PendingOrdersCard"
 import LatestRestockCard from '../components/restocks/LatestsRestocksCard'
 import { useState, useEffect } from "react"
-import type { Order, Item } from "../types"
-import { getOrderByStatus } from "../api/orders"
+import type { Order, Item, OrderStatus } from "../types"
+import { getOrders } from "../api/orders"
 import { getStock, getLowStockItems } from "../api/items"
 import {buttonVariants} from "../components/styles/ButtonStyles"
 import AddRestockModal from "../components/restocks/AddRestockModal"
@@ -63,7 +63,7 @@ export default function Dashboard() {
 			try {
 				setLoading(true)
 				const [ordersData, itemsData, lowStockItemsData] = await Promise.all([
-					getOrderByStatus('pending'),
+					getOrders({status: 'pending' as OrderStatus}),
 					getStock(),
 					getLowStockItems(),
 				])

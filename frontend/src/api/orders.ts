@@ -50,35 +50,50 @@ export async function updateOrder(id: string, orderData: Partial<CreateOrderPayl
 	return response.json()
 }
 
-
-export async function getOrders(): Promise<Order []> {
+export async function getOrders({ 
+	limit, 
+	offset, 
+	status,
+	orderDate,
+	sortByDate
+}: { 
+	limit?: number | null; 
+	offset?: number | null; 
+	status?: OrderStatus | null;
+	orderDate?: string | null;
+	sortByDate?: 'asc'| 'desc' | null;
+}): Promise<Order[]> {
 	const { data, error } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
 		throw new Error('User is not authenticated')
 	}
-	const response = await fetch(`${API_URL}/orders`, {
-		headers: {
-			'Authorization': `Bearer ${token}`
-		}
-	})
 
-	if (!response.ok) {
-		const errorBody = await response.json()
-		throw new Error(errorBody.detail || `Error ${response.status}`)
+	const url = new URL(`${API_URL}/orders`)
+	
+	// Only append to the query string if the value is explicitly provided
+	if (limit !== null && limit !== undefined) {
+		url.searchParams.append('limit', limit.toString())
 	}
-	return response.json()
-}
-
-export async function getOrderByStatus(status: OrderStatus): Promise<Order []> {
-	const { data, error } = await supabase.auth.getSession()
-	const token = data.session?.access_token
-
-	if (!token) {
-		throw new Error('User is not authenticated')
+	
+	if (offset !== null && offset !== undefined) {
+		url.searchParams.append('offset', offset.toString())
 	}
-	const response = await fetch(`${API_URL}/orders?status=${status}`, {
+
+	if (orderDate) {
+		url.searchParams.append('order_date', orderDate)
+	}
+
+	if (sortByDate) {
+		url.searchParams.append('sort_by_date', sortByDate)
+	}
+	
+	if (status) {
+		url.searchParams.append('status', status)
+	}
+
+	const response = await fetch(url.toString(), {
 		headers: {
 			'Authorization': `Bearer ${token}`
 		}

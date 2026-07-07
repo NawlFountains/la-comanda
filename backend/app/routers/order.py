@@ -1,8 +1,9 @@
+from datetime import date
 from typing import Optional
 from app.models.price_history import PriceHistory
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, desc, asc
 from sqlalchemy.orm import selectinload, joinedload
 from app.database import get_db
 from app.models import Business, Item, Customer, Product, Order, OrderItem, RecipeItem
@@ -141,21 +142,32 @@ async def create_order(
 @router.get("", response_model=list[OrderResponse])
 async def get_orders(
         status: Optional[OrderStatus] = Query(None, description="Filter orders by status"),
+        order_date: Optional[date] = Query(None, description="Filter by exact date (YYYY-MM-DD)"),
+        sort_by_date: str = Query("desc", description="Sort by date: 'asc' or 'desc'"),
         business: Business = Depends(get_current_business),
         db: AsyncSession = Depends(get_db),
         limit: int = Query(20, ge=1, le=100),
         offset: int = Query(0, ge=0)
 ):
     query = (
-            select(Order)
-            .where(Order.business_id == business.id)
-            .options(selectinload(Order.order_items))
-            .limit(limit)
-            .offset(offset)
+        select(Order)
+        .where(Order.business_id == business.id)
+        .options(selectinload(Order.order_items))
     )
 
     if status is not None:
         query = query.where(Order.status == status)
+
+    if order_date is not None:
+        query = query.where(func.date(Order.created_at) == order_date)
+        query = query.order_by(asc(Order.created_at))
+    else:
+        if sort_by_date == "asc":
+            query = query.order_by(asc(Order.created_at))
+        else:
+            query = query.order_by(desc(Order.created_at))
+
+    query = query.limit(limit).offset(offset)
 
     result = await db.execute(query)
     orders = result.scalars().all()
