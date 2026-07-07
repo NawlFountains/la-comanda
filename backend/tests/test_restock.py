@@ -10,7 +10,7 @@ from app.dependencies.auth import get_current_business
 from app.models import Restock, Item
 from datetime import date
 from decimal import Decimal
-from conftest import mock_auth_failure
+from conftest import assert_json_match_recipe_item, mock_auth_failure
 
 # --- POST Test ---
 
@@ -345,6 +345,128 @@ async def test_create_restock_incomplete_input_mandatory(client: AsyncClient, db
     assert db_restock is None
 
 # --- GET Test ---
+
+@pytest.mark.asyncio
+async def test_get_restocks_with_limit(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        restock_factory,
+        assert_json_match_restock
+):
+    """ should return only the number of restocks specified by limit """
+    r1, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2025, 5, 7))
+    r2, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 3, 6))
+    r3, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 7))
+
+    response = await client.get(
+            "/restocks?limit=2",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+
+    # Always return from most recent
+    assert_json_match_restock(r3, data[0])
+    assert_json_match_restock(r2, data[1])
+
+@pytest.mark.asyncio
+async def test_get_restocks_with_offset(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        restock_factory,
+        assert_json_match_restock
+):
+    """ should skip restocks by offset """
+    r1, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 5))
+    r2, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 6))
+    r3, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 7))
+
+    response = await client.get(
+            "/restocks?offset=1",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+
+    assert_json_match_restock(r2, data[0])
+    assert_json_match_restock(r1, data[1])
+
+@pytest.mark.asyncio
+async def test_get_restocks_with_limit_and_offset(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        restock_factory,
+        assert_json_match_restock
+):
+    """ should return paged restocks with limit and offset """
+    r1, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 5))
+    r2, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 6))
+    r3, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 7))
+
+    response = await client.get(
+            "/restocks?limit=1&offset=1",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+
+    assert_json_match_restock(r2, data[0]) # Skip 1 (the most recent by date r3)
+
+@pytest.mark.asyncio
+async def test_get_restocks_limit_exceeds_total(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        restock_factory,
+        assert_json_match_restock
+):
+    """ should return all restocks when limit exceeds total count """
+    r1, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 5))
+    r2, _, _ = await restock_factory(business_id=setup_business.id, restock_date=date(2026, 5, 6))
+
+    response = await client.get(
+            "/restocks?limit=100",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data) == 2
+
+    assert_json_match_restock(r2, data[0])
+    assert_json_match_restock(r1, data[1])
+
+@pytest.mark.asyncio
+async def test_get_restocks_invalid_limit(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business
+):
+    """ should return 422 when limit is invalid """
+    response = await client.get(
+            "/restocks?limit=0",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 422
+
+@pytest.mark.asyncio
+async def test_get_restocks_invalid_offset(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business
+):
+    """ should return 422 when offset is negative """
+    response = await client.get(
+            "/restocks?offset=-1",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 422
 
 @pytest.mark.asyncio
 async def test_get_restocks(client: AsyncClient, db_session: AsyncSession, setup_business,restock_factory, assert_json_match_restock):

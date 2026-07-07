@@ -690,6 +690,121 @@ async def test_get_orders(
     assert_json_match_order(o3, data[2])
 
 @pytest.mark.asyncio
+async def test_get_orders_with_limit(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        order_factory,
+        assert_json_match_order
+):
+    """ should return order by limit from a business """
+    o1, _, _, _ = await order_factory(business_id=setup_business.id)
+    o2, _, _, _ = await order_factory(business_id=setup_business.id, status=OrderStatus.cancelled, quantity=2)
+    o3, _, _, _ = await order_factory(business_id=setup_business.id, status=OrderStatus.delivered, quantity=6)
+
+    response = await client.get(
+            "/orders?limit=2",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+
+    assert len(data) == 2
+
+    assert_json_match_order(o1, data[0])
+    assert_json_match_order(o2, data[1])
+
+@pytest.mark.asyncio
+async def test_get_orders_with_offset(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        order_factory,
+        assert_json_match_order
+):
+    """ should skip orders by offset """
+    o1, _, _, _ = await order_factory(business_id=setup_business.id)
+    o2, _, _, _ = await order_factory(business_id=setup_business.id, quantity=2)
+    o3, _, _, _ = await order_factory(business_id=setup_business.id, quantity=6)
+
+    response = await client.get(
+            "/orders?offset=1",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    assert_json_match_order(o2, data[0])
+    assert_json_match_order(o3, data[1])
+
+@pytest.mark.asyncio
+async def test_get_orders_with_limit_and_offset(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        order_factory,
+        assert_json_match_order
+):
+    """ should return paged orders with limit and offset """
+    o1, _, _, _ = await order_factory(business_id=setup_business.id)
+    o2, _, _, _ = await order_factory(business_id=setup_business.id, quantity=2)
+    o3, _, _, _ = await order_factory(business_id=setup_business.id, quantity=6)
+
+    response = await client.get(
+            "/orders?limit=1&offset=1",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert_json_match_order(o2, data[0])
+
+@pytest.mark.asyncio
+async def test_get_orders_limit_exceeds_total(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business,
+        order_factory
+):
+    """ should return all orders when limit exceeds total count """
+    o1, _, _, _ = await order_factory(business_id=setup_business.id)
+    o2, _, _, _ = await order_factory(business_id=setup_business.id, quantity=2)
+
+    response = await client.get(
+            "/orders?limit=100",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+
+@pytest.mark.asyncio
+async def test_get_orders_invalid_limit(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business
+):
+    """ should return 422 when limit is invalid """
+    response = await client.get(
+            "/orders?limit=0",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 422
+
+@pytest.mark.asyncio
+async def test_get_orders_invalid_offset(
+        client: AsyncClient,
+        db_session: AsyncSession,
+        setup_business
+):
+    """ should return 422 when offset is negative """
+    response = await client.get(
+            "/orders?offset=-1",
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 422
+
+@pytest.mark.asyncio
 async def test_get_orders_filter_by_status(
         client: AsyncClient,
         db_session: AsyncSession,
