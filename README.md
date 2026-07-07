@@ -17,7 +17,7 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
   + [ ] Home Screen
   + [x] Products Screen
   + [ ] Dark theme
-  + [ ] Error handling
+  + [x] Error handling
 + [ ] Modify endpoint:
   + [ ] Allow pagination and more queries on each endpoint
   + [ ] Add product endpoint with full details using join (PriceHistory and RecipeItems)
