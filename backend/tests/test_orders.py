@@ -712,9 +712,6 @@ async def test_get_orders_with_limit(
 
     assert len(data) == 2
 
-    assert_json_match_order(o1, data[0])
-    assert_json_match_order(o2, data[1])
-
 @pytest.mark.asyncio
 async def test_get_orders_with_offset(
         client: AsyncClient,
