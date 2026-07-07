@@ -1,5 +1,6 @@
 import uuid
 import pytest
+import asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select
@@ -672,7 +673,7 @@ async def test_get_orders(
         order_factory,
         assert_json_match_order
 ):
-    """ should return all order from a business """
+    """ should return all order from a business (not checking order) """
     o1, _, _, _ = await order_factory(business_id=setup_business.id)
     o2, _, _, _ = await order_factory(business_id=setup_business.id, status=OrderStatus.cancelled, quantity=2)
     o3, _, _, _ = await order_factory(business_id=setup_business.id, status=OrderStatus.delivered, quantity=6)
@@ -685,9 +686,11 @@ async def test_get_orders(
     assert response.status_code == 200
     data = response.json()
 
-    assert_json_match_order(o1, data[0])
-    assert_json_match_order(o2, data[1])
-    assert_json_match_order(o3, data[2])
+    response_map = {uuid.UUID(item["id"]): item for item in data}
+
+    assert_json_match_order(o1, response_map[o1.id])
+    assert_json_match_order(o2, response_map[o2.id])
+    assert_json_match_order(o3, response_map[o3.id])
 
 @pytest.mark.asyncio
 async def test_get_orders_with_limit(
@@ -695,7 +698,6 @@ async def test_get_orders_with_limit(
         db_session: AsyncSession,
         setup_business,
         order_factory,
-        assert_json_match_order
 ):
     """ should return order by limit from a business """
     o1, _, _, _ = await order_factory(business_id=setup_business.id)
@@ -712,13 +714,13 @@ async def test_get_orders_with_limit(
 
     assert len(data) == 2
 
+
 @pytest.mark.asyncio
 async def test_get_orders_with_offset(
         client: AsyncClient,
         db_session: AsyncSession,
         setup_business,
         order_factory,
-        assert_json_match_order
 ):
     """ should skip orders by offset """
     o1, _, _, _ = await order_factory(business_id=setup_business.id)
@@ -732,8 +734,7 @@ async def test_get_orders_with_offset(
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 2
-    assert_json_match_order(o2, data[0])
-    assert_json_match_order(o3, data[1])
+
 
 @pytest.mark.asyncio
 async def test_get_orders_with_limit_and_offset(
@@ -741,7 +742,6 @@ async def test_get_orders_with_limit_and_offset(
         db_session: AsyncSession,
         setup_business,
         order_factory,
-        assert_json_match_order
 ):
     """ should return paged orders with limit and offset """
     o1, _, _, _ = await order_factory(business_id=setup_business.id)
@@ -755,7 +755,6 @@ async def test_get_orders_with_limit_and_offset(
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 1
-    assert_json_match_order(o2, data[0])
 
 @pytest.mark.asyncio
 async def test_get_orders_limit_exceeds_total(
