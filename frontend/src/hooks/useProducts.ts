@@ -1,15 +1,16 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, getProducts, updateProduct, createRecipeItem, deleteRecipeItem, updateRecipeItem } from '../api/products'
+import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, getProductRecipeItems, updateProduct, createRecipeItem, deleteRecipeItem, updateRecipeItem, getProductsWithDetails } from '../api/products'
 import { productCreateSchema, productUpdateSchema, type ProductErrors } from '../schemas/product'
-import type { PriceHistory, RecipeItem, CreateProductPayload, Product, CreatePriceHistoryPayload, CreateRecipeItemPayload } from '../types'
+import type { PriceHistory, RecipeItem, CreateProductPayload, Product, CreatePriceHistoryPayload, CreateRecipeItemPayload, ProductWithDetails } from '../types'
 import {parseZodErrors} from '../utils/parseZodErrors'
 import {priceHistoryCreateSchema, type PriceHistoryErrors } from '../schemas/price_history'
 import {recipeItemCreateSchema, recipeItemUpdateSchema, type RecipeItemErrors} from '../schemas/recipe_item'
 
 export const useProducts = (activeProductId?: string | null) => {
-	const [products, setProducts] = useState<Product[]>([])
+	const [products, setProducts] = useState<ProductWithDetails[]>([])
+
 	const [prices, setPrices] = useState<PriceHistory[]>([])
-	const [recipeItems, setRecipeItems] = useState<RecipeItem[]>([])
+
 	const [searchQuery, setSearchQuery] = useState("")
 	const [loading, setLoading] = useState<boolean>(false)
 	const [loadingDetails, setLoadingDetails] = useState<boolean>(false)
@@ -22,11 +23,10 @@ export const useProducts = (activeProductId?: string | null) => {
 	const [submitError, setSubmitError] = useState<string | null>(null)
 
 	useEffect(() => {
-		// TODO change backend to retrive full product with recipes and prices `products/full`
 		async function loadProducts() {
 			try {
 				setLoading(true)
-				const data = await getProducts()
+				const data = await getProductsWithDetails()
 				setProducts(data)
 			} catch (err) {
 				setLoadError(err)
@@ -40,16 +40,12 @@ export const useProducts = (activeProductId?: string | null) => {
 	useEffect(() => {
 		if (!activeProductId) return
 
-		async function loadProductDetails() {
+		async function loadProductPriceHistory() {
 			try {
 				setLoadingDetails(true)
-				const [prices, recipe] = await Promise.all([
-					getProductPriceHistory(activeProductId),
-					getProductRecipeItems(activeProductId)
-				])
+				const prices = await getProductPriceHistory(activeProductId)
 
 				setPrices(prices)
-				setRecipeItems(recipe)
 			} catch (err) {
 				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
@@ -57,7 +53,7 @@ export const useProducts = (activeProductId?: string | null) => {
 			}
 		}
 		
-		loadProductDetails()
+		loadProductPriceHistory()
 	}, [activeProductId])
 
 	const handleProductCreate = useCallback( async (productData: CreateProductPayload): Promise<boolean> => {
@@ -73,7 +69,15 @@ export const useProducts = (activeProductId?: string | null) => {
 		try {
 			const newProduct: Product = await createProduct(productData)
 
-			setProducts((prevProducts) => [...prevProducts, newProduct])
+			const newProductWithNoDetails : ProductWithDetails = ({
+				id: newProduct.id,
+				business_id: newProduct.business_id,
+				name: newProduct.name,
+				latest_price: null,
+				recipe_items: []
+			})
+
+			setProducts((prevProducts) => [...prevProducts, newProductWithNoDetails])
 			return true
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Unknown error")
@@ -96,7 +100,11 @@ export const useProducts = (activeProductId?: string | null) => {
 		setSubmitError(null)
 		try {
 			const updatedProduct: Product = await updateProduct(id, productData)
-			setProducts((prevProducts) => prevProducts.map((product) => product.id === id ? updatedProduct: product))
+			setProducts((prevProducts) => 
+				prevProducts.map((product) => 
+					product.id === id ? { ...product, ...updatedProduct } : product
+				)
+			)
 			return true
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Unknown error")
@@ -136,6 +144,19 @@ export const useProducts = (activeProductId?: string | null) => {
 			const newPrice: PriceHistory = await createPriceProduct(productId, priceData)
 
 			setPrices((prevPrices) => [...prevPrices, newPrice])
+			setProducts((prevProducts) => 
+					prevProducts.map((product) => {
+						if (product.id !== productId) return product
+
+						const hasNoPrice = !product.latest_price
+						
+						const isNewer = product.latest_price && 
+							new Date(newPrice.valid_from) > new Date(product.latest_price.valid_from)
+
+						if (hasNoPrice || isNewer) return { ...product, latest_price: newPrice }
+						return product
+					})
+				)
 			return true
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Unknown error")
@@ -158,7 +179,14 @@ export const useProducts = (activeProductId?: string | null) => {
 		setSubmitError(null)
 		try {
 			const newRecipeItem: RecipeItem = await createRecipeItem(productId, recipeItemData)
-			setRecipeItems((prevRecipeItems) => [...prevRecipeItems, newRecipeItem])
+
+			setProducts((prevProducts) => 
+				    prevProducts.map((product) => 
+						product.id === productId
+							? { ...product, recipe_items: [...product.recipe_items, newRecipeItem] }
+							: product
+				    )
+			)
 			return true
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Unknown error")
@@ -181,7 +209,19 @@ export const useProducts = (activeProductId?: string | null) => {
 		setSubmitError(null)
 		try {
 			const updatedRecipeItem: RecipeItem = await updateRecipeItem(productId, recipeId, recipeItemData)
-			setRecipeItems((prevRecipeItems) => prevRecipeItems.map((recipeItem) => recipeItem.id === recipeId ? updatedRecipeItem: recipeItem))
+
+			setProducts((prevProducts) => 
+				    prevProducts.map((product) => 
+						product.id === productId
+							? {
+								...product,
+								recipe_items: product.recipe_items.map((item) => 
+									item.id === recipeId ? updatedRecipeItem : item
+								)
+							}
+							: product
+				    )
+			)
 			return true
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Unknown error")
@@ -198,7 +238,13 @@ export const useProducts = (activeProductId?: string | null) => {
 		try {
 			await deleteRecipeItem(productId, id)
 
-			setRecipeItems((prevRecipeItems) => prevRecipeItems.filter((recipeItem) => recipeItem.id !== id))
+			setProducts((prevProducts) => 
+				prevProducts.map((product) => 
+					product.id === productId 
+						? { ...product, recipe_items: product.recipe_items.filter((item) => item.id !== id) }
+						: product
+				)
+			)
 		} catch (err) {
 			setSubmitError(err instanceof Error ? err.message : "Unknown error")
 			console.error("Failed to delete product:", err)
@@ -217,7 +263,6 @@ export const useProducts = (activeProductId?: string | null) => {
 		products,
 		visibleProducts,
 		prices,
-		recipeItems,
 		searchQuery,
 		setSearchQuery,
 		handleProductCreate,

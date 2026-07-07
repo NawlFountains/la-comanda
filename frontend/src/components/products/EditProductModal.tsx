@@ -3,7 +3,7 @@ import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
 import { buttonVariants } from '../styles/ButtonStyles'
-import type { Product, CreateProductPayload, CreatePriceHistoryPayload, CreateRecipeItemPayload, PriceHistory, RecipeItem, Item } from '../../types'
+import type { Product, CreateProductPayload, CreatePriceHistoryPayload, CreateRecipeItemPayload, PriceHistory, RecipeItem, Item, ProductWithDetails } from '../../types'
 import type { ProductErrors } from '../../schemas/product'
 import {LoadingSpinner, PenIcon, TrashIcon} from '../styles/Icons'
 import type {PriceHistoryErrors} from '../../schemas/price_history'
@@ -17,9 +17,8 @@ interface EditProductModalProps {
 	onAddRecipeItem: (productId: string, data: CreateRecipeItemPayload) => Promise<boolean>
 	onEditRecipeItem: (productId: string, id: string, data: Partial<CreateRecipeItemPayload>) => Promise<boolean>
 	onDeleteRecipeItem: (productId: string, id: string) => void
-	product: Product
+	product: ProductWithDetails
 	prices: PriceHistory[]
-	recipeItems: RecipeItem[]
 	items: Item[]
 	submitting: boolean
 	loading: boolean
@@ -38,7 +37,6 @@ export default function EditProductModal({
 	onDeleteRecipeItem, 
 	product, 
 	prices,
-	recipeItems,
 	items,
 	submitting, 
 	loading,
@@ -178,7 +176,7 @@ export default function EditProductModal({
 				/>
 				{/* Recipe items */}
 				<div className='flex flex-col text-center gap-3'>
-					{(recipeItems && recipeItems.length > 0) || (newRecipeItems && newRecipeItems.length > 0) ? (
+					{(product.recipe_items && product?.recipe_items?.length > 0) || (newRecipeItems && newRecipeItems.length > 0) ? (
 						<table>
 						<thead>
 							<tr className='text-lg font-mono bg-neutral-200'>
@@ -188,7 +186,7 @@ export default function EditProductModal({
 							</tr>
 						</thead>
 						<tbody>
-						{recipeItems?.map(( item, idx) => {
+						{product.recipe_items?.map(( item, idx) => {
 							const isEditing = item.id === editingRecipeId
 							const selectedItem = items.find(i => i.id === item.item_id)
 

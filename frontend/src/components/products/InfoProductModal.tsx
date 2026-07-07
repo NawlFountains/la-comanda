@@ -1,19 +1,18 @@
 import React, { useMemo } from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import { buttonVariants } from '../styles/ButtonStyles'
-import type { PriceHistory, Product, RecipeItem, Item } from '../../types'
+import type { PriceHistory, Product, RecipeItem, Item, ProductWithDetails } from '../../types'
 import { LoadingSpinner } from '../styles/Icons'
 
 interface InfoProductModalProps {
 	onClose: () => void
 	loading: boolean
-	product: Product
+	product: ProductWithDetails
 	prices: PriceHistory[]
-	recipeItems: RecipeItem[] 
 	items: Item[]
 }
 
-export default function InfoProductModal({ onClose, loading, product, prices, recipeItems, items }: InfoProductModalProps) {
+export default function InfoProductModal({ onClose, loading, product, prices, items }: InfoProductModalProps) {
 	const itemById = useMemo(() => {
 		return Object.fromEntries(items.map(item => [item.id, item]))
 	}, [items])
@@ -60,7 +59,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, re
 				)}
 				</div>
 				<div className='flex flex-col'>
-				{recipeItems && recipeItems.length > 0 ?  (
+				{product.recipe_items && product.recipe_items.length > 0 ?  (
 					<>
 					<h2 className='font-mono text-lg'>Recipe</h2>
 					<table>
@@ -75,7 +74,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, re
 						</tr>
 					</thead>
 					<tbody>
-					{recipeItems.map((item, idx) => (
+					{product.recipe_items.map((item, idx) => (
 						<tr key={idx}>
 							<td> 
 							{itemById[item.item_id].name}

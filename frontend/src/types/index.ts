@@ -65,6 +65,14 @@ export interface OrderItem {
 	unit_price: string
 }
 
+export interface ProductWithDetails {
+	id: string
+	business_id: string
+	name: string
+	latest_price: PriceHistory | null
+	recipe_items: RecipeItem[]
+}
+
 export type ActiveModal = { mode: 'info' | 'edit' | 'delete'; id: string } | null
 
 export type OrderStatus = 'pending' | 'confirmed' | 'delivered' | 'cancelled'

@@ -19,7 +19,6 @@ export default function Products() {
 		products,
 		visibleProducts,
 		prices,
-		recipeItems,
 		searchQuery,
 		setSearchQuery, 
 		handleProductCreate,
@@ -110,7 +109,6 @@ export default function Products() {
 					loading={loadingDetails}
 					product={activeProduct}
 					prices={prices}
-					recipeItems={recipeItems}
 					items={items}
 				/>
 			)}
@@ -125,7 +123,6 @@ export default function Products() {
 					onDeleteRecipeItem={handleRecipeItemDelete}
 					product={activeProduct}
 					prices={prices}
-					recipeItems={recipeItems}
 					items={items}
 					submitting={submitting}
 					loading={loadingDetails}

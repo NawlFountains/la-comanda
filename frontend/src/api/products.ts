@@ -1,5 +1,5 @@
 import {supabase} from '../supabase/supabaseClient'
-import type { CreatePriceHistoryPayload, CreateProductPayload, CreateRecipeItemPayload, PriceHistory, Product, RecipeItem } from '../types'
+import type { CreatePriceHistoryPayload, CreateProductPayload, CreateRecipeItemPayload, PriceHistory, Product, ProductWithDetails, RecipeItem } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -175,6 +175,25 @@ export async function getProducts(): Promise<Product []> {
 		throw new Error('User is not authenticated')
 	}
 	const response = await fetch(`${API_URL}/products`, {
+		headers: {
+			'Authorization': `Bearer ${token}`
+		}
+	})
+	if (!response.ok) {
+		const errorBody = await response.json()
+		throw new Error(errorBody.detail || `Error ${response.status}`)
+	}
+	return response.json()
+}
+
+export async function getProductsWithDetails(): Promise<ProductWithDetails[]> {
+	const { data, error } = await supabase.auth.getSession()
+	const token = data.session?.access_token
+
+	if (!token) {
+		throw new Error('User is not authenticated')
+	}
+	const response = await fetch(`${API_URL}/products/full`, {
 		headers: {
 			'Authorization': `Bearer ${token}`
 		}

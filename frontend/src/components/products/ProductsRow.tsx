@@ -1,9 +1,9 @@
 import React, {useState} from 'react'
 import { InfoIcon, PenIcon, TrashIcon } from '../styles/Icons'
-import type { Product } from '../../types'
+import type { ProductWithDetails } from '../../types'
 
 interface ProductsRowProps {
-	product: Product
+	product: ProductWithDetails
 	onTriggerInfo: () => void
 	onTriggerEdit: () => void
 	onTriggerDelete: () => void
@@ -13,9 +13,10 @@ export default function ProductsRow({ product, onTriggerEdit, onTriggerInfo, onT
 	return (
 		<div 
 			key={product.id} 
-			className="grid grid-cols-3 p-2 gap-4">
-			<p className="font-mono">{product.id}</p>
+			className="grid grid-cols-3 sm:grid-cols-4 p-2 gap-4">
+			<p className="font-mono hidden sm:block">{product.id}</p>
 			<p>{product.name}</p>
+			<p className='font-mono'>{product?.latest_price ? `$${product.latest_price.price}` : "No price setted"}</p>
 			<div className='space-x-3'>
 				<button
 					onClick={onTriggerInfo}
