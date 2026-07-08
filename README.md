@@ -3,7 +3,7 @@
 Backend API for small food businesses to manage stock, orders, customers and restocking. Built for the typical Argentine take-out workflow where orders come in via WhatsApp and the cook tracks everything manually.
 
 ## Stack
-FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
+FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic · React · Tailwind CSS · Typescript
 
 ## Roadmap
 - [x] Business, Product, Item, Customer, Restock, Recipe endpoints
@@ -19,13 +19,13 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic
   + [ ] Dark theme
   + [x] Error handling
 + [ ] Modify endpoint:
-  + [ ] Allow pagination and more queries on each endpoint
-  + [ ] Add product endpoint with full details using join (PriceHistory and RecipeItems)
+  + [x] Allow pagination and more queries on each orders and restock endpoints
+  + [x] Add product endpoint with full details using join (PriceHistory and RecipeItems)
 + [ ] Playwright testing E2E each page
 - [ ] Deploy to Railway + Vercel
 
 ## Testing
-97% code coverage across 8 test files. Each test runs against an in-memory SQLite database with automatic rollback — no real database needed. Auth is mocked via FastAPI dependency overrides. CI runs on every push via GitHub Actions.
+96% code coverage across 8 test files. Each test runs against an in-memory SQLite database with automatic rollback — no real database needed. Auth is mocked via FastAPI dependency overrides. CI runs on every push via GitHub Actions.
 
 Exploratory and manual testing done via Postman.
 
