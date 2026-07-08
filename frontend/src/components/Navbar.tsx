@@ -18,7 +18,7 @@ interface StyledNavLinkProps {
 function StyledNavLink({to, onClick, children}: StyledNavLinkProps) {
 	return (
 		<div className={`${buttonVariants.base}`}>
-			<NavLink to={to} onClick={onClick}>{children}</NavLink>
+			<NavLink to={to} onClick={onClick} className='my-auto'>{children}</NavLink>
 		</div>
 	)
 }
@@ -113,7 +113,11 @@ export default function Navbar({ business }: NavBarProps) {
 					<ul className="divide-y divide-neutral-300">
 					{navlinkPaths.map((navlink, idx) => (
 						<li key={idx}>
-							<StyledNavLink to={navlink.to} onClick={() => setMenuOpen(prev => !prev)}>{navlink.title}</StyledNavLink>
+							<StyledNavLink 
+								to={navlink.to} 
+								onClick={() => setMenuOpen(prev => !prev)}>
+								{navlink.title}
+							</StyledNavLink>
 						</li>
 					))}
 					<li>

@@ -97,7 +97,7 @@ export default function Dashboard() {
 
 	return (
 		<ScreenLayout>
-			<div className="flex flex-col w-full sm:w-5/6 items-center gap-4">
+			<div className="flex flex-col items-center gap-4">
 
 			{/* Modals */}
 			{showAddRestockMenu && (

@@ -72,7 +72,6 @@ export async function getOrders({
 
 	const url = new URL(`${API_URL}/orders`)
 	
-	// Only append to the query string if the value is explicitly provided
 	if (limit !== null && limit !== undefined) {
 		url.searchParams.append('limit', limit.toString())
 	}

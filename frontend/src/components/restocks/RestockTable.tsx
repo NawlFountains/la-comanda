@@ -3,7 +3,7 @@ import {cardVariants} from '../styles/CardStyles'
 
 export default function RestockTable({ children }: { children: React.ReactNode} ) {
 	return (
-	<div className={`${cardVariants.table} sm:mx-2`}>
+	<div className={`${cardVariants.table} sm:mx-2 overflow-hidden`}>
 		<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
 
 			{/* Header */}

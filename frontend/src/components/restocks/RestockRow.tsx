@@ -28,7 +28,7 @@ export default function RestockRow({ items, restock, onTriggerEdit, onTriggerDel
 				restock.restock_items.map((ri, idx) => {
 					const item = itemById[ri.item_id]
 					return (
-						<span key={idx}>{item.name} {ri.quantity} <span className='font-medium'>{item.unit}</span>{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
+						<span key={idx}>{item?.name} {ri.quantity} <span className='font-medium'>{item.unit}</span>{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
 					)
 				})
 			): (

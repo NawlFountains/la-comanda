@@ -3,8 +3,8 @@ import { cardVariants } from '../styles/CardStyles.ts'
 
 export default function TableSkeleton({ rows = 4, cols = 4 }) {
 	return (
-		<div className={`w-full ${cardVariants.table} p-2 animate-pulse`}>
-			<div className="flex flex-col gap-3 bg-neutral-100 rounded-xl border border-neutral-200">
+		<div className={`${cardVariants.table} sm:mx-2 animate-pulse rounded-xl overflown-hidden`}>
+			<div className="flex flex-col gap-3 order border-neutral-200">
 				
 				{/* Table Header Skeleton */}
 				<div 
@@ -36,6 +36,13 @@ export default function TableSkeleton({ rows = 4, cols = 4 }) {
 						))}
 					</div>
 				))}
+
+				{/* Footer */}
+				<div className="flex flex-row justify-center items-center gap-4 my-4 mb-2">
+					<div className="w-20 h-6 rounded-xl bg-neutral-400/40"/>
+					<div className="w-16 h-6 rounded-xl bg-neutral-300/40"/>
+					<div className="w-20 h-6 rounded-xl bg-neutral-400/40"/>
+				</div>
 			</div>
 		</div>
 	)

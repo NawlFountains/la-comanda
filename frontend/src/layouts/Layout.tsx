@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react'
 import {supabase} from '../supabase/supabaseClient'
 import {getMyBusiness} from '../api/business'
 import {LoadingSpinner} from '../components/styles/Icons'
-import ScreenLayout from './ScreenLayout'
 import Footer from '../components/Footer'
 
 export interface LayoutContextType {
@@ -40,11 +39,12 @@ export default function Layout() {
 
 	if (loading && !isHomePage) {
 		return (
-			<ScreenLayout>
-				<div className='m-auto'>
-				<LoadingSpinner size={50}/>
+			<div className='min-h-screen w-full bg-neutral-200 flex flex-col items-center w-5/6'>
+				<div className='w-full flex-1 flex flex-col sm:w-5/6 items-center justify-center'>
+				<LoadingSpinner size={100}/>
 				</div>
-			</ScreenLayout>
+				<Footer />
+			</div>
 		)
 	}
 

@@ -79,7 +79,7 @@ export default function Login() {
 			<button 
 				disabled={loading}
 				onClick={() => handleLogin()}
-				className={`${buttonVariants.primary} p-3 w-full max-w-sm mb-3 border border-neutral-600 rounded-lg`}>
+				className={`${buttonVariants.primary} w-full max-w-sm mb-3 border border-neutral-600 rounded-lg`}>
 				{ loading ? 'Signing in...' : 'Sign in' }
 			</button>
 			</div>
