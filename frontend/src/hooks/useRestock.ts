@@ -41,7 +41,6 @@ export const useRestocks = () => {
 
 	const handleSearchSupplierChanged = (supplier: string | null) => {
 		setAppliedSearchSupplier(supplier)
-		setSearchSupplier(supplier)
 	}
 
 	const handleRestockCreate = useCallback( async (restockData: CreateRestockPayload): Promise<boolean> => {

@@ -41,7 +41,6 @@ export const useOrders = () => {
 	}
 
 	const handleDateChange = (dateString: string | null) => {
-		setSearchDate(dateString || null)
 		setAppliedDate(dateString || null)
 		setPage(1)
 	}

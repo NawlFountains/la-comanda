@@ -36,7 +36,6 @@ export const useItems = () => {
 
 	const handleSearchNameChanged = (name: string | null) => {
 		setAppliedName(name ? name : "")
-		setSearchName(name)
 	}
 
 	const visibleItems = useMemo(() => {

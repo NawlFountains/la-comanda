@@ -262,7 +262,6 @@ export const useProducts = (activeProductId?: string | null) => {
 	}, [products, appliedSearchName])
 
 	const handleSearchNameChanged = (name: string | null) => {
-		setSearchName(name)
 		setAppliedSearchName(name ? name : '')
 	}
 
