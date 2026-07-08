@@ -502,6 +502,67 @@ async def test_get_restocks(client: AsyncClient, db_session: AsyncSession, setup
     assert_json_match_restock(r1, data[1])
 
 @pytest.mark.asyncio
+async def test_get_restocks_by_supplier(client: AsyncClient, db_session: AsyncSession, setup_business,restock_factory, assert_json_match_restock):
+    """ should return all restocks that match supplier name from the current business"""
+
+    r1, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 5, 5),
+        supplier="WallMart",
+        notes="Test restock",
+        quantity=Decimal("3")
+    )
+    r2, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2026, 6, 5),
+        supplier="Coto",
+        notes="Test restock",
+        quantity=Decimal("5")
+    )
+    r3, _, _ = await restock_factory(
+        business_id=setup_business.id,
+        restock_date=date(2025, 6, 5),
+        supplier="Coto",
+        notes="Test restock 2",
+        quantity=Decimal("10")
+    )
+
+    # Matching supplier = "Wallmart" , 1 match expected
+
+    response = await client.get(
+            "/restocks?supplier=WallMart", 
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+    assert len(data) == 1
+    assert_json_match_restock(r1, data[0])
+
+    # Matching supplier = "Coto" , 2 matches expected
+
+    response = await client.get(
+            "/restocks?supplier=Coto", 
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+
+    data = response.json()
+    assert len(data) == 2
+    assert_json_match_restock(r2, data[0])
+    assert_json_match_restock(r3, data[1])
+
+    # Matching supplier = "HomeDepo" , 0 matches expected
+
+    response = await client.get(
+            "/restocks?supplier=HomeDepo", 
+            headers={"Authorization": "Bearer faketoken"}
+    )
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+@pytest.mark.asyncio
 async def test_get_restocks_empty(client: AsyncClient, db_session: AsyncSession, setup_business):
     """ should return empty list if no restocks logged for said business """
     response = await client.get("/restocks", headers={"Authorization": "Bearer faketoken"})
