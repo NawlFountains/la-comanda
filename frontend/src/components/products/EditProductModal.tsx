@@ -3,7 +3,7 @@ import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
 import { buttonVariants } from '../styles/ButtonStyles'
-import type { Product, CreateProductPayload, CreatePriceHistoryPayload, CreateRecipeItemPayload, PriceHistory, RecipeItem, Item, ProductWithDetails } from '../../types'
+import type { CreateProductPayload, CreatePriceHistoryPayload, CreateRecipeItemPayload, PriceHistory, Item, ProductWithDetails } from '../../types'
 import type { ProductErrors } from '../../schemas/product'
 import {LoadingSpinner, PenIcon, TrashIcon} from '../styles/Icons'
 import type {PriceHistoryErrors} from '../../schemas/price_history'
@@ -154,7 +154,9 @@ export default function EditProductModal({
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 
-					placeholder='name'
+					placeholder='e.g. Potatoes'
+					id="productName"
+					label="Name"
 					value={name}
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
@@ -176,7 +178,7 @@ export default function EditProductModal({
 				/>
 				{/* Recipe items */}
 				<div className='flex flex-col text-center gap-3'>
-					{(product.recipe_items && product?.recipe_items?.length > 0) || (newRecipeItems && newRecipeItems.length > 0) ? (
+					{((product.recipe_items && product?.recipe_items?.length > 0) || (newRecipeItems && newRecipeItems.length > 0)) && (
 						<table>
 						<thead>
 							<tr className='text-lg font-mono bg-neutral-200'>
@@ -206,6 +208,8 @@ export default function EditProductModal({
 											className='w-1/3'
 											placeholder='Quantity'
 											type='number'
+											id={`recipeItem${idx}Quantity`}
+											label="Quantity"
 											value={editedRecipeItems[item.id]?.quantity ?? item.quantity}
 											step="any"
 											onChange={(e) => handleRecipeItemChange(item.id, 'quantity', e.target.value) }
@@ -261,9 +265,12 @@ export default function EditProductModal({
 
 							    {/* Item Dropdown Selection */}
 							    <td>
+							<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
+								<legend className="text-xs px-1 text-neutral-600">Item</legend>
 							      <select
-								className='w-2/3 border border-neutral-700 rounded-lg py-1 px-2 text-center'
+								className='w-2/3 py-1 px-2 text-center'
 								value={item.item_id}
+								id={`recipeItem${idx}ItemId`}
 								onChange={(e) => handleItemChange(idx, 'item_id', e.target.value)}
 							      >
 								<option value="" disabled>Select an item</option>
@@ -273,13 +280,16 @@ export default function EditProductModal({
 								  </option>
 								))}
 							      </select>
+							      </fieldset>
 							    </td>
 							    
 							    {/* Quantity Input */}
-							    <td className='flex flex-row gap-2 justify-center py-1'>
+							    <td className='flex flex-row gap-2 justify-center py-1 items-center'>
 							    <InputModal
 								    className='w-1/3'
 								    placeholder='Quantity'
+								    id={`recipeItem${idx}Quantity`}
+								    label="Quantity"
 								    type='number'
 								    value={item.quantity || ''}
 								    step="any"
@@ -314,7 +324,7 @@ export default function EditProductModal({
 						)}
 						</tbody>
 						</table>
-						): ( <p>No recipe setted</p>)}
+						)}
 					<button
 						onClick={() => handleAddRecipeItem()} 
 						className={`${buttonVariants.secondary}`}>

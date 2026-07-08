@@ -59,6 +59,7 @@ export default function Products() {
 					placeholder="Search product by name"
 					type="text"
 					value={searchQuery}
+					id="searchQuery"
 					onChange={(e) => setSearchQuery(e.target.value)}
 					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
 				{/* Create product */}

@@ -169,7 +169,7 @@ export default function Dashboard() {
 
 			<div className="flex flex-col md:grid md:grid-cols-2 gap-4">
 				<div className="flex flex-col gap-2">
-				    <PendingOrdersCard orders={displayedOrders} customers={customers} route={isLimitExceeded ? '/stock' : undefined}/>
+				    <PendingOrdersCard orders={displayedOrders} customers={customers} route={isLimitExceeded ? '/orders' : undefined}/>
 				</div>
         
 			<LowStockItemsCard items={lowStockItems}/>

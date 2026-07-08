@@ -32,12 +32,14 @@ export default function EditRestockModal( { onClose, onEdit, submitting, restock
 	return (
 		<ModalLayout onClose={onClose}>
 				<div className='p-2'>
-					<h1 className='text-center text-xl font-mono'>Create restock</h1>
+					<h1 className='text-center text-xl font-mono'>Edit restock</h1>
 				</div>
 				<div className='flex flex-col'>
 					<InputModal 
-						placeholder='YYYY-MM-DD'
+						type="date"
 						value={restockDate}
+						id="restockDate"
+						label="Date"
 						onChange={(e) => setRestockDate(e.target.value)}/>
 					{errors.restock_date && (<ErrorMessage message={errors.restock_date}/>)}
 				</div>
@@ -46,6 +48,8 @@ export default function EditRestockModal( { onClose, onEdit, submitting, restock
 						<InputModal 
 							placeholder='Supplier name'
 							value={supplier}
+							id="restockSupplier"
+							label="Supplier"
 							onChange={(e) => setSupplier(e.target.value)}/>
 						{errors.supplier && (<ErrorMessage message={errors.supplier} />)}
 					</div>
@@ -53,6 +57,8 @@ export default function EditRestockModal( { onClose, onEdit, submitting, restock
 						<InputModal 
 							placeholder='Notes'
 							value={notes}
+							id="restockNotes"
+							label="Notes"
 							onChange={(e) => setNotes(e.target.value)}/>
 						{errors.notes && (<ErrorMessage message={errors.notes} />)}
 					</div>

@@ -47,7 +47,7 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 						to={route} 
 						className="text-sm font-medium text-neutral-600 hover:text-neutral-900 underline transition-colors"
 					>
-						More pending orders, check stock page →
+						More pending orders, check orders page →
 					</Link>
 				</div>
 			)}

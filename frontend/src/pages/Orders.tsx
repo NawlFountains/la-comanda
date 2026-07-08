@@ -3,7 +3,7 @@ import ScreenLayout from "../layouts/ScreenLayout"
 import type { ActiveModal, OrderStatus } from "../types"
 import OrdersTable from "../components/orders/OrdersTable"
 import OrdersRow from "../components/orders/OrdersRow"
-import { LoadingSpinner, TrashIcon } from "../components/styles/Icons"
+import { TrashIcon } from "../components/styles/Icons"
 import { buttonVariants } from "../components/styles/ButtonStyles"
 import { useOrders } from "../hooks/useOrders"
 import {useCustomer} from "../hooks/useCustomers"
@@ -63,6 +63,7 @@ export default function Orders() {
 				    <input
 					value={searchDate ?? ""}
 					type='date'
+					id="searchDate"
 					onChange={(e) => setSearchDate(e.target.value)}
 					onKeyDown={(e) => { if (e.key === 'Enter') setAppliedDate(searchDate) }}
 					className="bg-neutral-100 border border-neutral-300 rounded-l-lg px-3 h-10 w-full focus:outline-none focus:ring-1 focus:ring-neutral-500"
@@ -95,13 +96,15 @@ export default function Orders() {
 					<option value="confirmed">Confirmed</option>
 				</select>
 
-				<button 
-					title="Remove status filter"
-					onClick={() => handleStatusChange('')}
-					className={`text-red-500 cursor-pointer hover:scale-105
-						${filterStatus ? 'block' : 'hidden'}`}>
+				{filterStatus && (
+					<button 
+						title="Remove status filter"
+						onClick={() => handleStatusChange('')}
+
+						className="text-neutral-400 hover:text-red-500 transition-colors">
 					<TrashIcon />
-				</button>
+					</button>
+				)}
 
 				<button
 					onClick={() => setShowCreateOrderModal(true)}

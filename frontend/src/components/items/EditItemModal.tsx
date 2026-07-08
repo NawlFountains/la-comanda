@@ -40,8 +40,10 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 				<div className="flex flex-col">
 				<InputModal
 					value={name}
+					label='Name'
+					id='itemName'
 					onChange={(e) => setName(e.target.value)}
-					placeholder="Name">
+					placeholder="e.g. Potatoes">
 				</InputModal>
 				{errors.name && (<ErrorMessage message={errors.name} />)}
 				</div>
@@ -50,9 +52,11 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 					<InputModal
 						value={currentStock}
 						type="number"
+						id="itemCurrentStock"
+						label="Current stock"
 						className="w-full"
 						onChange={(e) => setCurrentStock(e.target.value)}
-						placeholder="Current Stock">
+						placeholder="e.g. 0.5">
 					</InputModal>
 					{errors.current_stock && (<ErrorMessage message={errors.current_stock} />)}
 					</div>
@@ -60,8 +64,10 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 					<InputModal
 						value={unit}
 						className="w-full"
+						id="itemUnit"
+						label="Unit"
 						onChange={(e) => setUnit(e.target.value)}
-						placeholder="Unit">
+						placeholder="kg/l">
 					</InputModal>
 					{errors.unit && (<ErrorMessage message={errors.unit} />)}
 					</div>
@@ -69,16 +75,19 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 				<div className="flex flex-col">
 				<InputModal
 					value={lowStockThreshold}
+					id="itemLowStockThreshold"
+					label="Low stock threshold"
 					onChange={(e) => setLowStockThreshold(e.target.value)}
-					placeholder="Low Stock threshold">
+					placeholder="e.g. 50">
 				</InputModal>
 				{errors.low_stock_threshold && (<ErrorMessage message={errors.low_stock_threshold}/>)}
 				</div>
 				<div className="flex flex-col">
 				<InputModal
 					value={notes}
-					onChange={(e) => setNotes(e.target.value)}
-					placeholder="Notes (optional)">
+					id="itemNotes"
+					label="Notes (optional)"
+					onChange={(e) => setNotes(e.target.value)}>
 				</InputModal>
 				{errors.notes && (<ErrorMessage message={errors.notes}/>)}
 				</div>

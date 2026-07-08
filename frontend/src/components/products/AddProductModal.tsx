@@ -31,8 +31,10 @@ export default function AddProductModal({ onClose, onCreate, submitting, errors,
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 
-					placeholder='name'
+					placeholder='e.g. Milanesas'
 					value={name}
+					id="productName"
+					label="Name"
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
 			</div>

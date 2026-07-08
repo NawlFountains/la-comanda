@@ -1,6 +1,7 @@
 import React, {useMemo} from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import type { Customer, Order, Product } from '../../types'
+import {formatDatetime} from '../../utils/date'
 
 interface InfoOrderModalProps {
 	onClose: () => void
@@ -18,21 +19,30 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 	}, [products])
 	return (
 		<ModalLayout onClose={onClose}>
-			<div>
-				<h1 className='font-mono text-lg text-center'>Order {order.id}</h1>
+			{/* Title & Order ID Header */}
+			<div className="text-lg border-neutral-200 pb-2 mb-4">
+				<h1 className="font-mono text-neutral-500 text-center break-all px-4">
+					Order <span className="text-neutral-800 font-semibold">{order.id}</span>
+				</h1>
 			</div>
 
-			{/* Customer and order status*/}
-			<div className='text-center grid grid-cols-2 gap-2 mx-5'>
-				<div className='font-bold'>
+			{/* Customer and Order Status Grid */}
+			<div className="grid grid-cols-2 gap-x-4 max-w-lg mx-auto text-md mb-6 bg-neutral-50 p-3 rounded-md border border-neutral-200">
+				<div className="text-right text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>Customer:</p>
 					<p>Contact:</p>
-					<p>Unit price:</p>
+					<p>Status:</p>
+					<p>Created at:</p>
 				</div>
-				<div>
-				<p>{customer.name}</p>
-				<p>{customer.phone}</p>
-				<p className={`font-mono ${order.status === 'cancelled' ? 'text-red-500' : ''}`}>{order.status}</p>
+				<div className="text-left text-neutral-800 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center">
+					<p>{customer.name}</p>
+					<p>{customer.phone || 'N/A'}</p>
+					<p className={`font-mono capitalize font-bold ${
+						order.status === 'cancelled' ? 'text-red-500' : 'text-amber-600'
+					}`}>
+						{order.status}
+					</p>
+					<p>{formatDatetime(order.created_at)}</p>
 				</div>
 			</div>
 
@@ -69,8 +79,11 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 				</tbody>
 				</table>
 			)}
-			<div className='text-center'>
-			 <p className='font-mono text-lg'>Total: ${total.toFixed(2)}</p>
+
+			{/* Total Section */}
+			<div className="flex justify-between items-center p-3 bg-neutral-100 rounded-md border border-neutral-200">
+				<span className="text-neutral-600 font-medium text-sm">Total Amount</span>
+				<p className="font-mono text-xl font-bold text-neutral-900">${total.toFixed(2)}</p>
 			</div>
 		</ModalLayout>
 	)

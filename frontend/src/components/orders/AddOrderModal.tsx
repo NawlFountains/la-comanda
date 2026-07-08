@@ -93,9 +93,12 @@ export default function AddOrderModal({
 				</div>
 			</div>
 			<div className='w-full flex-1'>
+	<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
+				<legend className="text-xs px-1 text-neutral-600">Customer</legend>
 				      <select
-				      	className='w-full border border-neutral-700 rounded-lg py-1 px-2'
+				      	className='w-full py-1 px-2'
 					value={customerId}
+					id="customerId"
 					onChange={(e) => setCustomerId(e.target.value)}
 				      >
 					<option value="" disabled>Select an costumer</option>
@@ -108,6 +111,7 @@ export default function AddOrderModal({
 					 Create new customer
 					</option>
 				      </select>
+		</fieldset>
 				    {orderErrors.customer_id && (<ErrorMessage message={orderErrors.customer_id}/>)}
 			    </div>
 			    
@@ -117,25 +121,33 @@ export default function AddOrderModal({
 				<div className='flex flex-col'>
 					<InputModal 
 						className='p-1 w-full'
+						id="customerName"
+						label="Name"
 						value={customerName}
 						onChange={(e) => setCustomerName(e.target.value)}
-						placeholder='name'/>
+						placeholder='e.g. Cornelius'/>
 					{customerErrors.name && (<ErrorMessage message={customerErrors.name}/>)}
 				</div>
 				<div>
 					<InputModal 
 						className='p-1 w-full'
 						value={customerPhone}
+						id="customerPhone"
+						label="Phone"
 						onChange={(e) => setCustomerPhone(e.target.value)}
-						placeholder='phone'/>
+						placeholder='+54 9 11 1234-5678'/>
 					{customerErrors.phone && (<ErrorMessage message={customerErrors.phone}/>)}
 				</div>
 				</div>
 			)}
 			<div className='flex flex-col'>
+				<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
+						<legend className="text-xs px-1 text-neutral-600">Status</legend>
+
 				<select
-				      	className='w-full border border-neutral-700 rounded-lg py-1 px-2'
+				      	className='w-full rounded-lg py-1 px-2'
 					value={status}
+					id="orderStatus"
 					onChange={(e) => setStatus(e.target.value as OrderStatus)}
 				      >
 				      <option value="cancelled">Cancelled</option>
@@ -143,6 +155,7 @@ export default function AddOrderModal({
 				      <option value="delivered">Delivered</option>
 				      <option value="confirmed">Confirmed</option>
 				</select>
+				</fieldset>
 			</div>
 			 <div className='flex flex-col gap-2'>
 				<h2 className='text-center text-xl font-mono'>Products ordered</h2>
@@ -151,8 +164,12 @@ export default function AddOrderModal({
 
 					    {/* Item Dropdown Selection */}
 					    <div className='w-full flex-1'>
+					    <fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
+						<legend className="text-xs px-1 text-neutral-600">Product</legend>
+
 					      <select
-						className='w-full border border-neutral-700 rounded-lg py-1 px-2'
+						className='w-full rounded-lg py-1 px-2'
+						id={`orderItem${index}Id$`}
 						value={item.product_id}
 						onChange={(e) => handleItemChange(index, 'product_id', e.target.value)}
 					      >
@@ -163,14 +180,18 @@ export default function AddOrderModal({
 						  </option>
 						))}
 					      </select>
+					      </fieldset>
 					    </div>
 					    
 					    {/* Quantity Input */}
 					    <div className='w-32 flex flex-row gap-2'>
 					    <InputModal
-						className='w-full'
-						    placeholder='Quantity'
+						    className='w-full'
+						    placeholder='e.g. 3'
 						    type='number'
+						    step='1'
+						    id={`orderItem${index}Id`}
+						    label="Quantity"
 						    value={item.quantity || ''}
 						    onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
 					    />

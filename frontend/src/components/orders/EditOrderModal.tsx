@@ -37,16 +37,37 @@ export default function EditOrderModal({
 
 	return (
 		<ModalLayout onClose={onClose}>
-			<div className='flex flex-col'>
-				<h1 className='font-mono font-lg text-center'>Edit Order</h1>
+			{/* Title & Order ID Header */}
+			<div className="text-lg border-neutral-200 pb-2 mb-4">
+				<h1 className="font-mono text-neutral-500 text-center break-all px-4">
+					Order <span className="text-neutral-800 font-semibold">{order.id}</span>
+				</h1>
 			</div>
-			<div className='w-full flex-1'>
-				<h2 className=''>Change status order for <span className='font-mono font-medium'>{customer.name}</span> created at <span className='font-medium'>{formatDatetime(order.created_at)}</span></h2>
-				<p>Phone number : <span className='font-mono'>{customer.phone}</span></p>
+
+			{/* Customer and Order Status Grid */}
+			<div className="grid grid-cols-2 gap-x-4 max-w-lg mx-auto text-md mb-6 bg-neutral-50 p-3 rounded-md border border-neutral-200">
+				<div className="text-right text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
+					<p>Customer:</p>
+					<p>Contact:</p>
+					<p>Status:</p>
+					<p>Created at:</p>
+				</div>
+				<div className="text-left text-neutral-800 font-medium flex flex-col gap-2 tracking-wider text-sm justify-center">
+					<p>{customer.name}</p>
+					<p>{customer.phone || 'N/A'}</p>
+					<p className={`font-mono capitalize font-bold ${
+						order.status === 'cancelled' ? 'text-red-500' : 'text-amber-600'
+					}`}>
+						{order.status}
+					</p>
+					<p>{formatDatetime(order.created_at)}</p>
+				</div>
 			</div>
 			<div className='flex flex-col'>
+			<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
+				<legend className="text-xs px-1 text-neutral-600">Status</legend>
 				<select
-				      	className='w-full border border-neutral-700 rounded-lg py-1 px-2'
+				      	className='w-full py-1 px-2'
 					value={status}
 					onChange={(e) => setStatus(e.target.value as OrderStatus)}
 				      >
@@ -55,6 +76,7 @@ export default function EditOrderModal({
 				      <option value="delivered">Delivered</option>
 				      <option value="confirmed">Confirmed</option>
 				</select>
+				</fieldset>
 				{status === 'cancelled' && (
 					<p className='text-red-500 p-2'> Setting an order status as cancelled it's irreversible. </p>
 				)}

@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
-import { buttonVariants } from '../styles/ButtonStyles'
-import type { PriceHistory, Product, RecipeItem, Item, ProductWithDetails } from '../../types'
+import type { PriceHistory, Item, ProductWithDetails } from '../../types'
 import { LoadingSpinner } from '../styles/Icons'
+import {formatDate} from '../../utils/date'
 
 interface InfoProductModalProps {
 	onClose: () => void
@@ -13,6 +13,7 @@ interface InfoProductModalProps {
 }
 
 export default function InfoProductModal({ onClose, loading, product, prices, items }: InfoProductModalProps) {
+	const [showPastPrices, setShowPastPrices] = useState<boolean>(false)
 	const itemById = useMemo(() => {
 		return Object.fromEntries(items.map(item => [item.id, item]))
 	}, [items])
@@ -31,32 +32,36 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 					<h2 className='font-mono text-lg'>Prices</h2>
 					<table>
 					<thead>
-						<tr className='font-mono bg-neutral-200'>
+						<tr className='text-lg font-mono bg-neutral-200 font-medium'>
 							<td>
 							Price
 							</td>
 							<td>
-							valid form
+							From
 							</td>
 						</tr>
 					</thead>
 					<tbody>
-						{prices.map((price, idx) => (
-							<tr key={idx}>
-							<td>
-							${price.price}
-							</td>
-							<td>
-							{price.valid_from}
-							</td>
-							</tr>
-						   ))}
+					{(showPastPrices ? prices : prices.slice(0, 1)).map(( price, idx) => (
+									<tr key={idx}>
+										<td>${price.price}</td>
+										<td>{formatDate(price.valid_from)}</td>
+									</tr>
+							))}
 					</tbody>
 					</table>
 					</>
 				) : (
 					<p> No price setted </p>
 				)}
+				{prices && prices.length > 1 && (
+						<button 
+							onClick={() => setShowPastPrices(!showPastPrices)}
+							className="text-sm text-neutral-600 underline cursor-pointer hover:text-neutral-800"
+						>
+							{showPastPrices? "Hide History" : `Show History (${prices.length - 1} more)`}
+						</button>
+					)}
 				</div>
 				<div className='flex flex-col'>
 				{product.recipe_items && product.recipe_items.length > 0 ?  (
@@ -64,7 +69,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 					<h2 className='font-mono text-lg'>Recipe</h2>
 					<table>
 					<thead>
-						<tr className='bg-neutral-200'>
+						<tr className='font-mono text-lg bg-neutral-200'>
 							<td>
 								Item
 							</td>

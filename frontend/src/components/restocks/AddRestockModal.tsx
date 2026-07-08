@@ -62,7 +62,9 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 
-					placeholder='YYYY-MM-DD'
+					id="restockDate"
+					type="date"
+					label="Date"
 					value={restockDate}
 					onChange={(e) => setRestockDate(e.target.value)}/>
 				{errors.restock_date && (<ErrorMessage message={errors.restock_date}/>)}
@@ -70,7 +72,9 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 			<div className='flex flex-col md:grid md:grid-cols-2 gap-4'>
 				<div className='flex flex-col'>
 					<InputModal 
-						placeholder='Supplier name'
+						placeholder='e.g. Supermarket'
+						id="restockSupplier"
+						label="Supplier"
 						value={supplier}
 						onChange={(e) => setSupplier(e.target.value)}/>
 					{errors.supplier && (<ErrorMessage message={errors.supplier} />)}
@@ -78,6 +82,8 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 				<div className='flex flex-col'>
 					<InputModal 
 						placeholder='Notes'
+						id="restockNotes"
+						label="Notes"
 						value={notes}
 						onChange={(e) => setNotes(e.target.value)}/>
 					{errors.notes && (<ErrorMessage message={errors.notes} />)}
@@ -94,9 +100,12 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 
 				    {/* Item Dropdown Selection */}
 				    <div className='w-full flex-1'>
+					<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
+						<legend className="text-xs px-1 text-neutral-600">Item</legend>
 				      <select
-				      	className='w-full border border-neutral-700 rounded-lg py-1 px-2'
+				      	className='w-full py-1 px-2'
 					value={item.item_id}
+					id={`restockItem${index}Id`}
 					onChange={(e) => handleItemChange(index, 'item_id', e.target.value)}
 				      >
 					<option value="" disabled>Select an item</option>
@@ -106,13 +115,16 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 					  </option>
 					))}
 				      </select>
+				      </fieldset>
 				    </div>
 				    
 				    {/* Quantity Input */}
-				    <div className='w-32 flex flex-row gap-2'>
+				    <div className='w-32 flex flex-row gap-2 items-center'>
 				    <InputModal
 				    	className='w-full'
-					    placeholder='Quantity'
+					    placeholder='e.g 3'
+					    id={`restockItem${index}Quantity`}
+					    label="Quantity"
 					    type='number'
 					    value={item.quantity || ''}
 					    step="any"

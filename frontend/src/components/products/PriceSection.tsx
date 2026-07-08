@@ -4,6 +4,7 @@ import ErrorMessage from '../errors/ErrorMessage'
 import InputModal from '../InputModal'
 import type { PriceHistoryErrors } from '../../schemas/price_history'
 import type { Product, PriceHistory, CreatePriceHistoryPayload } from '../../types'
+import {formatDate} from '../../utils/date'
 
 
 interface PriceSectionProps {
@@ -39,7 +40,7 @@ export default function PriceSection({
 	return (
 		<div className='flex flex-col text-center gap-3'>
 		{/* Current and Past prices */}
-		{(prices && prices.length > 0) || (createPrice) ? (
+		{((prices && prices.length > 0) || (createPrice)) && (
 			<table>
 			<thead>
 				<tr className='text-lg font-mono bg-neutral-200'>
@@ -51,7 +52,7 @@ export default function PriceSection({
 			{(showPastPrices ? prices : prices.slice(0, 1)).map(( price, idx) => (
 				<tr key={idx}>
 					<td className='w-1/2 p-2'>${price.price}</td>
-					<td className='w-1/2'>{price.valid_from}</td>
+					<td className='w-1/2'>{formatDate(price.valid_from)}</td>
 				</tr>
 			))}
 			{createPrice && (
@@ -62,9 +63,11 @@ export default function PriceSection({
 						</p>
 					<InputModal
 						name="input_price"
-						className='w-full sm:w-2/3 text-center'
+						className='w-1/3 text-center'
 						value={price}
-						placeholder="price"
+						placeholder="e.g. 100.50"
+						id="priceValue"
+						label="Price"
 						type='number'
 						onChange={(e) => setPrice(e.target.value)}
 						/>
@@ -73,32 +76,15 @@ export default function PriceSection({
 					<td className='px-4'>
 					<InputModal
 						name="input_valid_from"
-						className='w-full sm:w-2/3 text-center'
+						type="date"
+						id="priceValidFrom"
+						label="From"
+						className='w-1/3 text-center'
 						value={validFrom}
-						placeholder="valid from (YYYY-MM-DD)"
 						onChange={(e) => setValidFrom(e.target.value)}
 						/>
 					</td>
 
-					{/* Desktop confirmation */}
-					<td className='hidden sm:block absolute right-5'>
-					<button
-						onClick={() => handleSubmit()}
-					      className="p-2 text-gray-400 hover:text-green-500 text-sm"
-					      title="Confirm price">
-					✓
-
-					</button>
-					</td>
-					<td className='hidden sm:block absolute right-0'>
-					<button
-						onClick={() => setCreatePrice(false)}
-					      className="p-2 text-gray-400 hover:text-red-500 text-sm"
-					      title="Remove price">
-					✕
-
-					</button>
-					</td>
 				</tr>
 			)}	
 
@@ -113,9 +99,9 @@ export default function PriceSection({
 				</tr>
 			)}
 
-			{/* Mobile confirmation */}
+			{/*  Price creation confirmation */}
 			{createPrice && (
-				<tr className='sm:hidden'>
+				<tr>
 					<td className='p-2'>
 						<button 
 							onClick={() => setCreatePrice(false)}
@@ -134,8 +120,6 @@ export default function PriceSection({
 			)}
 			</tbody>
 			</table>
-		): (
-			<p>No price setted</p>
 		)}
 
 		{prices && prices.length > 1 && (
