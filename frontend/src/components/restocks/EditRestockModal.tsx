@@ -32,7 +32,7 @@ export default function EditRestockModal( { onClose, onEdit, submitting, restock
 	return (
 		<ModalLayout onClose={onClose}>
 				<div className='p-2'>
-					<h1 className='text-center text-xl font-mono'>Edit restock</h1>
+					<h1 className='text-center text-lg font-mono'>Edit restock</h1>
 				</div>
 				<div className='flex flex-col'>
 					<InputModal 

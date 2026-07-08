@@ -12,8 +12,7 @@ export default function StockRow({ item, onTriggerEdit, onTriggerDelete }: Stock
 	return (
 		<div 
 			key={item.id} 
-			className="grid grid-cols-3 sm:grid-cols-5 p-2">
-			<p className="font-mono hidden sm:block">{item.id}</p>
+			className="grid grid-cols-3 sm:grid-cols-4 p-2">
 			<p>{item.name}</p>
 			<p>{item.current_stock} <span className='font-medium'>{item.unit}</span></p>
 			<p className='hidden sm:block'>{item.low_stock_threshold} <span className='font-medium'>{item.unit}</span></p>

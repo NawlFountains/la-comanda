@@ -21,7 +21,7 @@ export default function RestockRow({ items, restock, onTriggerEdit, onTriggerDel
 		<div 
 			key={restock.id} 
 			className="grid grid-cols-3 sm:grid-cols-5 p-2">
-			<p className="font-mono hidden sm:block">{restock.id}</p>
+			<p className="font-mono hidden sm:block">#{restock.id.slice(0, 6).toUpperCase()}</p>
 			<p>{restock.supplier}</p>
 			<p className='hidden sm:block'>
 			{restock.restock_items.length > 0 ? (

@@ -14,11 +14,11 @@ interface OrdersRowProps {
 export default function OrdersRow({ order, customer, onTriggerInfo, onTriggerEdit, onTriggerDelete }: OrdersRowProps) {
 	return (
 		<div 
-			className="grid grid-cols-4 md:grid-cols-5 p-1">
-			<p className="font-mono hidden md:block">{order.id}</p>
+			className="grid grid-cols-4 md:grid-cols-5 p-2">
+			<p className="font-mono">#{order.id.slice(0, 6).toUpperCase()}</p>
 			<p>{customer?.name}</p>
 			<p className={`font-mono ${order.status === 'cancelled' ? 'text-red-500' : '' }`}>{order.status}</p>
-			<p>{formatDatetime(order.created_at)}</p>
+			<p className='hidden md:block'>{formatDatetime(order.created_at)}</p>
 			<div className='space-x-3'>
 				<button
 					onClick={onTriggerInfo}

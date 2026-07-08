@@ -27,7 +27,7 @@ export default function AddProductModal({ onClose, onCreate, submitting, errors,
 	return (
 		<ModalLayout onClose={onClose}>
 			<div className='flex flex-col'>
-				<h1 className='font-mono text-center'>Add product</h1>
+				<h1 className='font-mono text-lg text-center'>Add product</h1>
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 

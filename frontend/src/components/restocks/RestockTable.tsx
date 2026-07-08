@@ -8,7 +8,7 @@ export default function RestockTable({ children }: { children: React.ReactNode} 
 
 			{/* Header */}
 			<div className="bg-neutral-200 grid grid-cols-3 sm:grid-cols-5 p-2 font-mono">
-				<p className='hidden sm:block'>Restock_ID</p>
+				<p className='hidden sm:block'>Ref</p>
 				<p>Supplier</p>
 				<p className='hidden sm:block'>Items</p>
 				<p>Date</p>

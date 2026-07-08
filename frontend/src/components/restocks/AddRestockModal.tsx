@@ -58,7 +58,7 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 	return (
 		<ModalLayout onClose={onClose}>
 			<div className='p-2'>
-				<h1 className='text-center text-xl font-mono'>Create restock</h1>
+				<h1 className='text-center text-lg font-mono'>Add restock</h1>
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 

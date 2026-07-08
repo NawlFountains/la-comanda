@@ -19,22 +19,24 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 	}, [products])
 	return (
 		<ModalLayout onClose={onClose}>
+
 			{/* Title & Order ID Header */}
-			<div className="text-lg border-neutral-200 pb-2 mb-4">
+			<div className="text-lg border-neutral-200 pb-2 ">
 				<h1 className="font-mono text-neutral-500 text-center break-all px-4">
-					Order <span className="text-neutral-800 font-semibold">{order.id}</span>
+					Info about Order
 				</h1>
 			</div>
 
 			{/* Customer and Order Status Grid */}
-			<div className="grid grid-cols-2 gap-x-4 max-w-lg mx-auto text-md mb-6 bg-neutral-50 p-3 rounded-md border border-neutral-200">
-				<div className="text-right text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
+			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 p-3 rounded-md border border-neutral-200">
+				<div className="text-left text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>Customer:</p>
 					<p>Contact:</p>
 					<p>Status:</p>
 					<p>Created at:</p>
+					<p>ID:</p>
 				</div>
-				<div className="text-left text-neutral-800 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center">
+				<div className="text-left text-neutral-800 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
 					<p>{customer.name}</p>
 					<p>{customer.phone || 'N/A'}</p>
 					<p className={`font-mono capitalize font-bold ${
@@ -43,6 +45,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 						{order.status}
 					</p>
 					<p>{formatDatetime(order.created_at)}</p>
+					<p className='font-mono'>{order.id}</p>
 				</div>
 			</div>
 

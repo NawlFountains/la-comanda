@@ -21,7 +21,19 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 	return (
 		<ModalLayout onClose={onClose}>
 			<div className='flex flex-col'>
-				<h1 className='font-mono text-lg text-center'>Info about <span className='font-medium'>{product.name}</span></h1>
+				<h1 className='font-mono text-lg text-center'>Info</h1>
+			</div>
+
+			{/* Product info */}
+			<div className="grid grid-cols-4 gap-x-4 max-w-lg mx-auto text-md p-3 rounded-md border border-neutral-200">
+				<div className="text-center text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
+					<p>Name:</p>
+					<p>ID:</p>
+				</div>
+				<div className="text-left text-neutral-800 font-medium tracking-wider text-sm flex flex-col gap-2 justify-center col-span-3">
+					<p>{product.name}</p>
+					<p className='font-mono'>{product.id}</p>
+				</div>
 			</div>
 
 			{!loading ? (

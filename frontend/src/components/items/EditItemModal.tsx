@@ -34,7 +34,7 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 	}
 	return (
 			<ModalLayout onClose={onClose}>
-				<h2 className="text-center text-xl font-mono p-2">
+				<h2 className="text-center text-lg font-mono p-2">
 				Edit item <span className="font-medium">{item.name}</span>
 				</h2>
 				<div className="flex flex-col">
