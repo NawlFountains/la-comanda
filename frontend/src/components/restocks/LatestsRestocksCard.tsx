@@ -34,12 +34,16 @@ export default function LatestRestockCard({ restocks, items }: LatestRestockCard
 							<p>{formatDate(restock.restock_date)}</p>
 							<p>{restock.supplier}</p>
 							<p>
-							{restock.restock_items.map((ri, idx) => {
-								const item = itemById[ri.item_id]
-								return (
-									<span key={idx}>{item.name} {ri.quantity} {item.unit}{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
-								)
-							})}
+							{restock.restock_items.length > 0 ? (
+								restock.restock_items.map((ri, idx) => {
+									const item = itemById[ri.item_id]
+									return (
+										<span key={idx}>{item.name} {ri.quantity} {item.unit}{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
+									)
+								})
+							): (
+								<span>-</span>
+							)}
 							</p>
 						</div>
 					))

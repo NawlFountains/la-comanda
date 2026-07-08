@@ -24,12 +24,16 @@ export default function RestockRow({ items, restock, onTriggerEdit, onTriggerDel
 			<p className="font-mono hidden sm:block">{restock.id}</p>
 			<p>{restock.supplier}</p>
 			<p className='hidden sm:block'>
-			{restock.restock_items.map((ri, idx) => {
-				const item = itemById[ri.item_id]
-				return (
-					<span key={idx}>{item.name} {ri.quantity} <span className='font-medium'>{item.unit}</span>{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
-				)
-			})}
+			{restock.restock_items.length > 0 ? (
+				restock.restock_items.map((ri, idx) => {
+					const item = itemById[ri.item_id]
+					return (
+						<span key={idx}>{item.name} {ri.quantity} <span className='font-medium'>{item.unit}</span>{idx < restock.restock_items.length - 1 ? ',' : ''} </span>
+					)
+				})
+			): (
+				<span>-</span>
+			)}
 			</p>
 			<p>{formatDate(restock.restock_date)}</p>
 			<div className='space-x-3'>

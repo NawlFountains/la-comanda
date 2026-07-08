@@ -22,21 +22,29 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 				<h1 className="text-xl "> Currently pending orders</h1>
 			</div>
 			<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
-				<div className="bg-neutral-200 grid grid-cols-3 p-1 font-mono">
-						<p>Order_ID</p>
+				<div className="bg-neutral-200 grid grid-cols-3 sm:grid-cols-4 p-1 font-mono">
+						<p className='hidden sm:block'>Order_ID</p>
 						<p>Customer name</p>
 						<p>Created at</p>
+						<p>Total</p>
 				</div>
 				{orders.length > 0 ? (
-					orders.map(order => (
-						<div 
-							key={order.id} 
-							className="grid grid-cols-3 p-1">
-							<p className="font-mono">{order.id}</p>
-							<p>{customerById[order.customer_id]?.name}</p>
-							<p>{formatDatetime(order.created_at)}</p>
-						</div>
-					))
+					orders.map(order => {
+						const total = order.order_items.reduce((sum, item) => {
+						    return sum + (parseFloat(item.unit_price) * item.quantity)
+						}, 0)
+
+						return (
+							<div 
+								key={order.id} 
+								className="grid grid-cols-3 sm:grid-cols-4 p-1">
+								<p className="font-mono hidden sm:block">{order.id}</p>
+								<p>{customerById[order.customer_id]?.name}</p>
+								<p>{formatDatetime(order.created_at)}</p>
+								<p>${total}</p>
+							</div>
+						)}
+					)
 				): (
 					<EmptyRow message='No pending orders' />
 				)}

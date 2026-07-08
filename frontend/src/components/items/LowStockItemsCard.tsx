@@ -7,8 +7,6 @@ interface LowStockItemsCardProps {
 }
 
 export default function LowStockItemsCard({ items } : LowStockItemsCardProps) {	
-	if (items.length == 0) return (<div>No items running low</div>)
-
 	return (
 		<div className={cardVariants.table}>
 			<h1 className="text-xl p-6"> Items currently running low on stock </h1>
