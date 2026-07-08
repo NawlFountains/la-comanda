@@ -13,6 +13,7 @@ import type { ActiveModal } from "../types"
 import TableSkeleton from "../components/skeletons/TableSkeleton"
 import EmptyRow from "../components/EmptyRow"
 import ErrorLoading from "../components/errors/ErrorLoading"
+import InputSearchFilter from "../components/InputSearchFilter"
 
 export default function Products() {
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
@@ -20,8 +21,9 @@ export default function Products() {
 		products,
 		visibleProducts,
 		prices,
-		searchQuery,
-		setSearchQuery, 
+		searchName,
+		setSearchName, 
+		setAppliedSearchName,
 		handleProductCreate,
 		handleProductUpdate,
 		handleProductDelete,
@@ -55,13 +57,13 @@ export default function Products() {
 			{/* Search and creation tab */}
 			<div className="flex flex-row sm:flex-row justify-between mx-2 gap-2">
 				{/* Search filter */}
-				<input
-					placeholder="Search product by name"
-					type="text"
-					value={searchQuery}
-					id="searchQuery"
-					onChange={(e) => setSearchQuery(e.target.value)}
-					className="bg-neutral-300 px-3 w-full h-10 rounded-sm"/>	
+				<InputSearchFilter 
+					id="searchSupplier"
+					placeholder="Search products by name"
+					value={searchName}
+					onChange={setSearchName}
+					onApply={setAppliedSearchName}
+				/>
 				{/* Create product */}
 				<button
 					onClick={() => setCreateProductModal(true)}
@@ -84,7 +86,7 @@ export default function Products() {
 							/>
 						)
 					): (
-						<EmptyRow message={`No ${searchQuery ? 'matching' : ''} products`} />
+						<EmptyRow message={`No ${searchName ? 'matching' : ''} products`} />
 					)}
 					
 					
