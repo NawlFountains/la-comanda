@@ -11,7 +11,9 @@ export const useProducts = (activeProductId?: string | null) => {
 
 	const [prices, setPrices] = useState<PriceHistory[]>([])
 
-	const [searchQuery, setSearchQuery] = useState("")
+	const [searchName, setSearchName] = useState("")
+	const [appliedSearchName, setAppliedSearchName ] = useState("")
+
 	const [loading, setLoading] = useState<boolean>(false)
 	const [loadingDetails, setLoadingDetails] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
@@ -255,16 +257,22 @@ export const useProducts = (activeProductId?: string | null) => {
 
 	const visibleProducts = useMemo(() => {
 		return products.filter(product=>
-			product.name.toLowerCase().includes(searchQuery.toLowerCase())
+			product.name.toLowerCase().includes(appliedSearchName.toLowerCase())
 		)
-	}, [products, searchQuery])
+	}, [products, appliedSearchName])
+
+	const handleSearchNameChanged = (name: string | null) => {
+		setSearchName(name)
+		setAppliedSearchName(name ? name : '')
+	}
 
 	return {
 		products,
 		visibleProducts,
 		prices,
-		searchQuery,
-		setSearchQuery,
+		searchName,
+		setSearchName,
+		setAppliedSearchName: handleSearchNameChanged,
 		handleProductCreate,
 		handleProductUpdate,
 		handleProductDelete,

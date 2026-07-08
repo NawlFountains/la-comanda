@@ -7,8 +7,12 @@ import {parseZodErrors} from '../utils/parseZodErrors'
 
 export const useItems = () => {
 	const [items, setItems] = useState<Item[]>([])
+
 	const [searchName, setSearchName] = useState("")
+	const [appliedName, setAppliedName] = useState("")
+
 	const [filterLowStock, setFilterLowStock] = useState<boolean>(false)
+
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
 	const [errors, setErrors] = useState<ItemErrors>({})
@@ -30,15 +34,20 @@ export const useItems = () => {
 		loadItems()
 	}, [])
 
+	const handleSearchNameChanged = (name: string | null) => {
+		setAppliedName(name ? name : "")
+		setSearchName(name)
+	}
+
 	const visibleItems = useMemo(() => {
 		const filteredItems = filterLowStock
 			? items.filter(item => Number(item.current_stock) < Number(item.low_stock_threshold))
 			: items
 
 		return filteredItems.filter(item =>
-			item.name.toLowerCase().includes(searchName.toLowerCase())
+			item.name.toLowerCase().includes(appliedName.toLowerCase())
 		)
-	}, [items, filterLowStock, searchName])
+	}, [items, filterLowStock, appliedName])
 
 	const handleItemCreate = useCallback( async (itemData: CreateItemPayload): Promise<boolean> => {
 		const result = itemCreateSchema.safeParse(itemData)
@@ -111,6 +120,7 @@ export const useItems = () => {
 		handleItemUpdate,
 		searchName,
 		setSearchName,
+		setAppliedSearchName: handleSearchNameChanged,
 		filterLowStock,
 		setFilterLowStock,
 		loading,
