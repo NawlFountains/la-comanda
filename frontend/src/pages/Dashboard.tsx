@@ -15,6 +15,7 @@ import AddOrderModal from "../components/orders/AddOrderModal"
 import {useProducts} from "../hooks/useProducts"
 import AddProductModal from "../components/products/AddProductModal"
 import DashboardSkeleton from "../components/skeletons/DashboardSkeleton"
+import ErrorLoading from "../components/errors/ErrorLoading"
 
 export default function Dashboard() {
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
@@ -57,6 +58,11 @@ export default function Dashboard() {
 	const [showAddOrderMenu, setShowAddOrderMenu] = useState<boolean>(false)
 	const [showAddProductMenu, setShowAddProductMenu] = useState<boolean>(false)
 
+	const MAX_PENDING_ORDERS = 2
+	const isLimitExceeded = pendingOrders.length > MAX_PENDING_ORDERS
+	const displayedOrders = isLimitExceeded
+		? pendingOrders.slice(0, MAX_PENDING_ORDERS)
+		: pendingOrders
 
 	useEffect(() => {
 		async function loadDashboardData() {
@@ -84,7 +90,10 @@ export default function Dashboard() {
 			<DashboardSkeleton />
 		</ScreenLayout>
 	)
-	if (error) return (<div className="text-center text-red-500">{error}</div>)
+	if (error) 
+		return (
+			<ErrorLoading message={error}/>
+		)
 
 	return (
 		<ScreenLayout>
@@ -159,9 +168,12 @@ export default function Dashboard() {
 				</h1>
 
 			<div className="flex flex-col md:grid md:grid-cols-2 gap-4">
-				<PendingOrdersCard orders={pendingOrders} customers={customers}/>
-				<LowStockItemsCard items={lowStockItems}/>
-			</div>
+				<div className="flex flex-col gap-2">
+				    <PendingOrdersCard orders={displayedOrders} customers={customers} route={isLimitExceeded ? '/stock' : undefined}/>
+				</div>
+        
+			<LowStockItemsCard items={lowStockItems}/>
+		    </div>
 
 			<LatestRestockCard restocks={restocks} items={items} />
 			</div>
