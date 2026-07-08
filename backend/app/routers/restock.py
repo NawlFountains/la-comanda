@@ -1,3 +1,5 @@
+from typing import Optional
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,19 +14,23 @@ router = APIRouter(prefix="/restocks", tags=["restocks"])
 
 @router.get("", response_model=list[RestockResponse])
 async def get_restocks(
+        supplier: Optional[str] = Query(None, description="Filter by supplier name"),
         business: Business = Depends(get_current_business),
         db: AsyncSession = Depends(get_db),
         limit: int = Query(20, ge=1, le=100),
         offset: int = Query(0, ge=0)
 ):
-    result = await db.execute(
-            select(Restock)
-                .where( Restock.business_id == business.id)
-                .order_by(desc(Restock.restock_date))
-                .options(selectinload(Restock.restock_items))
-                .limit(limit)
-                .offset(offset)
+    query = (
+                select(Restock)
+                    .where( Restock.business_id == business.id)
     )
+
+    if supplier is not None:
+        query = query.where(Restock.supplier == supplier)
+
+    query = query.order_by(desc(Restock.restock_date)).options(selectinload(Restock.restock_items)).limit(limit).offset(offset)
+
+    result = await db.execute(query)
 
     restocks = result.scalars().all()
 
