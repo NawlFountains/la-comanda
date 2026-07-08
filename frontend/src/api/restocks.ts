@@ -69,14 +69,37 @@ export async function deleteRestock(id: string): Promise<void> {
 
 
 
-export async function getRestocks(): Promise<Restock []> {
+export async function getRestocks({
+	limit, 
+	offset, 
+	supplier,
+}: {
+	limit?: number | null
+	offset?: number | null
+	supplier?: string | null
+}): Promise<Restock []> {
 	const { data, error } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
 		throw new Error('User is not authenticated')
 	}
-	const response = await fetch(`${API_URL}/restocks`, {
+
+	const url = new URL(`${API_URL}/restocks`)
+
+	if (limit !== null && limit !== undefined) {
+		url.searchParams.append('limit', limit.toString())
+	}
+	
+	if (offset !== null && offset !== undefined) {
+		url.searchParams.append('offset', offset.toString())
+	}
+
+	if (supplier) {
+		url.searchParams.append('supplier', supplier)
+	}
+
+	const response = await fetch(url.toString(), {
 		headers: {
 			'Authorization': `Bearer ${token}`
 		}

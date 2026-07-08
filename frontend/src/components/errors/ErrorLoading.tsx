@@ -14,15 +14,18 @@ export default function ErrorLoading({ message }: ErrorLoadingProps) {
 
 	return (
 	<ScreenLayout>
-		<div className='my-auto flex flex-col text-center items-center gap-5'>
-		<img
-			alt="cat-error"
-			src={errorImage}>
-			</img>
-		<p
-			className='text-red-500 text-xl'>
-			Failed to load data
-		</p>
+		<div className='my-auto flex flex-col text-center items-center gap-5 py-4'>
+			<img
+				alt="cat-error"
+				src={errorImage}>
+				</img>
+			<p
+				className='text-red-500 text-lg'>
+				This is embarassing, failed to fetch data
+			</p>
+			<p className='text-base font-mono'>
+				Refresh the page and try again
+			</p>
 		<div className='grid grid-cols-1 md:grid-cols-2 content-evenly w-full md:w-2/3 gap-3'>
 			<button
 				className={`${buttonVariants.base}`}
