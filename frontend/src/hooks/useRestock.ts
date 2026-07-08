@@ -9,16 +9,25 @@ export const useRestocks = () => {
 	const [restocks, setRestocks] = useState<Restock[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
-	const [searchQuery, setSearchQuery] = useState('')
+
+	const [searchSupplier, setSearchSupplier] = useState('')
+	const [appliedSearchSupplier, setAppliedSearchSupplier] = useState<string | null>(null)
+
 	const [errors, setErrors ] = useState<RestockErrors>({})
 	const [loadError, setLoadError] = useState<string | null>(null)
 	const [submitError, setSubmitError] = useState<string | null>(null)
+
+	const [ page, setPage ] = useState<number>(1)
+	const LIMIT = 20
+
 
 	useEffect(() => {
 		async function loadRestocks() {
 			try {
 				setLoading(true)
-				const data = await getRestocks()
+				const offset = (page - 1) * LIMIT
+
+				const data = await getRestocks({limit: LIMIT, offset, supplier: appliedSearchSupplier})
 
 				setRestocks(data)
 			} catch (err) {
@@ -28,12 +37,12 @@ export const useRestocks = () => {
 			}
 		}
 		loadRestocks()
-	}, [])
+	}, [page, appliedSearchSupplier])
 
-	const visibleRestocks = useMemo(() => {
-		return restocks.filter(restock =>
-				      restock.supplier?.toLowerCase().includes(searchQuery.toLowerCase()))
-	}, [restocks, searchQuery])
+	const handleSearchSupplierChanged = (supplier: string | null) => {
+		setAppliedSearchSupplier(supplier)
+		setSearchSupplier(supplier)
+	}
 
 	const handleRestockCreate = useCallback( async (restockData: CreateRestockPayload): Promise<boolean> => {
 		const result = restockCreateSchema.safeParse(restockData)
@@ -104,9 +113,12 @@ export const useRestocks = () => {
 
 	return {
 		restocks,
-		visibleRestocks,
-		searchQuery,
-		setSearchQuery,
+		page,
+		setPage,
+		limit: LIMIT,
+		searchSupplier,
+		setSearchSupplier,
+		setAppliedSearchSupplier: handleSearchSupplierChanged,
 		loading,
 		submitting,
 		handleRestockCreate,

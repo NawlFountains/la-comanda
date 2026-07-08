@@ -15,6 +15,8 @@ import EditRestockModal from "../components/restocks/EditRestockModal"
 import TableSkeleton from "../components/skeletons/TableSkeleton"
 import EmptyRow from "../components/EmptyRow"
 import ErrorLoading from "../components/errors/ErrorLoading"
+import InputSearchFilter from "../components/InputSearchFilter"
+import PaginationControlFooter from "../components/PaginationControlFooter"
 
 type MultiActiveModal = 
 
@@ -28,6 +30,7 @@ export default function Stock() {
 		visibleItems, 
 		searchName: itemSearchName, 
 		setSearchName: setItemSearchName, 
+		setAppliedSearchName: setAppliedItemSearchName,
 		handleItemCreate, 
 		handleItemDelete, 
 		handleItemUpdate, 
@@ -40,9 +43,12 @@ export default function Stock() {
 		errors: itemErrors } = useItems()
 
 	const { restocks, 
-		visibleRestocks, 
-		searchQuery: restockSearchQuery,
-		setSearchQuery: setRestockSearchQuery,
+		page,
+		setPage,
+		limit,
+		searchSupplier: restockSearchSupplier,
+		setSearchSupplier: setRestockSearchSupplier,
+		setAppliedSearchSupplier: setAppliedSearchSupplier,
 		handleRestockCreate, 
 		handleRestockDelete, 
 		handleRestockUpdate, 
@@ -67,6 +73,8 @@ export default function Stock() {
 	const [showAddItemModal, setShowAddItemModal] = useState(false)
 	const [showAddRestockModal, setShowAddRestockModal] = useState(false)
 
+	const [activeTab, setActiveTab] = useState<'stock'| 'restock'>('stock')
+
 
 	if (itemLoadError || restockLoadError) return (
 		<ErrorLoading message={itemLoadError ?? restockLoadError} />
@@ -74,107 +82,142 @@ export default function Stock() {
 
 	return (
 		<ScreenLayout>
-			<div className="flex flex-col w-full gap-8 mt-2">
+			<div className="flex flex-col w-full gap-2 mt-2">
 
-				
-
-				<div className="flex flex-col gap-3">
-
-					{/* Search, filter and creation tab */}
-					<div className="flex flex-col sm:flex-row justify-between mx-2 gap-2">
-						{/* Search filter */}
-						<input
-							name="search-item"
-							placeholder="Search by item name"
-							type="text"
-							value={itemSearchName}
-							onChange={(e) => setItemSearchName(e.target.value)}
-							className="w-full sm:max-w-xs h-10 bg-neutral-300 px-3 rounded-md text-neutral-800 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-400"/>
-
-						{/* Action Controls */}
-					<div className="flex items-center justify-end w-full sm:w-auto gap-2">
-						{/* Toggle Button */}
+				{/* Toggle views */}
+				<div className="flex flex-row px-2 gap-3 w-fit rounded-lg">
+					<div className={`py-2 ${activeTab === 'stock' ? `border-b-2 border-neutral-800` : ''} transition-all duration-50`}>
 						<button
-							onClick={() => setFilterLowStock(prev => !prev)}
-							className={`${filterLowStock ? buttonVariants.toggleOn : buttonVariants.toggleOff} h-10 flex items-center gap-1.5`}
-						>
-							<span className={`transition-all duration-150 ${filterLowStock ? 'opacity-100 scale-100' : 'opacity-0 scale-0 w-0'}`}>
-								✓
-							</span>
-							<span className="text-nowrap">Low Stock</span>
-						</button>
-
-						{/* Add Item Button */}
-						<button
-							onClick={() => setShowAddItemModal(true)}
-							className={`${buttonVariants.secondary} h-10 flex items-center`}
-						>
-							+ Add item
+							aria-pressed={activeTab === 'stock'}
+							role='tab'
+							className={`${activeTab === 'stock' ? `${buttonVariants.toggleOn}` : buttonVariants.toggleOff}`}
+							onClick={() => setActiveTab('stock')}>
+							Stock
 						</button>
 					</div>
+					<div className={`py-2 ${activeTab === 'restock' ? `border-b-2 border-neutral-800` : ''} transition-all duration-50`}>
+						<button
+							aria-pressed={activeTab === 'restock'}
+							role='tab'
+							className={`${activeTab === 'restock'? buttonVariants.toggleOn : buttonVariants.toggleOff}`}
+							onClick={() => setActiveTab('restock')}>
+							Restock
+						</button>
 					</div>
-
-					{/* Items table */}
-					{!itemLoading ? (
-					<StockTable>
-						{visibleItems.length > 0 ? (
-							visibleItems.map((item, idx) => (
-								<StockRow	
-									key={idx}
-									item={item}
-									onTriggerEdit={() => setActiveModal({ target: 'item', mode: 'edit', itemId: item.id })}
-									onTriggerDelete={() => setActiveModal({ target: 'item', mode: 'delete', itemId: item.id })}
-									/>
-							))
-						): (
-							<EmptyRow message={`No ${itemSearchName ? 'matching' : ''} items`} />
-						)}
-					</StockTable>
-					) : (
-						<TableSkeleton cols={5}/>
-					)}
 				</div>
 
-				<div className="flex flex-col gap-3">
-					<div className="flex flex-row justify-between mx-2 gap-2">
-						{/* Search filter */}
-						<input
-							name="search-supplier"
-							placeholder="Search by supplier name"
-							type="text"
-							value={restockSearchQuery}
-							onChange={(e) => setRestockSearchQuery(e.target.value)}
-							className="bg-neutral-300 px-3 min-w-32 w-full h-10 rounded-sm"/>	
-						<button
-							onClick={() => setShowAddRestockModal(true)}
-							className={buttonVariants.secondary}>
-						+ Add Restock 
-						</button>
-					</div>
+				{/* Stock tab */}
+				{activeTab === 'stock' && (
+					<div className="flex flex-col gap-3">
 
+						{/* Search, filter and creation tab */}
+						<div className="flex flex-col sm:flex-row justify-between mx-2 gap-2">
+							{/* Search filter */}
+							<InputSearchFilter 
+								id="itemSearchName"
+								placeholder="Search by item name"
+								value={itemSearchName}
+								onChange={setItemSearchName}
+								onApply={setAppliedItemSearchName}
+							/>
+							{/* Action Controls */}
+							<div className="flex items-center justify-end w-full sm:w-auto gap-2">
+								{/* Toggle Button */}
+								<button
+									onClick={() => setFilterLowStock(prev => !prev)}
+									className={`${filterLowStock ? buttonVariants.toggleOn : buttonVariants.toggleOff} flex items-center gap-1.5`}
+								>
+									<span className={`transition-all duration-150 ${filterLowStock ? 'opacity-100 scale-100' : 'opacity-0 scale-0 w-0'}`}>
+										✓
+									</span>
+									<span className="text-nowrap">Low Stock</span>
+								</button>
 
+								{/* Add Item Button */}
+								<button
+									onClick={() => setShowAddItemModal(true)}
+									className={`${buttonVariants.secondary} flex items-center`}
+								>
+									+ Add item
+								</button>
+							</div>
+						</div>
 
-					{/* Restock table */}
-					{!restockLoading ? (
-						<RestockTable >
-							{visibleRestocks.length > 0 ? (
-								visibleRestocks.map((restock, idx) => (
-									<RestockRow
+						{/* Items table */}
+						{!itemLoading ? (
+						<StockTable>
+							{visibleItems.length > 0 ? (
+								visibleItems.map((item, idx) => (
+									<StockRow	
 										key={idx}
-										items={items}
-										restock={restock}
-										onTriggerEdit={() => setActiveModal({ target: 'restock', mode: 'edit', restockId: restock.id })}
-										onTriggerDelete={() => setActiveModal({ target: 'restock', mode: 'delete', restockId: restock.id })}
+										item={item}
+										onTriggerEdit={() => setActiveModal({ target: 'item', mode: 'edit', itemId: item.id })}
+										onTriggerDelete={() => setActiveModal({ target: 'item', mode: 'delete', itemId: item.id })}
 										/>
 								))
 							): (
-								<EmptyRow message={`No ${restockSearchQuery ? 'matching' : ''} restocks`} />
+								<EmptyRow message={`No ${itemSearchName ? 'matching' : ''} items`} />
 							)}
-						</RestockTable>
-					): (
-						<TableSkeleton cols={5}/>
-					)}
-				</div>
+						</StockTable>
+						) : (
+							<TableSkeleton cols={5}/>
+						)}
+					</div>
+				)}
+
+
+				{/* Restock tab */}
+				{activeTab === 'restock' && (
+					<div className="flex flex-col gap-3">
+						<div className="flex flex-row justify-between mx-2 gap-2">
+							{/* Search filter */}
+							<InputSearchFilter 
+								id="searchSupplier"
+								placeholder="Search by supplier name"
+								value={restockSearchSupplier}
+								onChange={setRestockSearchSupplier}
+								onApply={setAppliedSearchSupplier}
+							/>
+							<button
+								onClick={() => setShowAddRestockModal(true)}
+								className={buttonVariants.secondary}>
+							+ Add Restock 
+							</button>
+						</div>
+
+
+
+						{/* Restock table */}
+						{!restockLoading ? (
+							<RestockTable >
+								{restocks.length > 0 ? (
+									restocks.map((restock, idx) => (
+										<RestockRow
+											key={idx}
+											items={items}
+											restock={restock}
+											onTriggerEdit={() => setActiveModal({ target: 'restock', mode: 'edit', restockId: restock.id })}
+											onTriggerDelete={() => setActiveModal({ target: 'restock', mode: 'delete', restockId: restock.id })}
+											/>
+									))
+								): (
+									<EmptyRow message={`No ${restockSearchSupplier? 'matching' : ''} restocks`} />
+								)}
+								<PaginationControlFooter 
+									loading={restockLoading}
+									page={page}
+									setPage={setPage}
+									itemCount={restocks.length}
+									limit={limit}
+									
+								/>
+							</RestockTable>
+						): (
+							<TableSkeleton cols={5}/>
+						)}
+					</div>
+				)}
+				
 
 				{/* Item modals */}
 				{showAddItemModal && (
