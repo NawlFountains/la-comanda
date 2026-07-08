@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react"
 import { getOrders, createOrder, updateOrder } from '../api/orders'
 import type { OrderStatus, Order, CreateOrderPayload } from '../types'
-import {formatDatetime} from "../utils/date"
 import {orderCreateSchema, orderUpdateSchema, type OrderErrors} from "../schemas/order"
 import {parseZodErrors} from "../utils/parseZodErrors"
 
@@ -17,7 +16,7 @@ export const useOrders = () => {
 	const [ submitError, setSubmitError ] = useState<string | null>(null)
 
 	const [ page, setPage ] = useState<number>(1)
-	const LIMIT = 5
+	const LIMIT = 20
 
 	useEffect(() => {
 		async function loadOrders() {
