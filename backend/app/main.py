@@ -15,7 +15,7 @@ app = FastAPI(title='Comanda API')
 
 origins = [
     "http://localhost:5173",
-    "https://la-comanda-manager.vercel.app/"
+    "https://la-comanda-manager.vercel.app"
 ]
 
 app.add_middleware(
