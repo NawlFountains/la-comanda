@@ -31,7 +31,7 @@ export const useProducts = (activeProductId?: string | null) => {
 				const data = await getProductsWithDetails()
 				setProducts(data)
 			} catch (err) {
-				setLoadError(err)
+				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}
@@ -45,9 +45,12 @@ export const useProducts = (activeProductId?: string | null) => {
 		async function loadProductPriceHistory() {
 			try {
 				setLoadingDetails(true)
-				const prices = await getProductPriceHistory(activeProductId)
 
-				setPrices(prices)
+				if (activeProductId) {
+					const prices = await getProductPriceHistory(activeProductId)
+					setPrices(prices)
+				}
+
 			} catch (err) {
 				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import ScreenLayout from '../../layouts/ScreenLayout'
 import errorImage from '../../assets/loading-cat.jpg'

@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import { buttonVariants } from '../styles/ButtonStyles'
 import InputModal from '../InputModal'

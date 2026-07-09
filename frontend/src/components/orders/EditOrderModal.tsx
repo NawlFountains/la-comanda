@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import ErrorMessage from '../errors/ErrorMessage'
 import { buttonVariants } from '../styles/ButtonStyles'

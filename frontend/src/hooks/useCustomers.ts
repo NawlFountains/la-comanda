@@ -18,7 +18,7 @@ export const useCustomer = () => {
 				const data = await getCustomers()
 				setCustomers(data)
 			} catch (err) {
-				setError(err)
+				setError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}
@@ -42,7 +42,7 @@ export const useCustomer = () => {
 			setCustomers((prevCustomers) => [...prevCustomers, newCustomer])
 			return newCustomer.id 
 		} catch (err) {
-			setError(err)
+			setError(err instanceof Error ? err.message : "Unkown error")
 			console.error("Failed to create customer:", err)
 			return null 
 		} finally {

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import type { PriceHistory, Item, ProductWithDetails } from '../../types'
 import { LoadingSpinner } from '../styles/Icons'

@@ -1,4 +1,3 @@
-import React from "react"
 import { cardVariants } from "./styles/CardStyles"
 import {buttonVariants} from "./styles/ButtonStyles"
 import ErrorMessage from "./errors/ErrorMessage"

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { PenIcon, TrashIcon } from '../styles/Icons'
 import type { Item, Restock } from '../../types'
 import {formatDate} from '../../utils/date'

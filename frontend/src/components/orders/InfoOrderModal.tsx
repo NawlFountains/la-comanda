@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import type { Customer, Order, Product } from '../../types'
 import {formatDatetime} from '../../utils/date'

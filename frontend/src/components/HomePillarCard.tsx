@@ -1,4 +1,3 @@
-import React from 'react'
 import {cardVariants} from './styles/CardStyles'
 
 interface HomePillarCardProps {

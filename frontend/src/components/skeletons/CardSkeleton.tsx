@@ -1,4 +1,3 @@
-import React from 'react'
 import {cardVariants} from '../styles/CardStyles'
 
 export default function CardSkeleton({ rows = 3 }) {

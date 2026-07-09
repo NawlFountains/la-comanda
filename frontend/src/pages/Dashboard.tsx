@@ -76,7 +76,7 @@ export default function Dashboard() {
 				setItems(itemsData)
 				setLowStockItems(lowStockItemsData)
 			} catch (err) {
-				setError('Failed to fetch data '+err.message)
+				setError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}

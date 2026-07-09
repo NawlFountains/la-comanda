@@ -22,11 +22,15 @@ export function useRegister() {
 	function validate() {
 		const resultRegister = registerSchema.safeParse({ email, password, confirmPassword })
 		const resultBusiness = businessCreateSchema.safeParse({ name, phone })
-		if (!resultRegister.success || !resultBusiness.success) {
+		if (!resultRegister.success) {
+
 			const newLoginErrors: RegisterErrors = parseZodErrors<RegisterErrors>(resultRegister.error)
+			setRegisterErrors(newLoginErrors)
+			return false
+		}
+		if (!resultBusiness.success) {
 			const newBusinessErrors: BusinessErrors = parseZodErrors<BusinessErrors>(resultBusiness.error)
 			
-			setRegisterErrors(newLoginErrors)
 			setBusinessErrors(newBusinessErrors)
 			return false
 		}

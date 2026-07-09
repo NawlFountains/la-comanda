@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import {useState} from "react"
 import InputModal from '../InputModal'
 import ErrorMessage from "../errors/ErrorMessage"
 import { buttonVariants } from '../styles/ButtonStyles'

@@ -76,9 +76,16 @@ export default function Stock() {
 	const [activeTab, setActiveTab] = useState<'stock'| 'restock'>('stock')
 
 
-	if (itemLoadError || restockLoadError) return (
-		<ErrorLoading message={itemLoadError ?? restockLoadError} />
-	)
+	if (itemLoadError) {
+		return (
+			<ErrorLoading message={itemLoadError} />
+		)
+	}
+	if (restockLoadError) {
+		return (
+			<ErrorLoading message={restockLoadError} />
+		)
+	}
 
 	return (
 		<ScreenLayout>
@@ -117,7 +124,7 @@ export default function Stock() {
 								id="itemSearchName"
 								placeholder="Search by item name"
 								value={itemSearchName}
-								onChange={setItemSearchName}
+								onChange={(e) => setItemSearchName(e ?? "")}
 								onApply={setAppliedItemSearchName}
 							/>
 							{/* Action Controls */}
@@ -175,7 +182,7 @@ export default function Stock() {
 								id="searchSupplier"
 								placeholder="Search by supplier name"
 								value={restockSearchSupplier}
-								onChange={setRestockSearchSupplier}
+								onChange={(e) => setRestockSearchSupplier(e ?? "")}
 								onApply={setAppliedSearchSupplier}
 							/>
 							<button

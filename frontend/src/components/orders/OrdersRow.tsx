@@ -1,4 +1,3 @@
-import React from 'react'
 import { InfoIcon, PenIcon, TrashIcon } from '../styles/Icons'
 import { formatDatetime } from '../../utils/date'
 import type { Order, Customer } from '../../types'

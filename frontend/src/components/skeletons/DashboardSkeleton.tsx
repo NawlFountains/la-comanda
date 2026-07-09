@@ -1,4 +1,3 @@
-import React from 'react'
 import CardSkeleton from '../skeletons/CardSkeleton'
 import { buttonVariants } from '../styles/ButtonStyles'
 

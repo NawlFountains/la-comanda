@@ -1,5 +1,4 @@
 // components/Icons.tsx
-import React from "react"
 export function EyeIcon({ className = "w-5 h-5" }) {
 	return (
 		<svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>

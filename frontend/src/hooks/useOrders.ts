@@ -27,7 +27,7 @@ export const useOrders = () => {
 				const data = await getOrders({limit: LIMIT,offset, status: filterStatus, orderDate: appliedDate})
 				setOrders(data)
 			} catch (err) {
-				setLoadError(err)
+				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}

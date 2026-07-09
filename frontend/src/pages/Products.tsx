@@ -61,7 +61,7 @@ export default function Products() {
 					id="searchSupplier"
 					placeholder="Search products by name"
 					value={searchName}
-					onChange={setSearchName}
+					onChange={(e) => setSearchName(e ?? "")}
 					onApply={setAppliedSearchName}
 				/>
 				{/* Create product */}

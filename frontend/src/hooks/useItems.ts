@@ -26,7 +26,7 @@ export const useItems = () => {
 				const data = await getStock()
 				setItems(data)
 			} catch (err) {
-				setLoadError(err)
+				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}

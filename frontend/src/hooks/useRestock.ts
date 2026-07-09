@@ -31,7 +31,7 @@ export const useRestocks = () => {
 
 				setRestocks(data)
 			} catch (err) {
-				setLoadError(err)
+				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}

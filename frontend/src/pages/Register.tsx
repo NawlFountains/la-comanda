@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import AuthLayout from '../layouts/AuthLayout'
 import { buttonVariants } from '../components/styles/ButtonStyles'
 import { EyeIcon, EyeSlashIcon } from '../components/styles/Icons'

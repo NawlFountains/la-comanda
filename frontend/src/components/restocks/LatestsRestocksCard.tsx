@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react'
+import {useMemo} from 'react'
 import type { Restock, Item } from '../../types'
 import {cardVariants} from '../styles/CardStyles'
 import { formatDate } from '../../utils/date'

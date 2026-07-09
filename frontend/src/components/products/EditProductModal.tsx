@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
@@ -295,7 +295,7 @@ export default function EditProductModal({
 								    step="any"
 								    onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
 							    />
-							    <span className='p-1'>{selectedItem.unit}</span>
+							    <span className='p-1'>{selectedItem?.unit}</span>
 							    </td>
 
 							    {/* Remove item button */}
