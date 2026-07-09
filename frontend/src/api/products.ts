@@ -4,7 +4,7 @@ import type { CreatePriceHistoryPayload, CreateProductPayload, CreateRecipeItemP
 const API_URL = import.meta.env.VITE_API_URL
 
 export async function createProduct(productData: CreateProductPayload): Promise<Product> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -26,7 +26,7 @@ export async function createProduct(productData: CreateProductPayload): Promise<
 }
 
 export async function createPriceProduct(productId: string, priceData: CreatePriceHistoryPayload): Promise<PriceHistory> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -49,7 +49,7 @@ export async function createPriceProduct(productId: string, priceData: CreatePri
 }
 
 export async function createRecipeItem(productId: string, recipeItemData: CreateRecipeItemPayload): Promise<RecipeItem> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -70,7 +70,7 @@ export async function createRecipeItem(productId: string, recipeItemData: Create
 }
 
 export async function updateProduct(productId: string, productData: Partial<CreateProductPayload>): Promise<Product> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -90,7 +90,7 @@ export async function updateProduct(productId: string, productData: Partial<Crea
 }
 
 export async function updateRecipeItem(productId: string, recipeId: string, recipeItemData: Partial<CreateRecipeItemPayload>): Promise<RecipeItem> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -112,7 +112,7 @@ export async function updateRecipeItem(productId: string, recipeId: string, reci
 
 
 export async function deleteProduct(productId: string) {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -130,7 +130,7 @@ export async function deleteProduct(productId: string) {
 }
 
 export async function deletePrice(productId: string, priceId: string) {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -148,7 +148,7 @@ export async function deletePrice(productId: string, priceId: string) {
 }
 
 export async function deleteRecipeItem(productId: string, recipeId: string) {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -168,7 +168,7 @@ export async function deleteRecipeItem(productId: string, recipeId: string) {
 }
 
 export async function getProducts(): Promise<Product []> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -187,7 +187,7 @@ export async function getProducts(): Promise<Product []> {
 }
 
 export async function getProductsWithDetails(): Promise<ProductWithDetails[]> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -206,7 +206,7 @@ export async function getProductsWithDetails(): Promise<ProductWithDetails[]> {
 }
 
 export async function getProductPriceHistory(productId: string): Promise<PriceHistory[]> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -227,7 +227,7 @@ export async function getProductPriceHistory(productId: string): Promise<PriceHi
 }
 
 export async function getProductRecipeItems(productId: string): Promise<RecipeItem[]> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {

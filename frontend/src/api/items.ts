@@ -4,7 +4,7 @@ import type { CreateItemPayload, Item } from '../types'
 const API_URL = import.meta.env.VITE_API_URL
 
 export async function createItem(itemData: CreateItemPayload): Promise<Item> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -27,7 +27,7 @@ export async function createItem(itemData: CreateItemPayload): Promise<Item> {
 }
 
 export async function updateItem(itemId: string, itemData: Partial<CreateItemPayload>): Promise<Item> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -50,7 +50,7 @@ export async function updateItem(itemId: string, itemData: Partial<CreateItemPay
 }
 
 export async function deleteItem(itemId: string): Promise<void> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -70,7 +70,7 @@ export async function deleteItem(itemId: string): Promise<void> {
 }
 
 export async function getStock(): Promise<Item []> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -90,7 +90,7 @@ export async function getStock(): Promise<Item []> {
 }
 
 export async function getLowStockItems(): Promise<Item []> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {

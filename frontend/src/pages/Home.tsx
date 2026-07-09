@@ -9,17 +9,14 @@ export default function Home() {
 		{
 			"title": "Real-time stock",
 			"description": "Automatically track current stock, updates on restocks and orders",
-			"route": "/"
 		},
 		{
 			"title": "Smart restocking",
 			"description": "Never run out of stock again. Set low-stock threshold and generate purchase orders in 1 click.",
-			"route": "/"
 		},
 		{
 			"title": "Seamless order managment",
 			"description": "Track customer orders form placement to fulfillment without losing your mind.",
-			"route": "/"
 		},
 	]
 	return (
@@ -35,8 +32,7 @@ export default function Home() {
 				className="w-2/3 shadow-lg shadow-zinc-600 rounded-xl overflow-hidden">
 				<img
 					src={demo_ui}
-					alt="demo_ui">
-				</img>
+					alt="demo_ui"/>
 			</div>
 			</div>
 
@@ -49,7 +45,6 @@ export default function Home() {
 						key={pillar.title}
 						title={pillar.title}
 						description={pillar.description}
-						route={pillar.route}
 						/>
 				))}
 			</div>
@@ -70,8 +65,7 @@ export default function Home() {
 					</div>
 					<img
 						className="w-full md:w-1/2"
-						alt="mock_advantange_img">
-					</img>
+						alt="mock_advantange_img"/>
 				</div>
 
 				<div
@@ -87,8 +81,7 @@ export default function Home() {
 					</div>
 					<img
 						className="w-full md:w-1/2"
-						alt="mock_advantange_img">
-					</img>
+						alt="mock_advantange_img"/>
 				</div>
 			</div>
 

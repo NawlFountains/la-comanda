@@ -4,7 +4,7 @@ import type { CreateRestockPayload, Restock } from '../types'
 const API_URL = import.meta.env.VITE_API_URL
 
 export async function createRestock(restockData: CreateRestockPayload): Promise<Restock> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -26,7 +26,7 @@ export async function createRestock(restockData: CreateRestockPayload): Promise<
 }
 
 export async function updateRestock(id: string, itemData: Partial<CreateRestockPayload>): Promise<Restock> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -48,7 +48,7 @@ export async function updateRestock(id: string, itemData: Partial<CreateRestockP
 }
 
 export async function deleteRestock(id: string): Promise<void> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -78,7 +78,7 @@ export async function getRestocks({
 	offset?: number | null
 	supplier?: string | null
 }): Promise<Restock []> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {

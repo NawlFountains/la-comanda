@@ -1,4 +1,3 @@
-import React from 'react'
 import { useRouteError, isRouteErrorResponse, Link } from 'react-router-dom'
 import ScreenLayout from '../../layouts/ScreenLayout'
 import errorImage from '../../assets/loading-cat.jpg'
@@ -21,8 +20,7 @@ export default function ErrorFallback() {
 		<div className='my-auto flex flex-col text-center items-center gap-5'>
 		<img
 			alt="cat-error"
-			src={errorImage}>
-			</img>
+			src={errorImage}/>
 		<p
 			className='text-red-500 text-xl'>
 		Error: {errorMessage}

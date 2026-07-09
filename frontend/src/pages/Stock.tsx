@@ -48,7 +48,7 @@ export default function Stock() {
 		limit,
 		searchSupplier: restockSearchSupplier,
 		setSearchSupplier: setRestockSearchSupplier,
-		setAppliedSearchSupplier: setAppliedSearchSupplier,
+		setAppliedSearchSupplier,
 		handleRestockCreate, 
 		handleRestockDelete, 
 		handleRestockUpdate, 

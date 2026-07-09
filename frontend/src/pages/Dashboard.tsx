@@ -26,7 +26,6 @@ export default function Dashboard() {
 	} = useCustomer()
 
 	const {
-		orders,
 		submitting: orderSubmitting,
 		handleOrderCreate, 
 		errors: orderErrors,

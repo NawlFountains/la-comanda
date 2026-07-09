@@ -17,8 +17,7 @@ export default function ErrorLoading({ message }: ErrorLoadingProps) {
 		<div className='my-auto flex flex-col text-center items-center gap-5 py-4'>
 			<img
 				alt="cat-error"
-				src={errorImage}>
-				</img>
+				src={errorImage}/>
 			<p
 				className='text-red-500 text-lg'>
 				This is embarassing, failed to fetch data

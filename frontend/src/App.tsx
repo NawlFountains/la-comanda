@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom' 
 import { protectedLoader, loginLoader, rootSessionLoader } from './routes/authLoader'
 import Layout from './layouts/Layout'

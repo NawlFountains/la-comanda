@@ -1,4 +1,3 @@
-import React, {useState} from 'react'
 import { InfoIcon, PenIcon, TrashIcon } from '../styles/Icons'
 import type { ProductWithDetails } from '../../types'
 

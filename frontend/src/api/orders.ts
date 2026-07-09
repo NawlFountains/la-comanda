@@ -4,7 +4,7 @@ import type { Order, OrderStatus, CreateOrderPayload } from '../types'
 const API_URL = import.meta.env.VITE_API_URL
 
 export async function createOrder(orderData: CreateOrderPayload): Promise<Order> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -27,7 +27,7 @@ export async function createOrder(orderData: CreateOrderPayload): Promise<Order>
 }
 
 export async function updateOrder(id: string, orderData: Partial<CreateOrderPayload>): Promise<Order> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -63,7 +63,7 @@ export async function getOrders({
 	orderDate?: string | null;
 	sortByDate?: 'asc'| 'desc' | null;
 }): Promise<Order[]> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {

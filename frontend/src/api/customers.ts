@@ -4,7 +4,7 @@ import type { CreateCustomerPayload, Customer } from '../types'
 const API_URL = import.meta.env.VITE_API_URL
 
 export async function createCustomer(customerData: CreateCustomerPayload): Promise<Customer> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
@@ -26,7 +26,7 @@ export async function createCustomer(customerData: CreateCustomerPayload): Promi
 }
 
 export async function getCustomers(): Promise<Customer []> {
-	const { data, error } = await supabase.auth.getSession()
+	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
 	if (!token) {
