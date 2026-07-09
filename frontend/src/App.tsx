@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import Orders from './pages/Orders'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import Stock from './pages/Stock'
 import Products from './pages/Products'
 import ErrorFallback from './components/errors/ErrorFallback'
@@ -48,6 +49,11 @@ const router = createBrowserRouter([
 	{
 		path: '/login',
 		element: <Login />,
+		loader: loginLoader
+	}, 
+	{
+		path: '/register',
+		element: <Register />,
 		loader: loginLoader
 	}
 ])

@@ -3,6 +3,7 @@ import {cardVariants} from "../components/styles/CardStyles";
 import HomePillarCard from "../components/HomePillarCard";
 import ScreenLayout from "../layouts/ScreenLayout";
 import demo_ui from '../assets/demo_ui.png'
+import {Link} from "react-router-dom";
 
 export default function Home() {
 	const pillars = [
@@ -92,10 +93,11 @@ export default function Home() {
 					Ready to take control of your inventory? 
 					Join now to stop wasting time on managment
 				</p>
-				<button
-					className={`{${buttonVariants.base} font-mono p-2 w-full md:w-1/3`}>
+				<Link
+					to="/register"
+					className={`{${buttonVariants.base} font-mono p-2 w-full md:w-1/3 text-center`}>
 					[ Create your free account ]
-					</button>
+					</Link>
 			</div>
 
 			{/* Footer */}
