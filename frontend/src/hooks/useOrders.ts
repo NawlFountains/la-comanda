@@ -77,7 +77,7 @@ export const useOrders = () => {
 			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
 			return true
 		} catch (err) {
-			setSubmitError(err)
+			setSubmitError(err instanceof Error ? err.message : "Unkown error")
 			console.error("Failed to update order:", err)
 			return false
 		} finally {
@@ -100,7 +100,7 @@ export const useOrders = () => {
 			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
 			return true
 		} catch (err) {
-			setSubmitError(err)
+			setSubmitError(err instanceof Error ? err.message : "Unkown error")
 			console.error("Failed to update order:", err)
 			return false
 		} finally {
