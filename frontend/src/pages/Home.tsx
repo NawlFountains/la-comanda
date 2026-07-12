@@ -27,7 +27,7 @@ export default function Home() {
 			<div className="flex flex-col items-center p-5 gap-4">
 				<h1 className="text-xl font-mono">Stop guessing your inventory. Focus on what matters</h1>
 				<p className="text-lg text-neutral-700">Streamline your stock, automate restock alerts, manage customer
-				orders all from one centralized dashbord.</p>
+				orders all from one centralized dashboard.</p>
 
 			<div
 				className="w-2/3 shadow-lg shadow-zinc-600 rounded-xl overflow-hidden">
@@ -77,7 +77,7 @@ export default function Home() {
 						Order syncing
 					</h2>
 					<p className="text-neutral-600 leading-relaxed">
-					Log every other you got either in-person, by your cook or by yourself, orders sync instanly so your inventory numbers are flawless across your system.
+					Log every order you got either in-person, by your cook or by yourself, orders sync instanly so your inventory numbers are flawless across your system.
 					</p>
 					</div>
 					<img
@@ -99,10 +99,27 @@ export default function Home() {
 					[ Create your free account ]
 					</Link>
 			</div>
-
-			{/* Footer */}
-
-
+			<div className={`flex flex-col gap-3 w-full md:w-2/3 items-center`}>
+				<div className="flex flex-col border border-dashed borde-neutral-400 bg-neutral-100 rounded-xl p-3 gap-8">
+					<div className="p-2 border-b border-neutral-800">
+						<h1 className="text-2xl text-center font-bold">Pricing</h1>
+					</div>
+					<div className="flex flex-row font-mono gap-2 items-center justify-center">
+						<p className="text-3xl">$19.99</p>
+						<p className="font-mono text-sm className text-neutral-400">/ Month</p>
+					</div>
+					<div className="flex flex-col gap-2">
+						<p>Control your orders for customers</p>
+						<p>Stock mananagment</p>
+						<p>Product pricing</p>
+						<p>General dashboard</p>
+					</div>
+					<div className="flex flex-col gap-2">
+					<button className={buttonVariants.primary}>Try for free</button>
+						<p className="text-neutral-500 text-sm">* 7 days free trial</p>
+					</div>
+				</div>
+			</div>
 			</div>
 		</ScreenLayout>
 	)
