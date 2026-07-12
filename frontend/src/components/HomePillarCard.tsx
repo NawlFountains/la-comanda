@@ -9,7 +9,7 @@ export default function HomePillarCard( { title, description } : HomePillarCardP
 	return (
 		<div className={`${cardVariants.base} shadow-lg`}>
 		<h2 className='text-lg font-mono font-bold'>{title}</h2>
-		<p className='text-neutral-700'>{description}</p>
+		<p className='text-neutral-700 dark:text-neutral-400'>{description}</p>
 		</div>
 	)
 }

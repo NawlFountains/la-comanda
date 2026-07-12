@@ -29,16 +29,16 @@ export default function Register () {
 
 	return (
 		<AuthLayout>
-			<div className="bg-neutral-100 flex flex-col text-center items-center justify-center min-h-full w-full max-w-xl rounded-xl gap-8 p-4 sm:shadow-lg text-lg">
+			<div className="bg-neutral-100 dark:bg-neutral-800 flex flex-col text-center items-center justify-center min-h-full w-full max-w-xl rounded-xl gap-8 p-4 sm:shadow-lg text-lg">
 
 			<div className="relative flex flex-col gap-2 py-4 w-full">
 			<Link 
-				className="absolute left-0 text-neutral-600 hover:text-neutral-700 hidden sm:flex"
+				className="absolute left-0 text-neutral-600 dark:text-neutral-400 hover:text-neutral-700 hidden dark:hover:text-neutral-200 sm:flex"
 				to="/">
 				{`> Back`}
 			</Link>
 				 <h1 className="text-3xl font-bold">La comanda</h1>
-				 <h2 className="text-2xl text-neutral-700">Create your account</h2>
+				 <h2 className="text-2xl text-neutral-700 dark:text-neutral-400">Create your account</h2>
 			</div>
 
 			{/* Email input */}

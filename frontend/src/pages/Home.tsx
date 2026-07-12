@@ -26,7 +26,7 @@ export default function Home() {
 			{/* Introduction */}
 			<div className="flex flex-col items-center p-5 gap-4">
 				<h1 className="text-xl font-mono">Stop guessing your inventory. Focus on what matters</h1>
-				<p className="text-lg text-neutral-700">Streamline your stock, automate restock alerts, manage customer
+				<p className="text-lg text-neutral-700 dark:text-neutral-400">Streamline your stock, automate restock alerts, manage customer
 				orders all from one centralized dashboard.</p>
 
 			<div
@@ -60,7 +60,7 @@ export default function Home() {
 					<h2 className="text-xl font-mono">
 						Goodbye to spreadsheets
 					</h2>
-					<p className="text-neutral-600 leading-relaxed">
+					<p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
 					Instead of spending time every time your buy products, simply log the restock and the stock is updated automatically.
 					</p>
 					</div>
@@ -76,7 +76,7 @@ export default function Home() {
 					<h2 className="text-xl font-mono">
 						Order syncing
 					</h2>
-					<p className="text-neutral-600 leading-relaxed">
+					<p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
 					Log every order you got either in-person, by your cook or by yourself, orders sync instanly so your inventory numbers are flawless across your system.
 					</p>
 					</div>
@@ -100,7 +100,7 @@ export default function Home() {
 					</Link>
 			</div>
 			<div className={`flex flex-col gap-3 w-full md:w-2/3 items-center`}>
-				<div className="flex flex-col border border-dashed borde-neutral-400 bg-neutral-100 rounded-xl p-3 gap-8">
+				<div className="flex flex-col border border-dashed border-neutral-400 bg-neutral-100 dark:bg-neutral-800 rounded-xl p-3 gap-8">
 					<div className="p-2 border-b border-neutral-800">
 						<h1 className="text-2xl text-center font-bold">Pricing</h1>
 					</div>
