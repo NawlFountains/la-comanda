@@ -10,17 +10,17 @@ export default function DashboardSkeleton() {
 			<div className="flex flex-col md:grid md:grid-cols-3 w-full md:w-2/3 max-w-xl gap-4 mb-4">
 				<div className={`w-full h-10 rounded-xl ${buttonVariants.secondary} p-2`}>
 					<div
-						className='w-5/6 h-6 mx-auto rounded-xl bg-neutral-400'>
+						className='w-5/6 h-6 mx-auto rounded-xl bg-neutral-400 dark:bg-neutral-700'>
 					</div>
 				</div>
 				<div className={`w-full h-10 rounded-xl ${buttonVariants.secondary} p-2`}>
 					<div
-						className='w-5/6 h-6 mx-auto rounded-xl bg-neutral-400'>
+						className='w-5/6 h-6 mx-auto rounded-xl bg-neutral-400 dark:bg-neutral-700'>
 					</div>
 				</div>
 				<div className={`w-full h-10 rounded-xl ${buttonVariants.secondary} p-2`}>
 					<div
-						className='w-5/6 h-6 mx-auto rounded-xl bg-neutral-400'>
+						className='w-5/6 h-6 mx-auto rounded-xl bg-neutral-400 dark:bg-neutral-700'>
 					</div>
 				</div>
 
