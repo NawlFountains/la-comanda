@@ -181,7 +181,7 @@ export default function EditProductModal({
 					{((product.recipe_items && product?.recipe_items?.length > 0) || (newRecipeItems && newRecipeItems.length > 0)) && (
 						<table>
 						<thead>
-							<tr className='text-lg font-mono bg-neutral-200'>
+							<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700'>
 							<td>Item</td>
 							<td>Amount</td>
 							<td>Actions</td>
@@ -265,10 +265,10 @@ export default function EditProductModal({
 
 							    {/* Item Dropdown Selection */}
 							    <td>
-							<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-								<legend className="text-xs px-1 text-neutral-600">Item</legend>
+							<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+								<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Item</legend>
 							      <select
-								className='w-2/3 py-1 px-2 text-center'
+								className='dark:bg-neutral-800 w-2/3 py-1 px-2 text-center'
 								value={item.item_id}
 								id={`recipeItem${idx}ItemId`}
 								onChange={(e) => handleItemChange(idx, 'item_id', e.target.value)}

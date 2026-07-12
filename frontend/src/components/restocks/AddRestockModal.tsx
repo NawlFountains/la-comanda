@@ -100,10 +100,10 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 
 				    {/* Item Dropdown Selection */}
 				    <div className='w-full flex-1'>
-					<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600">Item</legend>
+					<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Item</legend>
 				      <select
-				      	className='w-full py-1 px-2'
+				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={item.item_id}
 					id={`restockItem${index}Id`}
 					onChange={(e) => handleItemChange(index, 'item_id', e.target.value)}

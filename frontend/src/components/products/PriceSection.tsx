@@ -43,7 +43,7 @@ export default function PriceSection({
 		{((prices && prices.length > 0) || (createPrice)) && (
 			<table>
 			<thead>
-				<tr className='text-lg font-mono bg-neutral-200'>
+				<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700'>
 				<td>Price</td>
 				<td>From</td>
 				</tr>
@@ -125,7 +125,7 @@ export default function PriceSection({
 		{prices && prices.length > 1 && (
 			<button 
 				onClick={() => setShowPastPrices(!showPastPrices)}
-				className="text-sm text-neutral-600 underline cursor-pointer hover:text-neutral-800"
+				className="text-sm text-neutral-600 dark:text-neutral-300 underline cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-100"
 			>
 				{showPastPrices? "Hide History" : `Show History (${prices.length - 1} more)`}
 			</button>

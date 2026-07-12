@@ -8,10 +8,10 @@ interface LowStockItemsCardProps {
 
 export default function LowStockItemsCard({ items } : LowStockItemsCardProps) {	
 	return (
-		<div className={cardVariants.table}>
+		<div className={cardVariants.tableBody}>
 			<h1 className="text-xl p-6"> Items currently running low on stock </h1>
-			<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
-				<div className="bg-neutral-200 grid grid-cols-3 p-1 font-mono">
+			<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
+				<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 p-1 font-mono">
 						<p>Name</p>
 						<p>Current stock</p>
 						<p>Low stock threshold</p>

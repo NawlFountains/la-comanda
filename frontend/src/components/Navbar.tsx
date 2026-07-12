@@ -51,7 +51,7 @@ export default function Navbar({ business }: NavBarProps) {
 
 
 	return (
-		<nav className="bg-neutral-100 w-full">
+		<nav className="bg-neutral-100 dark:bg-neutral-700 w-full dark:text-neutral-200">
 
 		{/* HORIZONTAL MENU */}
 		<div className="text-lg flex-row hidden md:flex w-full justify-between p-2">
@@ -89,15 +89,15 @@ export default function Navbar({ business }: NavBarProps) {
 				<button 
 					onClick={() => setMenuOpen(prev => !prev)} 
 					className="flex flex-col justify-center items-center w-8 h-8 gap-[6px] cursor-pointer group my-auto">
-					<span className={`h-[3px] w-6 bg-neutral-800 rounded-full transition-all duration-300 ease-in-out ${
+					<span className={`h-[3px] w-6 bg-neutral-800 dark:bg-neutral-200 rounded-full transition-all duration-300 ease-in-out ${
 						menuOpen ? "rotate-45 translate-y-[9px]" : ""
 					}`} />
 
-					<span className={`h-[3px] w-6 bg-neutral-800 rounded-full transition-all duration-300 ease-in-out ${
+					<span className={`h-[3px] w-6 bg-neutral-800 dark:bg-neutral-200 rounded-full transition-all duration-300 ease-in-out ${
 						menuOpen ? "opacity-0 scale-0" : ""
 					}`} />
 
-					<span className={`h-[3px] w-6 bg-neutral-800 rounded-full transition-all duration-300 ease-in-out ${
+					<span className={`h-[3px] w-6 bg-neutral-800 dark:bg-neutral-200 rounded-full transition-all duration-300 ease-in-out ${
 						menuOpen ? "-rotate-45 -translate-y-[9px]" : ""
 					}`} />
 				</button>
@@ -110,7 +110,7 @@ export default function Navbar({ business }: NavBarProps) {
 						? 'max-h-96 opacity-100 pointer-events-auto'
 						: 'max-h-0 opacity-0 pointer-events-none'}`}>
 				<div className="text-center">
-					<ul className="divide-y divide-neutral-300">
+					<ul className="divide-y divide-neutral-300 dark:divide-neutral-800">
 					{navlinkPaths.map((navlink, idx) => (
 						<li key={idx}>
 							<StyledNavLink 

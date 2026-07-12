@@ -17,12 +17,12 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 	}, [customers])
 
 	return (
-		<div className={cardVariants.table}>
+		<div className={cardVariants.tableBody}>
 			<div className='flex flex-col gap-2 p-4'>
 				<h1 className="text-xl "> Currently pending orders</h1>
 			</div>
-			<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
-				<div className="bg-neutral-200 grid grid-cols-3 sm:grid-cols-4 p-1 font-mono">
+			<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
+				<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 sm:grid-cols-4 p-1 font-mono">
 						<p className='hidden sm:block'>Ref</p>
 						<p>Customer name</p>
 						<p>Created at</p>
@@ -50,10 +50,10 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 				)}
 			</div>
 			{route && (
-				<div className="p-3 bg-neutral-50 text-center border-t border-neutral-300 rounded-b-xl">
+				<div className="p-3 bg-neutral-50 dark:bg-neutral-800 text-center border-t border-neutral-300 dark:border-neutral-600 rounded-b-xl">
 					<Link 
 						to={route} 
-						className="text-sm font-medium text-neutral-600 hover:text-neutral-900 underline transition-colors"
+						className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 underline transition-colors"
 					>
 						More pending orders, check orders page →
 					</Link>

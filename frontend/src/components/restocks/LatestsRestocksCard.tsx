@@ -18,10 +18,10 @@ export default function LatestRestockCard({ restocks, items }: LatestRestockCard
 
 
 	return (
-		<div className={cardVariants.table}>
+		<div className={cardVariants.tableBody}>
 			<h1 className="text-xl p-6"> Latest restocks</h1>
-			<div className="flex flex-col divide-y divide-neutral-300 rounded-b-xl">
-				<div className="bg-neutral-200 grid grid-cols-3 p-1 font-mono">
+			<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
+				<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 p-1 font-mono">
 						<p>Date</p>
 						<p>Supplier</p>
 						<p>Restock items</p>

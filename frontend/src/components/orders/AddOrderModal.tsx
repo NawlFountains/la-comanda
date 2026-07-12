@@ -93,23 +93,24 @@ export default function AddOrderModal({
 				</div>
 			</div>
 			<div className='w-full flex-1'>
-	<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-				<legend className="text-xs px-1 text-neutral-600">Customer</legend>
+	<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Customer</legend>
 				      <select
-				      	className='w-full py-1 px-2'
+				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={customerId}
 					id="customerId"
 					onChange={(e) => setCustomerId(e.target.value)}
 				      >
 					<option value="" disabled>Select an costumer</option>
+					<option value='create-customer'>
+					 Create new customer
+					</option>
 					{customers.map((validCustomers) => (
 					  <option key={validCustomers.id} value={validCustomers.id}>
 					    {validCustomers.name}
 					  </option>
 					))}
-					<option value='create-customer'>
-					 Create new customer
-					</option>
+					
 				      </select>
 		</fieldset>
 				    {orderErrors.customer_id && (<ErrorMessage message={orderErrors.customer_id}/>)}
@@ -141,11 +142,11 @@ export default function AddOrderModal({
 				</div>
 			)}
 			<div className='flex flex-col'>
-				<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600">Status</legend>
+				<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Status</legend>
 
 				<select
-				      	className='w-full rounded-lg py-1 px-2'
+				      	className='dark:bg-neutral-800 w-full rounded-lg py-1 px-2'
 					value={status}
 					id="orderStatus"
 					onChange={(e) => setStatus(e.target.value as OrderStatus)}
@@ -164,11 +165,11 @@ export default function AddOrderModal({
 
 					    {/* Item Dropdown Selection */}
 					    <div className='w-full flex-1'>
-					    <fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600">Product</legend>
+					    <fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Product</legend>
 
 					      <select
-						className='w-full rounded-lg py-1 px-2'
+						className='dark:bg-neutral-800 w-full rounded-lg py-1 px-2'
 						id={`orderItem${index}Id$`}
 						value={item.product_id}
 						onChange={(e) => handleItemChange(index, 'product_id', e.target.value)}

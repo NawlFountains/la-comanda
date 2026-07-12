@@ -75,7 +75,7 @@ export default function Orders() {
 				  id="filter-select"
 				  value={filterStatus ?? ""}
 				  onChange={(e) => handleStatusChange(e.target.value as OrderStatus | "")}
-				  className="bg-neutral-100 border border-neutral-300 rounded p-2 font-medium focus:outline-none focus:ring-neutral-500 cursor-pointer"
+				  className="bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded p-2 font-medium focus:outline-none focus:ring-neutral-500 cursor-pointer"
 				>
 					<option value="" disabled hidden>Filter by status</option>
 					<option value="pending">Pending</option>

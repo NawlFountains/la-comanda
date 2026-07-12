@@ -26,11 +26,11 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 
 			{/* Product info */}
 			<div className="grid grid-cols-4 gap-x-4 max-w-lg mx-auto text-md p-3 rounded-md border border-neutral-200">
-				<div className="text-center text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
+				<div className="text-center text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>Name:</p>
 					<p>ID:</p>
 				</div>
-				<div className="text-left text-neutral-800 font-medium tracking-wider text-sm flex flex-col gap-2 justify-center col-span-3">
+				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider text-sm flex flex-col gap-2 justify-center col-span-3">
 					<p>{product.name}</p>
 					<p className='font-mono'>{product.id}</p>
 				</div>
@@ -44,7 +44,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 					<h2 className='font-mono text-lg'>Prices</h2>
 					<table>
 					<thead>
-						<tr className='text-lg font-mono bg-neutral-200 font-medium'>
+						<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700 font-medium'>
 							<td>
 							Price
 							</td>
@@ -69,7 +69,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 				{prices && prices.length > 1 && (
 						<button 
 							onClick={() => setShowPastPrices(!showPastPrices)}
-							className="text-sm text-neutral-600 underline cursor-pointer hover:text-neutral-800"
+							className="text-sm text-neutral-600 dark:text-neutral-300 underline cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-100"
 						>
 							{showPastPrices? "Hide History" : `Show History (${prices.length - 1} more)`}
 						</button>
@@ -81,7 +81,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 					<h2 className='font-mono text-lg'>Recipe</h2>
 					<table>
 					<thead>
-						<tr className='font-mono text-lg bg-neutral-200'>
+						<tr className='font-mono text-lg bg-neutral-200 dark:bg-neutral-700'>
 							<td>
 								Item
 							</td>

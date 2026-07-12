@@ -24,8 +24,8 @@ export default function InputModal({ className = "", label, id, ...props }: Inpu
 	}
 
 	return (
-		<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-			<legend className="text-xs px-1 text-neutral-600">{label}</legend>
+		<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+			<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{label}</legend>
 			{input}
 		</fieldset>
 	)

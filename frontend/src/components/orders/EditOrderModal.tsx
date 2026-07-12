@@ -38,22 +38,22 @@ export default function EditOrderModal({
 	return (
 		<ModalLayout onClose={onClose}>
 			{/* Title & Order ID Header */}
-			<div className="text-lg border-neutral-200 pb-2 mb-4">
-				<h1 className="font-mono text-neutral-500 text-center break-all px-4">
+			<div className="text-lg border-b border-neutral-200 dark:border-neutral-700 pb-2 mb-4">
+				<h1 className="font-mono text-center break-all px-4">
 					Edit Order 
 				</h1>
 			</div>
 
 			{/* Customer and Order Status Grid */}
-			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 p-3 rounded-md border border-neutral-200">
-				<div className="text-left text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
+			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 dark:bg-neutral-700/40 p-3 rounded-md border border-neutral-200 dark:border-neutral-600">
+				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>Customer:</p>
 					<p>Contact:</p>
 					<p>Status:</p>
 					<p>Created at:</p>
 					<p>ID:</p>
 				</div>
-				<div className="text-left text-neutral-800 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
+				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
 					<p>{customer.name}</p>
 					<p>{customer.phone || 'N/A'}</p>
 					<p className={`font-mono capitalize font-bold ${
@@ -66,10 +66,10 @@ export default function EditOrderModal({
 				</div>
 			</div>
 			<div className='flex flex-col'>
-			<fieldset className="border border-neutral-400 rounded-lg px-2 pb-1">
-				<legend className="text-xs px-1 text-neutral-600">Status</legend>
+			<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
+				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Status</legend>
 				<select
-				      	className='w-full py-1 px-2'
+				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={status}
 					onChange={(e) => setStatus(e.target.value as OrderStatus)}
 				      >

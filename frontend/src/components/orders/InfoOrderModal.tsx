@@ -21,22 +21,22 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 		<ModalLayout onClose={onClose}>
 
 			{/* Title & Order ID Header */}
-			<div className="text-lg border-neutral-200 pb-2 ">
-				<h1 className="font-mono text-neutral-500 text-center break-all px-4">
+			<div className="text-lg border-b border-neutral-200 dark:border-neutral-700 pb-2 ">
+				<h1 className="font-mono text-center break-all px-4">
 					Info about Order
 				</h1>
 			</div>
 
 			{/* Customer and Order Status Grid */}
-			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 p-3 rounded-md border border-neutral-200">
-				<div className="text-left text-neutral-500 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
+			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 dark:bg-neutral-700/40 p-3 rounded-md border border-neutral-200 dark:border-neutral-600">
+				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>Customer:</p>
 					<p>Contact:</p>
 					<p>Status:</p>
 					<p>Created at:</p>
 					<p>ID:</p>
 				</div>
-				<div className="text-left text-neutral-800 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
+				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
 					<p>{customer.name}</p>
 					<p>{customer.phone || 'N/A'}</p>
 					<p className={`font-mono capitalize font-bold ${
@@ -53,7 +53,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 			{order?.order_items && order?.order_items?.length > 0 && (
 				<table className='text-center'>
 				<thead>
-					<tr className='font-mono bg-neutral-200 text-lg'>
+					<tr className='font-mono bg-neutral-200 dark:bg-neutral-700 text-lg'>
 						<td className='w-1/3'>
 						Product
 						</td>
@@ -84,9 +84,9 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 			)}
 
 			{/* Total Section */}
-			<div className="flex justify-between items-center p-3 bg-neutral-100 rounded-md border border-neutral-200">
-				<span className="text-neutral-600 font-medium text-sm">Total Amount</span>
-				<p className="font-mono text-xl font-bold text-neutral-900">${total.toFixed(2)}</p>
+			<div className="flex justify-between items-center p-3 bg-neutral-100 dark:bg-neutral-700/40 rounded-md border border-neutral-200 dark:border-neutral-600">
+				<span className="text-neutral-600 dark:text-neutral-200 font-medium text-sm">Total Amount</span>
+				<p className="font-mono text-xl font-bold text-neutral-900 dark:text-neutral-400">${total.toFixed(2)}</p>
 			</div>
 		</ModalLayout>
 	)

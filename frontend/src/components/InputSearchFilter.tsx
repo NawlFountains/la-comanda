@@ -31,11 +31,11 @@ export default function InputSearchFilter({
 				onKeyDown={(e) => {
 					if (e.key === "Enter") onApply(value)
 				}}
-				className="bg-neutral-100 border border-neutral-300 rounded-l-lg px-3 w-full focus:outline-none focus:ring-1 focus:ring-neutral-500"
+				className="bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-l-lg px-3 w-full focus:outline-none focus:ring-1 focus:ring-neutral-500"
 			/>
 			<button
 				onClick={() => onApply(value)}
-				className="bg-neutral-800 text-white px-4 rounded-r-lg hover:bg-neutral-700 transition-colors whitespace-nowrap"
+				className="bg-neutral-800 dark:bg-neutral-700 text-neutral-200 px-4 rounded-r-lg hover:bg-neutral-700 dark:hover:bg-neutral-200 dark:hover:text-neutral-800 transition-colors whitespace-nowrap"
 			>
 				Search
 			</button>

@@ -93,7 +93,7 @@ export default function Stock() {
 
 				{/* Toggle views */}
 				<div className="flex flex-row px-2 gap-3 w-fit rounded-lg">
-					<div className={`py-2 ${activeTab === 'stock' ? `border-b-2 border-neutral-800` : ''} transition-all duration-50`}>
+					<div className={`py-2 ${activeTab === 'stock' ? `border-b-2` : ''} border-neutral-800 dark:border-neutral-600 transition-all duration-50`}>
 						<button
 							aria-pressed={activeTab === 'stock'}
 							role='tab'
@@ -102,7 +102,7 @@ export default function Stock() {
 							Stock
 						</button>
 					</div>
-					<div className={`py-2 ${activeTab === 'restock' ? `border-b-2 border-neutral-800` : ''} transition-all duration-50`}>
+					<div className={`py-2 ${activeTab === 'restock' ? `border-b-2` : ''} border-neutral-800 dark:border-neutral-600 transition-all duration-50`}>
 						<button
 							aria-pressed={activeTab === 'restock'}
 							role='tab'
