@@ -39,7 +39,7 @@ export default function Layout() {
 
 	if (loading && !isHomePage) {
 		return (
-			<div className='min-h-screen w-full bg-neutral-200 flex flex-col items-center w-5/6'>
+			<div className='min-h-screen w-full bg-neutral-200 dark:bg-neutral-700 flex flex-col items-center w-5/6'>
 				<div className='w-full flex-1 flex flex-col sm:w-5/6 items-center justify-center'>
 				<LoadingSpinner size={100}/>
 				</div>

@@ -51,7 +51,7 @@ export default function Navbar({ business }: NavBarProps) {
 
 
 	return (
-		<nav className="bg-neutral-100 dark:bg-neutral-700 w-full dark:text-neutral-200">
+		<nav className="bg-neutral-100 dark:bg-neutral-800 w-full dark:text-neutral-200">
 
 		{/* HORIZONTAL MENU */}
 		<div className="text-lg flex-row hidden md:flex w-full justify-between p-2">
