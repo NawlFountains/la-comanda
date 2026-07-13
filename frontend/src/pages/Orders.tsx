@@ -16,6 +16,7 @@ import EmptyRow from "../components/EmptyRow"
 import InfoOrderModal from "../components/orders/InfoOrderModal"
 import InputSearchFilter from "../components/InputSearchFilter"
 import PaginationControlFooter from "../components/PaginationControlFooter"
+import ErrorLoading from "../components/errors/ErrorLoading"
 
 export default function Orders() {
 	const { orders,
@@ -47,7 +48,7 @@ export default function Orders() {
 	const [ showCreateOrderModal, setShowCreateOrderModal ] = useState<boolean>(false)
 	const activeOrder = orders.find(o => o.id === activeModal?.id)
 
-	if (loadError) return (<div className="text-center text-red-500">{loadError}</div>)
+	if (loadError) return (<ErrorLoading message={loadError}/>)
 
 	const handleStatusChange = (val: OrderStatus |  "") => {
 		const apiStatusValue = val === "" ? null : val;
