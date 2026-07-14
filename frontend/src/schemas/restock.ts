@@ -7,15 +7,18 @@ export const restockItemSchema = z.object({
 })
 
 export const restockCreateSchema = z.object({
-	restock_date: z.coerce.date({ message: "Please select a valid date" }),
+	restock_date: z.string().refine((val) => !isNaN(Date.parse(val)), {
+		message: "Invalid date"
+	}),
 	supplier: z.string().min(1, "Supplier name is required").max(100),
 	notes: z.string().nullable().optional(),
 	restock_items: z.array(restockItemSchema).min(1, "Must include at least one item")
 })
 
-export const restockUpdateSchema = restockCreateSchema.partial()
+export const restockUpdateSchema = restockCreateSchema.omit({ restock_items: true })
 
 export type RestockCreateData = z.infer<typeof restockCreateSchema>
+export type RestockItemCreateData = z.infer<typeof restockItemSchema>
 export type RestockUpdateData= z.infer<typeof restockUpdateSchema>
 
 export type RestockErrors = Partial<Record<keyof RestockCreateData, string>>

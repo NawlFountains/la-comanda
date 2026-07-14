@@ -85,31 +85,3 @@ export interface Order {
 	status: OrderStatus,
 	order_items: OrderItem[]
 }
-
-export type CreateItemPayload = Omit<Item, "id" | "business_id">
-export type CreateRestockItemPayload = Omit<RestockItem, "id" | "restock_id">
-
-export interface CreateRestockPayload {
-	supplier: string
-	notes: string
-	restock_date: string
-	restock_items: CreateRestockItemPayload[]
-}
-
-export type CreateOrderItemPayload = Omit<OrderItem, "id" | "order_id" | "unit_price">
-
-export interface CreateOrderPayload {
-	customer_id: string
-	status: OrderStatus
-	order_items: CreateOrderItemPayload[]
-}
-
-export type CreateCustomerPayload = Omit<Customer, "id" | "business_id">
-
-export type CreateProductPayload = Omit<Product, "id" | "business_id">
-
-export type CreatePriceHistoryPayload = Omit<PriceHistory, "id" | "product_id">
-
-export type CreateRecipeItemPayload = Omit<RecipeItem, "id" | "product_id">
-
-export type CreateBusinessPayload = Omit<Business, "id" | "created_at">

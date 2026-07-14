@@ -19,6 +19,7 @@ export const orderUpdateSchema = z.object({
 })
 
 export type OrderCreateData = z.infer<typeof orderCreateSchema>
+export type OrderItemCreateData = z.infer<typeof orderItemSchema>
 export type OrderUpdateData = z.infer<typeof orderUpdateSchema>
 
 export type OrderErrors = Partial<Record<keyof OrderCreateData, string>>
