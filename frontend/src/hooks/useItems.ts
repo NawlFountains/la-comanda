@@ -1,11 +1,19 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { deleteItem, getStock, updateItem } from '../api/items'
-import type { Item, CreateItemPayload } from '../types'
+import type { Item } from '../types'
 import { createItem } from '../api/items'
-import { itemCreateSchema, itemUpdateSchema, type ItemErrors } from '../schemas/item'
-import {parseZodErrors} from '../utils/parseZodErrors'
+import { itemCreateSchema, itemUpdateSchema, } from '../schemas/item'
+import type { ItemCreateData, ItemErrors, ItemUpdateData } from '../schemas/item'
+import {useToast} from '../context/ToastContext'
+import {useValidation} from './useValidation'
 
 export const useItems = () => {
+	const { showToast} = useToast()
+	const { errors, validate, clearErrors } = useValidation<ItemErrors>()
+
+	const validateItem = useCallback((data: ItemCreateData) => validate(itemCreateSchema, data), [validate])
+	const validateItemUpdate = useCallback((data: ItemUpdateData) => validate(itemUpdateSchema, data), [validate])
+
 	const [items, setItems] = useState<Item[]>([])
 
 	const [searchName, setSearchName] = useState("")
@@ -15,9 +23,7 @@ export const useItems = () => {
 
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
-	const [errors, setErrors] = useState<ItemErrors>({})
 	const [loadError, setLoadError] = useState<string | null>(null)
-	const [submitError, setSubmitError] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function loadItems() {
@@ -48,24 +54,26 @@ export const useItems = () => {
 		)
 	}, [items, filterLowStock, appliedName])
 
-	const handleItemCreate = useCallback( async (itemData: CreateItemPayload): Promise<boolean> => {
-		const result = itemCreateSchema.safeParse(itemData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<ItemErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleItemCreate = useCallback( async (itemData: ItemCreateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+
+		const tempId = crypto.randomUUID()
+		const optimisticItem: Item = { ... itemData, id: tempId, business_id: tempId, notes: itemData.notes ?? ''}
+
+		setItems((prevItems) => [...prevItems, optimisticItem])
+
 		try {
 			const newItem: Item= await createItem(itemData)
 
-			setItems((prevItems) => [...prevItems, newItem])
+			setItems((prevItems) => 
+				 prevItems.map((item) => (item.id === tempId ? newItem : item))
+			)
+			showToast("Item succesfully added", "message")
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to create item :", err)
+			setItems((prevItems) => prevItems.filter((item) => item.id !== tempId))
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to add item: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -74,37 +82,40 @@ export const useItems = () => {
 
 	const handleItemDelete = async(id: string) => {
 		setSubmitting(true)
-		setSubmitError(null)
 		try {
 			await deleteItem(id)
 
 			setItems((prevItems) => prevItems.filter((item) => item.id !== id))
+			showToast("Item succesfully deleted", "message")
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to delete item :", err)
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to delete item: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
 		}
 	}
 
-	const handleItemUpdate = useCallback( async (id: string, itemData: Partial<CreateItemPayload>): Promise<boolean> => {
-		const result = itemUpdateSchema.safeParse(itemData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<ItemErrors>(result.error)	
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleItemUpdate = useCallback( async (id: string, itemData: ItemUpdateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+		let previousItem: Item | undefined
+		setItems((prev) => {
+			previousItem = prev.find((i) => i.id === id)
+			return prev.map((i) =>
+				i.id === id ? { ...i, ...itemData} : i
+			)
+		})
 		try {
 			const updatedItem: Item= await updateItem(id, itemData)
-			setItems((prevItems) => prevItems.map((item) => item.id === id ? updatedItem : item))
+			setItems((prev) => prev.map((i) => (i.id === id ? updatedItem : i)))
+			showToast("Item succesfully updated", "message")
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to update item :", err)
+			if (previousItem) {
+				setItems((prev) => prev.map((i) => (i.id === id ? previousItem! : i)))
+			}
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to update item: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -114,6 +125,8 @@ export const useItems = () => {
 	return {
 		items,
 		visibleItems,
+		validateItem,
+		validateItemUpdate,
 		handleItemCreate,
 		handleItemDelete,
 		handleItemUpdate,
@@ -126,6 +139,6 @@ export const useItems = () => {
 		submitting,
 		errors,
 		loadError,
-		submitError
+		clearErrors
 	}
 }

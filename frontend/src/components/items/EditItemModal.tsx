@@ -2,20 +2,20 @@ import {useState} from "react"
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
 import { buttonVariants } from '../styles/ButtonStyles'
-import type { Item, CreateItemPayload } from '../../types'
-import type {ItemErrors} from "../../schemas/item.ts"
+import type { Item } from '../../types'
+import type {ItemErrors, ItemUpdateData} from "../../schemas/item.ts"
 import ModalLayout from "../../layouts/ModalLayout.tsx"
 
 interface EditItemModalProps {
 	onClose: () => void
-	onEdit: (id: string, data: Partial<CreateItemPayload>) => Promise<boolean>
+	onEdit: (id: string, data: ItemUpdateData) => Promise<boolean>
+	validateItemUpdate: (data: ItemUpdateData) => boolean,
 	submitting: boolean
 	errors: ItemErrors
-	submitError: string | null
 	item: Item
 }
 
-export default function EditItemModal( { onClose, onEdit, submitting, errors, submitError, item } : EditItemModalProps) {
+export default function EditItemModal( { onClose, onEdit, validateItemUpdate, submitting, errors, item } : EditItemModalProps) {
 	const [name, setName] = useState(item.name)
 	const [currentStock, setCurrentStock] = useState<string>(item.current_stock)
 	const [unit, setUnit] = useState(item.unit)
@@ -23,14 +23,11 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 	const [notes, setNotes] = useState(item.notes ?? '')
 	
 	const handleSubmit = async () => {
-		const success = await onEdit(item.id, {
-			name,
-			current_stock: currentStock,
-			unit,
-			low_stock_threshold: lowStockThreshold,
-			notes
-		})
-		if (success) onClose()
+		const itemData = { name, current_stock: currentStock, unit, low_stock_threshold: lowStockThreshold, notes }
+
+		if (!validateItemUpdate(itemData)) return 
+		onClose()
+		onEdit(item.id, itemData) 
 	}
 	return (
 			<ModalLayout onClose={onClose}>
@@ -92,7 +89,6 @@ export default function EditItemModal( { onClose, onEdit, submitting, errors, su
 				{errors.notes && (<ErrorMessage message={errors.notes}/>)}
 				</div>
 
-				{submitError && (<ErrorMessage message={submitError} />)}
 				<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}
