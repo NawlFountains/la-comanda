@@ -1,11 +1,18 @@
 import {useCallback, useEffect, useState} from "react"
 import { deleteRestock, getRestocks, updateRestock } from '../api/restocks'
-import type { CreateRestockPayload, Restock } from '../types'
-import { restockCreateSchema, restockUpdateSchema, type RestockErrors } from '../schemas/restock'
+import type { Restock } from '../types'
+import { restockCreateSchema, restockUpdateSchema, type RestockCreateData, type RestockErrors, type RestockUpdateData } from '../schemas/restock'
 import { createRestock } from "../api/restocks"
-import {parseZodErrors} from "../utils/parseZodErrors"
+import {useToast} from "../context/ToastContext"
+import {useValidation} from "./useValidation"
 
 export const useRestocks = () => {
+	const { showToast } = useToast()
+	const { errors, validate, clearErrors } = useValidation<RestockErrors>()
+
+	const validateRestock = useCallback((data: RestockCreateData) => validate(restockCreateSchema, data), [validate])
+	const validateRestockUpdate = useCallback((data: RestockUpdateData) => validate(restockUpdateSchema, data), [validate])
+
 	const [restocks, setRestocks] = useState<Restock[]>([])
 	const [loading, setLoading] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
@@ -13,9 +20,7 @@ export const useRestocks = () => {
 	const [searchSupplier, setSearchSupplier] = useState('')
 	const [appliedSearchSupplier, setAppliedSearchSupplier] = useState<string | null>(null)
 
-	const [errors, setErrors ] = useState<RestockErrors>({})
 	const [loadError, setLoadError] = useState<string | null>(null)
-	const [submitError, setSubmitError] = useState<string | null>(null)
 
 	const [ page, setPage ] = useState<number>(1)
 	const LIMIT = 20
@@ -43,24 +48,33 @@ export const useRestocks = () => {
 		setAppliedSearchSupplier(supplier)
 	}
 
-	const handleRestockCreate = useCallback( async (restockData: CreateRestockPayload): Promise<boolean> => {
-		const result = restockCreateSchema.safeParse(restockData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<RestockErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleRestockCreate = useCallback( async (restockData: RestockCreateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+		const tempId = crypto.randomUUID()
+		const optimisticRestock: Restock = {
+			... restockData, 
+			id: tempId, 
+			business_id: tempId,
+			restock_items: restockData.restock_items.map((item) => ({
+				...item,
+				id: crypto.randomUUID(),
+				restock_id: tempId
+			})),
+			notes: restockData.notes ?? ''
+		}
+
+		setRestocks((prevRestocks) => [...prevRestocks, optimisticRestock])
+
 		try {
 			const newRestock: Restock = await createRestock(restockData)
 
-			setRestocks((prevRestocks) => [...prevRestocks, newRestock])
+			setRestocks((prevRestocks) => prevRestocks.map((r) => (r.id === tempId ? newRestock : r )))
+			showToast('Restock succesfuly created', 'message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to create restock :", err)
+			setRestocks((prevRestocks) => prevRestocks.filter((r) => (r.id !== tempId)))
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to create restock: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -69,15 +83,14 @@ export const useRestocks = () => {
 
 	
 	const handleRestockDelete = async(id: string) => {
-		setSubmitting(true)
-		setSubmitError(null)
 		try {
 			await deleteRestock(id)
 
 			setRestocks((prevRestocks) => prevRestocks.filter((restock) => restock.id !== id))
+			showToast(`Restock succesfuly deleted`, 'message')
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to delete restock :", err)
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to delete restock: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -85,23 +98,26 @@ export const useRestocks = () => {
 	}
 
 
-	const handleRestockUpdate = useCallback( async (id: string, itemData: Partial<CreateRestockPayload>): Promise<boolean> => {
-		const result = restockUpdateSchema.safeParse(itemData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<RestockErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleRestockUpdate = useCallback( async (id: string, restockData: RestockUpdateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+		let previousRestock: Restock | undefined
+		setRestocks((prev) => {
+			previousRestock = prev.find((r) => r.id === id)
+			return prev.map((r) =>
+				r.id === id ? { ...r, ...restockData} : r
+			)
+		})
 		try {
-			const updatedRestock: Restock = await updateRestock(id, itemData)
-			setRestocks((prevRestocks) => prevRestocks.map((restock) => restock.id === id ? updatedRestock: restock))
+			const updatedRestock: Restock = await updateRestock(id, restockData)
+			setRestocks((prev) => prev.map((r) => (r.id === id ? updatedRestock : r)))
+			showToast(`Restock succesfuly update`, 'message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to update restock :", err)
+			if (previousRestock) {
+				setRestocks((prev) => prev.map((r) => (r.id === id ? previousRestock! : r)))
+			}
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to update restock: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -120,11 +136,13 @@ export const useRestocks = () => {
 		setAppliedSearchSupplier: handleSearchSupplierChanged,
 		loading,
 		submitting,
+		validateRestock,
+		validateRestockUpdate,
 		handleRestockCreate,
 		handleRestockDelete,
 		handleRestockUpdate,
 		errors,
 		loadError,
-		submitError
+		clearErrors
 	}
 }

@@ -1,40 +1,43 @@
 import {useState} from 'react'
 import ModalLayout from '../../layouts/ModalLayout'
-import type { RestockErrors } from '../../schemas/restock'
-import type { Item, CreateRestockPayload, CreateRestockItemPayload } from '../../types'
+import type { RestockCreateData, RestockErrors, RestockItemCreateData } from '../../schemas/restock'
+import type { Item } from '../../types'
 import {buttonVariants} from '../styles/ButtonStyles'
 import InputModal from '../InputModal'
 import ErrorMessage from '../errors/ErrorMessage'
 
 interface AddRestockModalProps {
 	onClose: () => void
-	onCreate: (data: CreateRestockPayload) => Promise<boolean>
+	onCreate: (data: RestockCreateData) => Promise<boolean>
+	validateRestock: (data: RestockCreateData) => boolean
 	items: Item[]
 	submitting: boolean
-	submitError: string | null
 	errors: RestockErrors
 }
 
-export default function AddRestockModal({ onClose, onCreate, items, submitError, submitting, errors }: AddRestockModalProps) {
+export default function AddRestockModal({ onClose, onCreate, validateRestock, items, submitting, errors }: AddRestockModalProps) {
 	const [supplier, setSupplier] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
 	const [restockDate, setRestockDate] = useState<string>( () => {
 		return new Date().toISOString().split('T')[0]
 	})
-	const [restockItems, setRestockItems] = useState<CreateRestockItemPayload[]>([]) 
+	const [restockItems, setRestockItems] = useState<RestockItemCreateData[]>([]) 
 
 	const handleSubmit = async () => {
-		const success = await onCreate({
+		const restockData = ({
 			restock_date: restockDate,
 			supplier,
 			notes,
 			restock_items : restockItems
+
 		})
-		if (success) onClose()
+		if (!validateRestock(restockData)) return
+		onClose()
+		onCreate(restockData)
 	}
 	
 	const handleAddRestockItem = () => {
-		const newRestockItem: CreateRestockItemPayload = {
+		const newRestockItem: RestockItemCreateData = {
 			item_id: items[0]?.id || '',
 			quantity: 1
 		}
@@ -42,12 +45,12 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 		setRestockItems([...restockItems, newRestockItem])
 	}
 
-	const handleItemChange = (index: number, field: keyof CreateRestockItemPayload, value: string | number) => {
+	const handleItemChange = (index: number, field: keyof RestockItemCreateData, value: string | number) => {
 		const updatedItems = [...restockItems]
 		updatedItems[index] = {
 			...updatedItems[index],
 			[field]: value
-		} as CreateRestockItemPayload
+		} as RestockItemCreateData 
 		setRestockItems(updatedItems)
 	}
 
@@ -153,7 +156,6 @@ export default function AddRestockModal({ onClose, onCreate, items, submitError,
 				{errors.restock_items && (<ErrorMessage message={errors.restock_items} /> )}
 				</div>
 
-			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

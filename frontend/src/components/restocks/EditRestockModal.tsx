@@ -3,30 +3,32 @@ import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal'
 import ErrorMessage from '../errors/ErrorMessage'
 import { buttonVariants } from '../styles/ButtonStyles'
-import type { RestockErrors } from '../../schemas/restock'
-import type { Restock, CreateRestockPayload } from '../../types'
+import type { RestockUpdateData, RestockErrors } from '../../schemas/restock'
+import type { Restock } from '../../types'
 
 interface EditRestockModalProps {
 	onClose: () => void,
-	onEdit: (id: string, data: Partial<CreateRestockPayload>) => Promise<boolean>
+	onEdit: (id: string, data: RestockUpdateData) => Promise<boolean>
+	validateRestockUpdate: (data: RestockUpdateData) => boolean
 	submitting: boolean
 	restock: Restock,
 	errors: RestockErrors
-	submitError: string | null
 }
 
-export default function EditRestockModal( { onClose, onEdit, submitting, restock, errors, submitError }: EditRestockModalProps ) {
+export default function EditRestockModal( { onClose, onEdit, validateRestockUpdate, submitting, restock, errors }: EditRestockModalProps ) {
 	const [supplier, setSupplier] = useState<string>(restock?.supplier || '')
 	const [notes, setNotes] = useState<string>(restock?.notes || '')
 	const [restockDate, setRestockDate] = useState<string>(restock?.restock_date || '')
 
 	const handleSubmit = async () => {
-		const success = await onEdit(restock.id, {
+		const updatedRestock = ({
 			supplier,
 			notes,
 			restock_date: restockDate
 		})
-		if (success) onClose()
+		if (!validateRestockUpdate(updatedRestock)) return
+		onClose()
+		onEdit(restock.id, updatedRestock)
 	}
 
 	return (
@@ -64,7 +66,6 @@ export default function EditRestockModal( { onClose, onEdit, submitting, restock
 					</div>
 					
 				</div>
-			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 				<button
 					onClick={onClose}
