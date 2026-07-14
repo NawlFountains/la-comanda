@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/favicon.ico" width="20" alt="App icon" />
+  <img src="frontend/public/icon-512.png" width="20" alt="App icon" />
   <br/>
   <strong>La comanda</strong>
 </p>
@@ -32,9 +32,9 @@ FastAPI · SQLAlchemy (async) · PostgreSQL on Supabase · Alembic · Pydantic �
   + [x] Dashboard Screen
   + [ ] Home Screen
   + [x] Products Screen
-  + [ ] Dark theme
+  + [x] Dark theme
   + [x] Error handling
-+ [ ] Modify endpoint:
++ [x] Modify endpoint:
   + [x] Allow pagination and more queries on each orders and restock endpoints
   + [x] Add product endpoint with full details using join (PriceHistory and RecipeItems)
 + [ ] Playwright testing E2E each page
