@@ -29,14 +29,14 @@ export default function OrdersRow({ order, customer, onTriggerInfo, onTriggerEdi
 					disabled={order.status === 'cancelled'}
 					onClick={onTriggerEdit}
 					title="Edit item"
-					className='cursor-pointer hover:scale-110 disabled:text-gray-200'>
+					className='cursor-pointer hover:scale-110 disabled:text-gray-200 disabled:dark:text-neutral-700 disabled:hover:scale-100 disabled:cursor-default'>
 					<PenIcon className='w-6 h-6' />
 				</button>
 				<button
 					disabled={order.status === 'cancelled'}
 					onClick={onTriggerDelete}
 					title="Delete item"
-					className='cursor-pointer text-red-500 hover:scale-110 disabled:text-gray-200'>
+					className='cursor-pointer text-red-500 hover:scale-110 disabled:text-gray-200 disabled:dark:text-neutral-700 disabled:hover:scale-100 disabled:cursor-default'>
 					<TrashIcon className='w-6 h-6' />
 				</button>
 			</div>

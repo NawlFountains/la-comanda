@@ -3,36 +3,35 @@ import ModalLayout from '../../layouts/ModalLayout'
 import ErrorMessage from '../errors/ErrorMessage'
 import { buttonVariants } from '../styles/ButtonStyles'
 import { formatDatetime } from '../../utils/date'
-import type { OrderErrors } from '../../schemas/order'
-import type { Customer, Order, CreateOrderPayload, OrderStatus } from '../../types'
+import type { OrderErrors, OrderUpdateData } from '../../schemas/order'
+import type { Customer, Order , OrderStatus } from '../../types'
 
 interface EditOrderModalProps {
 	onClose: () => void,
-	onEdit: (id: string, data: Partial<CreateOrderPayload>) => Promise<boolean>
+	onEdit: (id: string, data: OrderUpdateData) => Promise<boolean>
 	order: Order,
 	customer: Customer,
+	validateOrderUpdate: (data: OrderUpdateData) => boolean
 	submitting: boolean
 	errors: OrderErrors
-	submitError: string | null
 }
 
 export default function EditOrderModal({ 
 	onClose, 
 	onEdit,
+	validateOrderUpdate,
 	order, 
 	customer, 
 	submitting, 
-	errors,
-	submitError
+	errors
 }: EditOrderModalProps ) {
 	const [ status, setStatus ] = useState<OrderStatus>(order?.status || 'pending' as OrderStatus)
 
 	const handleSubmit = async () => {
-		const success = await onEdit(order.id, {
-			status
-		})
-
-		if (success) onClose()
+		const orderData = { status }
+		if (!validateOrderUpdate) return
+		onClose()
+		onEdit(order.id, orderData)
 	}
 
 	return (
@@ -56,7 +55,7 @@ export default function EditOrderModal({
 				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
 					<p>{customer.name}</p>
 					<p>{customer.phone || 'N/A'}</p>
-					<p className={`font-mono capitalize font-bold ${
+					<p className={`font-mono font-bold ${
 						order.status === 'cancelled' ? 'text-red-500' : 'text-amber-600'
 					}`}>
 						{order.status}
@@ -85,7 +84,6 @@ export default function EditOrderModal({
 				{errors.status && (<ErrorMessage message={errors.status}/>)}
 			</div>
 
-			{submitError && (<ErrorMessage message={submitError} />)}
 
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button

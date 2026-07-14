@@ -1,38 +1,40 @@
 import {useState} from 'react'
-import type { OrderErrors } from '../../schemas/order'
-import type { Product, Customer, CreateOrderPayload, OrderStatus, CreateOrderItemPayload, CreateCustomerPayload } from '../../types'
+import type { OrderCreateData, OrderErrors, OrderItemCreateData } from '../../schemas/order'
+import type { Product, Customer, OrderStatus } from '../../types'
 import { buttonVariants } from '../styles/ButtonStyles'
 import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal'
 import ErrorMessage from '../errors/ErrorMessage'
-import type {CustomerErrors} from '../../schemas/customer'
+import type {CustomerCreateData, CustomerErrors} from '../../schemas/customer'
 
 interface AddOrderModalProps {
 	onClose: () => void
-	onCreate: (data: CreateOrderPayload) => Promise<boolean>
-	onCreateCustomer: (data: CreateCustomerPayload) => Promise<string | null>
+	onCreate: (data: OrderCreateData) => Promise<boolean>
+	onCreateCustomer: (data: CustomerCreateData) => Promise<string | null>
+	validateOrder: (data: OrderCreateData) => boolean
+	validateCustomer: (data: CustomerCreateData) => boolean
 	products: Product[]
 	customers: Customer[]
 	submitting: boolean
 	orderErrors: OrderErrors
 	customerErrors: CustomerErrors 
-	submitError: string | null
 }
 
 export default function AddOrderModal({
 	onClose, 
 	onCreate, 
 	onCreateCustomer, 
+	validateOrder,
+	validateCustomer,
 	products, 
 	customers, 
 	submitting, 
 	orderErrors, 
 	customerErrors,
-	submitError
 }: AddOrderModalProps) {
 	const [customerId, setCustomerId] = useState('')
 	const [status, setStatus] = useState<OrderStatus>('pending')
-	const [orderItems, setOrderItems] = useState<CreateOrderItemPayload[]>([])
+	const [orderItems, setOrderItems] = useState<OrderItemCreateData[]>([])
 
 	const [customerName, setCustomerName] = useState<string>('')
 	const [customerPhone, setCustomerPhone] = useState<string>('')
@@ -41,29 +43,24 @@ export default function AddOrderModal({
 		let finalCustomerId: string | null = customerId
 
 		if (customerId === 'create-customer') {
-			const newId = await onCreateCustomer({
-				name: customerName,
-				phone: customerPhone
-			})
-
+			const customerData = { name: customerName, phone: customerPhone }
+			if (!validateCustomer(customerData)) return 
+			const newId = await onCreateCustomer(customerData)
 			if (!newId) return
 
 			finalCustomerId = newId
 			setCustomerId(newId)
 		}
 
-		const success = await onCreate({
-			customer_id: finalCustomerId,
-			status,
-			order_items: orderItems
-		})
-		
-		if (success) onClose()
+		const orderData = { customer_id: finalCustomerId, status, order_items: orderItems }
+		if (!validateOrder(orderData)) return
+		onClose()
+		onCreate(orderData)
 
 	}
 
 	const handleAddOrderItem = () => {
-		const newOrderItem: CreateOrderItemPayload = {
+		const newOrderItem: OrderItemCreateData = {
 			product_id: products[0]?.id || '',
 			quantity: 1
 		}
@@ -71,12 +68,12 @@ export default function AddOrderModal({
 		setOrderItems([...orderItems, newOrderItem])
 	}
 
-	const handleItemChange = (index: number, field: keyof CreateOrderItemPayload, value: string | number) => {
+	const handleItemChange = (index: number, field: keyof OrderItemCreateData, value: string | number) => {
 		const updatedItems = [...orderItems]
 		updatedItems[index] = {
 			...updatedItems[index],
 			[field]: value
-		} as CreateOrderItemPayload
+		} as OrderItemCreateData
 		setOrderItems(updatedItems)
 	}
 
@@ -217,7 +214,6 @@ export default function AddOrderModal({
 				{orderErrors.order_items && (<ErrorMessage message={orderErrors.order_items} /> )}
 				</div>
 
-			{submitError && ( <ErrorMessage message={submitError} />) }
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 
 					<button

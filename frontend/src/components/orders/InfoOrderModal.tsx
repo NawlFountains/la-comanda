@@ -39,7 +39,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
 					<p>{customer.name}</p>
 					<p>{customer.phone || 'N/A'}</p>
-					<p className={`font-mono capitalize font-bold ${
+					<p className={`font-mono font-bold ${
 						order.status === 'cancelled' ? 'text-red-500' : 'text-amber-600'
 					}`}>
 						{order.status}

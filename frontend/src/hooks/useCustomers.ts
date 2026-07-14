@@ -1,15 +1,20 @@
 import {useCallback, useEffect, useState} from "react"
 import { createCustomer, getCustomers } from '../api/customers'
-import type { CreateCustomerPayload, Customer } from '../types'
-import {customerCreateSchema, type CustomerErrors} from "../schemas/customer"
-import {parseZodErrors} from "../utils/parseZodErrors"
+import type { Customer } from '../types'
+import {customerCreateSchema} from "../schemas/customer"
+import type { CustomerCreateData, CustomerErrors } from "../schemas/customer"
+import {useToast} from "../context/ToastContext"
+import {useValidation} from "./useValidation"
 
 export const useCustomer = () => {
+	const { showToast } = useToast()
+	const { errors, validate, clearErrors } = useValidation<CustomerErrors>()
+	const validateCustomer = useCallback((data: CustomerCreateData) => validate(customerCreateSchema, data), [validate])
+
 	const [ customers, setCustomers ] = useState<Customer[]>([])
 	const [ loading, setLoading ] = useState<boolean>(false)
 	const [ submitting, setSubmitting] = useState<boolean>(false)
-	const [ errors, setErrors ] = useState<CustomerErrors>({})
-	const [ error, setError ] = useState<string | null>(null)
+	const [ loadError, setLoadError ] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function loadCustomers() {
@@ -18,7 +23,7 @@ export const useCustomer = () => {
 				const data = await getCustomers()
 				setCustomers(data)
 			} catch (err) {
-				setError(err instanceof Error ? err.message : "Unkown error")
+				setLoadError(err instanceof Error ? err.message : "Unkown error")
 			} finally {
 				setLoading(false)
 			}
@@ -26,24 +31,17 @@ export const useCustomer = () => {
 		loadCustomers()
 	}, [])
 
-	const handleCustomerCreate = useCallback( async (customerData: CreateCustomerPayload): Promise<string | null> => {
-		const result = customerCreateSchema.safeParse(customerData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<CustomerErrors>(result.error)
-			setErrors(newErrors)
-			return null 
-		}
-		setErrors({})		
+	const handleCustomerCreate = useCallback( async (customerData: CustomerCreateData): Promise<string | null> => {
 		setSubmitting(true)
-		setError(null)
 		try {
 			const newCustomer: Customer= await createCustomer(customerData)
 
 			setCustomers((prevCustomers) => [...prevCustomers, newCustomer])
+			showToast('Customer created succesfully', 'message')
 			return newCustomer.id 
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Unkown error")
-			console.error("Failed to create customer:", err)
+			const message = err instanceof Error ? err.message : "Unkown error"
+			showToast(`Failed to create customer: ${message}`)
 			return null 
 		} finally {
 			setSubmitting(false)
@@ -52,10 +50,12 @@ export const useCustomer = () => {
 
 	return {
 		customers,
+		validateCustomer,
 		handleCustomerCreate,
 		loading,
 		submitting,
 		errors,
-		error
+		loadError,
+		clearErrors
 	}
 }

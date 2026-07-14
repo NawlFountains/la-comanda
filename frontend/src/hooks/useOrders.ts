@@ -1,19 +1,25 @@
 import { useState, useEffect, useCallback } from "react"
 import { getOrders, createOrder, updateOrder } from '../api/orders'
-import type { OrderStatus, Order, CreateOrderPayload } from '../types'
-import {orderCreateSchema, orderUpdateSchema, type OrderErrors} from "../schemas/order"
-import {parseZodErrors} from "../utils/parseZodErrors"
+import type { OrderStatus, Order } from '../types'
+import {orderCreateSchema, orderUpdateSchema } from "../schemas/order"
+import type { OrderCreateData, OrderErrors, OrderUpdateData } from '../schemas/order'
+import {useToast} from "../context/ToastContext"
+import {useValidation} from "./useValidation"
 
 export const useOrders = () => {
+	const { showToast } = useToast()
+	const { errors, validate, clearErrors } = useValidation<OrderErrors>()
+
+	const validateOrder = useCallback((data: OrderCreateData ) => validate(orderCreateSchema, data), [validate])
+	const validateOrderUpdate = useCallback((data: OrderUpdateData) => validate(orderUpdateSchema, data), [validate])
+
 	const [ orders, setOrders ] = useState<Order[]>([])
 	const [ submitting, setSubmitting ] = useState<boolean>(false)
 	const [ loading, setLoading] = useState<boolean>(false)
 	const [ searchDate, setSearchDate ] = useState<string | null>(null)
 	const [ appliedDate, setAppliedDate ] = useState<string | null>(null)
 	const [ filterStatus, setFilterStatus ] = useState<OrderStatus | null>(null) 
-	const [ errors, setErrors ] = useState<OrderErrors>({})
 	const [ loadError, setLoadError ] = useState<string | null>(null)
-	const [ submitError, setSubmitError ] = useState<string | null>(null)
 
 	const [ page, setPage ] = useState<number>(1)
 	const LIMIT = 20
@@ -45,24 +51,32 @@ export const useOrders = () => {
 		setPage(1)
 	}
 
-	const handleOrderCreate = useCallback( async (orderData: CreateOrderPayload): Promise<boolean> => {
-		const result = orderCreateSchema.safeParse(orderData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<OrderErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleOrderCreate = useCallback( async (orderData: OrderCreateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+		let tempId = crypto.randomUUID()
+		let optimisticOrder: Order = {
+			...orderData,
+			id: tempId,
+			business_id: tempId ,
+			created_at: new Date().toISOString().split('T')[0],
+			order_items: orderData.order_items.map((item) => ({
+				...item,
+				id: tempId,
+				order_id: tempId,
+				unit_price: '-1'
+			}))
+		}
+		setOrders((prev) => [...prev, optimisticOrder])
 		try {
 			const newOrder: Order = await createOrder(orderData)
 
-			setOrders((prevOrders) => [...prevOrders, newOrder])
+			setOrders((prev) => prev.map((o) => (o.id === tempId ? newOrder: o )))
+			showToast(`Order succesfully created`, 'message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to create order:", err)
+			setOrders((prev) => prev.filter((o) => (o.id !== tempId)))
+			const message = err instanceof Error ? err.message : "Unkown error"
+			showToast(`Failed to create order: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -71,37 +85,40 @@ export const useOrders = () => {
 
 	const handleOrderDelete = async(id: string) => {
 		setSubmitting(true)
-		setSubmitError(null)
 		try {
 			const updatedOrder: Order = await updateOrder(id, { status: 'cancelled' as OrderStatus })
 			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
+			showToast(`Order succesfully deleted`, 'message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unkown error")
-			console.error("Failed to update order:", err)
+			const message = err instanceof Error ? err.message : "Unkown error"
+			showToast(`Failed to delete order: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
 		}
 	}
 
-	const handleOrderUpdate = useCallback( async (id: string, orderData: Partial<CreateOrderPayload>): Promise<boolean> => {
-		const result = orderUpdateSchema.safeParse(orderData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<OrderErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleOrderUpdate = useCallback( async (id: string, orderData: OrderUpdateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+		let previousOrder: Order | undefined
+		setOrders((prev) => {
+			previousOrder = prev.find((o) => o.id === id)
+			return prev.map((o) =>
+				o.id === id ? { ...o, ...orderData} : o
+			)
+		})
 		try {
 			const updatedOrder: Order = await updateOrder(id, orderData)
-			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
+			setOrders((prev) => prev.map((o) => (o.id === id ? updatedOrder : o)))
+			showToast(`Order succesfully updated`, 'message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unkown error")
-			console.error("Failed to update order:", err)
+			if (previousOrder) {
+				setOrders((prev) => prev.map((o) => (o.id === id ? previousOrder! : o)))
+			}
+			const message = err instanceof Error ? err.message : "Unkown error"
+			showToast(`Failed to update order: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -118,6 +135,8 @@ export const useOrders = () => {
 		searchDate,
 		setSearchDate,
 		setAppliedDate: handleDateChange,
+		validateOrder,
+		validateOrderUpdate,
 		handleOrderCreate,
 		handleOrderUpdate,
 		handleOrderDelete,
@@ -125,7 +144,7 @@ export const useOrders = () => {
 		submitting,
 		errors,
 		loadError,
-		submitError
+		clearErrors
 	}
 
 }
