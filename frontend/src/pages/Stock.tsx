@@ -28,6 +28,8 @@ export default function Stock() {
 	const { 
 		items, 
 		visibleItems, 
+		validateItem,
+		validateItemUpdate,
 		searchName: itemSearchName, 
 		setSearchName: setItemSearchName, 
 		setAppliedSearchName: setAppliedItemSearchName,
@@ -39,7 +41,7 @@ export default function Stock() {
 		loading: itemLoading, 
 		submitting: itemSubmitting,
 		loadError: itemLoadError, 
-		submitError: itemSubmitError,
+		clearErrors: itemClearErrors,
 		errors: itemErrors } = useItems()
 
 	const { restocks, 
@@ -49,6 +51,8 @@ export default function Stock() {
 		searchSupplier: restockSearchSupplier,
 		setSearchSupplier: setRestockSearchSupplier,
 		setAppliedSearchSupplier,
+		validateRestock,
+		validateRestockUpdate,
 		handleRestockCreate, 
 		handleRestockDelete, 
 		handleRestockUpdate, 
@@ -56,8 +60,7 @@ export default function Stock() {
 		submitting: restockSubmitting,
 		errors: restockErrors,
 		loadError: restockLoadError, 
-		submitError: restockSubmitError,
-
+		clearErrors: restockClearErrors
 	} = useRestocks()
 
 	const [ activeModal, setActiveModal ] = useState<MultiActiveModal>(null)
@@ -229,21 +232,27 @@ export default function Stock() {
 				{/* Item modals */}
 				{showAddItemModal && (
 					<AddItemModal 
-						onClose={() => setShowAddItemModal(false)}
+						onClose={() => {
+							itemClearErrors()
+							setShowAddItemModal(false)
+						}}
 						onCreate={handleItemCreate}
+						validateItem={validateItem}
 						submitting={itemSubmitting}
-						submitError={itemSubmitError}
 						errors={itemErrors}/>
 				)}
 
 				{activeModal?.mode === 'edit' && activeItem && (
 					<EditItemModal 
-						onClose={() => setActiveModal(null)}
+						onClose={() => {
+							itemClearErrors()
+							setActiveModal(null)
+						}}
 						onEdit={handleItemUpdate}
+						validateItemUpdate={validateItemUpdate}
 						submitting={itemSubmitting}
 						errors={itemErrors}
 						item={activeItem}
-						submitError={itemSubmitError}
 					/>
 				)}
 
@@ -256,18 +265,20 @@ export default function Stock() {
 							setActiveModal(null)
 						}}	
 						submitting={itemSubmitting}
-						submitError={itemSubmitError}
 						/>
 				)}
 				
 				{/* Restock modals */}
 				{showAddRestockModal && (
 					<AddRestockModal 
-						onClose={() => setShowAddRestockModal(false)}
+						onClose={() => {
+							restockClearErrors()
+							setShowAddRestockModal(false)
+						}}
 						onCreate={handleRestockCreate}
+						validateRestock={validateRestock}
 						items={items}
 						submitting={restockSubmitting}
-						submitError={restockSubmitError}
 						errors={restockErrors}/>
 				)}
 
@@ -275,8 +286,8 @@ export default function Stock() {
 					<EditRestockModal
 						onClose={() => setActiveModal(null)}
 						onEdit={handleRestockUpdate}
+						validateRestockUpdate={validateRestockUpdate}
 						submitting={restockSubmitting}
-						submitError={restockSubmitError}
 						errors={restockErrors}
 						restock={activeRestock}
 					/>
@@ -291,7 +302,6 @@ export default function Stock() {
 							setActiveModal(null)
 						}}	
 						submitting={restockSubmitting}
-						submitError={restockSubmitError}
 						/>
 				)}
 			</div>

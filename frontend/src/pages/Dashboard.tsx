@@ -43,9 +43,10 @@ export default function Dashboard() {
 	const { 
 		restocks,
 		submitting: restockSubmitting,
+		validateRestock,
 		handleRestockCreate, 
 		errors: restockErrors,
-		submitError: restockSubmitError
+		clearErrors: restockClearErrors,
 	} = useRestocks()
 
 	const [items, setItems] = useState<Item[]>([])
@@ -101,11 +102,14 @@ export default function Dashboard() {
 			{/* Modals */}
 			{showAddRestockMenu && (
 				<AddRestockModal 
-					onClose={() => setShowAddRestockMenu(false)} 
+					onClose={() => {
+						restockClearErrors()
+						setShowAddRestockMenu(false)
+					}} 
 					onCreate={handleRestockCreate}
+					validateRestock={validateRestock}
 					items={items}
 					submitting={restockSubmitting}
-					submitError={restockSubmitError}
 					errors={restockErrors}/>
 			)}
 
