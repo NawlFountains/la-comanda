@@ -10,6 +10,7 @@ import Register from './pages/Register'
 import Stock from './pages/Stock'
 import Products from './pages/Products'
 import ErrorFallback from './components/errors/ErrorFallback'
+import ToastProvider from './context/ToastContext'
 
 const router = createBrowserRouter([
 	{
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
 ])
 export default function App() {
 
-  return <RouterProvider router={router}/>
+  return ( 
+	  <ToastProvider>
+		  <RouterProvider router={router}/>
+	  </ToastProvider>
+	 )
 }
 
