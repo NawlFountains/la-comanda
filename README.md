@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/icon-512.png" width="20" alt="App icon" />
+  <img src="frontend/public/icon-512.png" width="100" alt="App icon" />
   <br/>
   <strong>La comanda</strong>
 </p>
@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="TailwindCSS" />
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
-</p>Backend API for small food businesses to manage stock, orders, customers and restocking. Built for the typical Argentine take-out workflow where orders come in via WhatsApp and the cook tracks everything manually.
+</p>Fullstack web app for small food businesses to manage stock, orders, customers and restocking. Built for the typical Argentine take-out workflow where orders come in via WhatsApp and the cook tracks everything manually.
 
 ## Demo
 
