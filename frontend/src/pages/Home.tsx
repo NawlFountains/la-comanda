@@ -87,18 +87,7 @@ export default function Home() {
 			</div>
 
 			{/* CTA */}
-
-			<div className={`${cardVariants.dashed} gap-3 w-full md:w-2/3 items-center`}>
-				<p>
-					Ready to take control of your inventory? 
-					Join now to stop wasting time on managment
-				</p>
-				<Link
-					to="/register"
-					className={`{${buttonVariants.base} font-mono p-2 w-full md:w-1/3 text-center`}>
-					[ Create your free account ]
-					</Link>
-			</div>
+			
 			<div className={`flex flex-col gap-3 w-full md:w-2/3 items-center`}>
 				<div className="flex flex-col border border-dashed border-neutral-400 bg-neutral-100 dark:bg-neutral-800 rounded-xl p-3 gap-8">
 					<div className="p-2 border-b border-neutral-800">
@@ -115,7 +104,11 @@ export default function Home() {
 						<p>General dashboard</p>
 					</div>
 					<div className="flex flex-col gap-2">
-					<button className={buttonVariants.primary}>Try for free</button>
+						<Link 
+							to="/register"
+							className={buttonVariants.primary}>
+							Try for free
+						</Link>
 						<p className="text-neutral-500 text-sm">* 7 days free trial</p>
 					</div>
 				</div>
