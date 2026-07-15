@@ -1,9 +1,10 @@
+import type {RestockCreateData, RestockUpdateData} from '../schemas/restock'
 import { supabase } from '../supabase/supabaseClient'
-import type { CreateRestockPayload, Restock } from '../types'
+import type { Restock } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export async function createRestock(restockData: CreateRestockPayload): Promise<Restock> {
+export async function createRestock(restockData: RestockCreateData): Promise<Restock> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -25,7 +26,7 @@ export async function createRestock(restockData: CreateRestockPayload): Promise<
 	return response.json()
 }
 
-export async function updateRestock(id: string, itemData: Partial<CreateRestockPayload>): Promise<Restock> {
+export async function updateRestock(id: string, itemData: RestockUpdateData): Promise<Restock> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 

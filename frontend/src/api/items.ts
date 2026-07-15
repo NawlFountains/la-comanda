@@ -1,9 +1,10 @@
+import type {ItemCreateData, ItemUpdateData} from '../schemas/item'
 import {supabase} from '../supabase/supabaseClient'
-import type { CreateItemPayload, Item } from '../types'
+import type { Item } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export async function createItem(itemData: CreateItemPayload): Promise<Item> {
+export async function createItem(itemData: ItemCreateData): Promise<Item> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -26,7 +27,7 @@ export async function createItem(itemData: CreateItemPayload): Promise<Item> {
 	return response.json()
 }
 
-export async function updateItem(itemId: string, itemData: Partial<CreateItemPayload>): Promise<Item> {
+export async function updateItem(itemId: string, itemData: ItemUpdateData): Promise<Item> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 

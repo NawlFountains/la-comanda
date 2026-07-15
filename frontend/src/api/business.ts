@@ -1,4 +1,5 @@
-import type { Business, CreateBusinessPayload } from '../types'
+import type { BusinessCreateData } from '../schemas/business'
+import type { Business } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -16,7 +17,7 @@ export async function getMyBusiness(token: string): Promise<Business> {
 	return response.json()
 }
 
-export async function createBusiness(token: string, data: CreateBusinessPayload): Promise<Business> {
+export async function createBusiness(token: string, data: BusinessCreateData): Promise<Business> {
 	const response = await fetch(`${API_URL}/businesses`, {
 		method: "POST",
 		headers: {

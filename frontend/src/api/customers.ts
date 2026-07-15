@@ -1,9 +1,10 @@
+import type {CustomerCreateData} from '../schemas/customer'
 import {supabase} from '../supabase/supabaseClient'
-import type { CreateCustomerPayload, Customer } from '../types'
+import type { Customer } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export async function createCustomer(customerData: CreateCustomerPayload): Promise<Customer> {
+export async function createCustomer(customerData: CustomerCreateData): Promise<Customer> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 

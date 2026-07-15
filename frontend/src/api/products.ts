@@ -1,9 +1,12 @@
+import type {PriceHistoryCreateData} from '../schemas/price_history'
+import type {ProductCreateData, ProductUpdateData} from '../schemas/product'
+import type {RecipeItemCreateData, RecipeItemUpdateData} from '../schemas/recipe_item'
 import {supabase} from '../supabase/supabaseClient'
-import type { CreatePriceHistoryPayload, CreateProductPayload, CreateRecipeItemPayload, PriceHistory, Product, ProductWithDetails, RecipeItem } from '../types'
+import type { PriceHistory, Product, ProductWithDetails, RecipeItem } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export async function createProduct(productData: CreateProductPayload): Promise<Product> {
+export async function createProduct(productData: ProductCreateData): Promise<Product> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -25,7 +28,7 @@ export async function createProduct(productData: CreateProductPayload): Promise<
 	return response.json()
 }
 
-export async function createPriceProduct(productId: string, priceData: CreatePriceHistoryPayload): Promise<PriceHistory> {
+export async function createPriceProduct(productId: string, priceData: PriceHistoryCreateData): Promise<PriceHistory> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -48,7 +51,7 @@ export async function createPriceProduct(productId: string, priceData: CreatePri
 	return response.json()
 }
 
-export async function createRecipeItem(productId: string, recipeItemData: CreateRecipeItemPayload): Promise<RecipeItem> {
+export async function createRecipeItem(productId: string, recipeItemData: RecipeItemCreateData): Promise<RecipeItem> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -69,7 +72,7 @@ export async function createRecipeItem(productId: string, recipeItemData: Create
 	return response.json()
 }
 
-export async function updateProduct(productId: string, productData: Partial<CreateProductPayload>): Promise<Product> {
+export async function updateProduct(productId: string, productData: ProductUpdateData): Promise<Product> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -89,7 +92,7 @@ export async function updateProduct(productId: string, productData: Partial<Crea
 	return response.json()
 }
 
-export async function updateRecipeItem(productId: string, recipeId: string, recipeItemData: Partial<CreateRecipeItemPayload>): Promise<RecipeItem> {
+export async function updateRecipeItem(productId: string, recipeId: string, recipeItemData: RecipeItemUpdateData): Promise<RecipeItem> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 

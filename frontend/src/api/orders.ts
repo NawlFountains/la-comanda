@@ -1,9 +1,10 @@
+import type {OrderCreateData, OrderUpdateData} from '../schemas/order'
 import {supabase} from '../supabase/supabaseClient'
-import type { Order, OrderStatus, CreateOrderPayload } from '../types'
+import type { Order, OrderStatus } from '../types'
 
 const API_URL = import.meta.env.VITE_API_URL
 
-export async function createOrder(orderData: CreateOrderPayload): Promise<Order> {
+export async function createOrder(orderData: OrderCreateData): Promise<Order> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 
@@ -26,7 +27,7 @@ export async function createOrder(orderData: CreateOrderPayload): Promise<Order>
 	return response.json()
 }
 
-export async function updateOrder(id: string, orderData: Partial<CreateOrderPayload>): Promise<Order> {
+export async function updateOrder(id: string, orderData: OrderUpdateData): Promise<Order> {
 	const { data } = await supabase.auth.getSession()
 	const token = data.session?.access_token
 

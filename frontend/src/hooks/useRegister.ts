@@ -2,10 +2,9 @@ import { useState } from 'react'
 import { useNavigate, useRevalidator } from 'react-router-dom'
 import { supabase } from '../supabase/supabaseClient'
 import { registerSchema , type RegisterErrors} from '../schemas/auth'
-import { businessCreateSchema, type BusinessErrors } from '../schemas/business'
+import { businessCreateSchema, type BusinessCreateData, type BusinessErrors } from '../schemas/business'
 import {parseZodErrors} from '../utils/parseZodErrors'
 import { createBusiness } from '../api/business'
-import type {CreateBusinessPayload} from '../types'
 
 export function useRegister() {
 	const [email, setEmail] = useState('')
@@ -53,7 +52,7 @@ export function useRegister() {
 
 		if (data.session) {
 			revalidator.revalidate()
-			const businessData: CreateBusinessPayload = {name, phone}
+			const businessData: BusinessCreateData= {name, phone}
 			try {
 				await createBusiness(data.session.access_token, businessData)
 				navigate('/dashboard', { replace: true } )

@@ -54,7 +54,7 @@ export const useRecipeItems = (setProducts: React.Dispatch<React.SetStateAction<
 		}
 	}, [setProducts]) 
 
-	const handleRecipeItemUpdate = useCallback( async (productId: string, recipeId: string, recipeItemData: RecipeItemCreateData): Promise<boolean> => {
+	const handleRecipeItemUpdate = useCallback( async (productId: string, recipeId: string, recipeItemData: RecipeItemUpdateData): Promise<boolean> => {
 		setSubmitting(true)
 		try {
 			const updatedRecipeItem: RecipeItem = await updateRecipeItem(productId, recipeId, recipeItemData)
