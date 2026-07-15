@@ -14,40 +14,22 @@ import TableSkeleton from "../components/skeletons/TableSkeleton"
 import EmptyRow from "../components/EmptyRow"
 import ErrorLoading from "../components/errors/ErrorLoading"
 import InputSearchFilter from "../components/InputSearchFilter"
+import { usePriceHistory } from "../hooks/usePriceHistory"
+import { useRecipeItems } from "../hooks/useRecipeItems"
 
 export default function Products() {
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
-	const { 
-		products,
-		visibleProducts,
-		prices,
-		searchName,
-		setSearchName, 
-		setAppliedSearchName,
-		handleProductCreate,
-		handleProductUpdate,
-		handleProductDelete,
-		handlePriceCreate,
-		handleRecipeItemCreate,
-		handleRecipeItemUpdate,
-		handleRecipeItemDelete,
-		loading,
-		loadingDetails,
-		submitting,
-		errors, 
-		priceErrors,
-		recipeErrors,
-		loadError,
-		submitError
-	} = useProducts(activeModal?.id) 
+	const productsData = useProducts()
 
 	const { items } = useItems()
 
-	const activeProduct = products.find(p => p.id === activeModal?.id)
+	const activeProduct = productsData.products.find(p => p.id === activeModal?.id)
+	const priceData = usePriceHistory(activeProduct?.id, productsData.setProducts)
+	const recipeItemData = useRecipeItems(productsData.setProducts)
 	const [ createProductModal, setCreateProductModal ] = useState(false)
 
-	if (loadError) return (
-		<ErrorLoading message={loadError} />
+	if (productsData.loadError) return (
+		<ErrorLoading message={productsData.loadError} />
 	)
 
 	return (
@@ -60,9 +42,9 @@ export default function Products() {
 				<InputSearchFilter 
 					id="searchSupplier"
 					placeholder="Search products by name"
-					value={searchName}
-					onChange={(e) => setSearchName(e ?? "")}
-					onApply={setAppliedSearchName}
+					value={productsData.searchName}
+					onChange={(e) => productsData.setSearchName(e ?? "")}
+					onApply={productsData.setAppliedSearchName}
 				/>
 				{/* Create product */}
 				<button
@@ -73,10 +55,10 @@ export default function Products() {
 			</div>
 
 			{/* Products table */}
-			{!loading ? (
+			{!productsData.loading ? (
 				<ProductsTable> 
-					{visibleProducts.length > 0 ? (
-						visibleProducts.map(product => 
+					{productsData.visibleProducts.length > 0 ? (
+						productsData.visibleProducts.map(product => 
 							<ProductsRow
 								key={product.id}
 								onTriggerEdit={() => setActiveModal({ mode: "edit", id: product.id })}
@@ -86,7 +68,7 @@ export default function Products() {
 							/>
 						)
 					): (
-						<EmptyRow message={`No ${searchName ? 'matching' : ''} products`} />
+						<EmptyRow message={`No ${productsData.searchName ? 'matching' : ''} products`} />
 					)}
 					
 					
@@ -100,41 +82,61 @@ export default function Products() {
 
 			{createProductModal && (
 				<AddProductModal 
-					onClose={() => setCreateProductModal(false)}
-					onCreate={handleProductCreate}
-					submitting={submitting}
-					errors={errors}
-					submitError={submitError}
+					onClose={() => {
+						productsData.clearErrors()
+						setCreateProductModal(false)
+					}}
+					onCreate={productsData.handleProductCreate}
+					validateProduct={productsData.validateProduct}
+					submitting={productsData.submitting}
+					errors={productsData.errors}
 				/>
 			)}
 
 			{activeModal?.mode === "info" && activeProduct && (
 				<InfoProductModal 
 					onClose={() => setActiveModal(null)}
-					loading={loadingDetails}
+					loading={priceData.loadingDetails}
 					product={activeProduct}
-					prices={prices}
+					prices={priceData.prices}
 					items={items}
 				/>
 			)}
 
 			{activeModal?.mode === "edit" && activeProduct && (
 				<EditProductModal 
-					onClose={() => setActiveModal(null)}
-					onEdit={handleProductUpdate}
-					onAddPrice={handlePriceCreate}
-					onAddRecipeItem={handleRecipeItemCreate}
-					onEditRecipeItem={handleRecipeItemUpdate}
-					onDeleteRecipeItem={handleRecipeItemDelete}
+					onClose={() => {
+						productsData.clearErrors()
+						priceData.clearErrors()
+						recipeItemData.clearErrors()
+						setActiveModal(null)
+					}}
+					productsActions={{
+						onEdit: productsData.handleProductUpdate,
+						validateProductUpdate: productsData.validateProductUpdate,
+						loading: productsData.loading,
+						submitting: productsData.submitting,
+						errors: productsData.errors,
+					}}
+					priceActions={{
+						onAdd: priceData.handlePriceCreate,
+						validatePrice: priceData.validatePrice,
+						submitting: priceData.submitting,
+						errors: priceData.errors
+					}}
+					recipeItemActions={{
+						onAdd: recipeItemData.handleRecipeItemCreate,
+						onEdit: recipeItemData.handleRecipeItemUpdate,
+						onDelete: recipeItemData.handleRecipeItemDelete,
+						validateRecipe: recipeItemData.validateRecipe,
+						validateRecipeUpdate: recipeItemData.validateRecipeUpdate,
+						submitting: recipeItemData.submitting,
+						errors: recipeItemData.errors
+					}}
 					product={activeProduct}
-					prices={prices}
+					prices={priceData.prices}
 					items={items}
-					submitting={submitting}
-					loading={loadingDetails}
-					errors={errors}
-					priceErrors={priceErrors}
-					recipeErrors={recipeErrors}
-					submitError={submitError}
+
 				/>
 			)}
 
@@ -143,11 +145,10 @@ export default function Products() {
 					name={activeProduct.name}
 					onClose={() => setActiveModal(null)}
 					onConfirm={() => {
-						handleProductDelete(activeProduct.id)
+						productsData.handleProductDelete(activeProduct.id)
 						setActiveModal(null)
 					}}	
-					submitting={submitting}
-					submitError={submitError}
+					submitting={productsData.submitting}
 					/>
 			)}
 			</div>

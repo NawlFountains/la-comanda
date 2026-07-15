@@ -1,28 +1,28 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { createPriceProduct, createProduct, deleteProduct, getProductPriceHistory, updateProduct, createRecipeItem, deleteRecipeItem, updateRecipeItem, getProductsWithDetails } from '../api/products'
-import { productCreateSchema, productUpdateSchema, type ProductErrors } from '../schemas/product'
-import type { PriceHistory, RecipeItem, CreateProductPayload, Product, CreatePriceHistoryPayload, CreateRecipeItemPayload, ProductWithDetails } from '../types'
-import {parseZodErrors} from '../utils/parseZodErrors'
-import {priceHistoryCreateSchema, type PriceHistoryErrors } from '../schemas/price_history'
-import {recipeItemCreateSchema, recipeItemUpdateSchema, type RecipeItemErrors} from '../schemas/recipe_item'
+import { createProduct, deleteProduct, updateProduct, getProductsWithDetails } from '../api/products'
+import type { Product, ProductWithDetails } from '../types'
+import { productCreateSchema, productUpdateSchema } from '../schemas/product'
+import type { ProductCreateData, ProductErrors, ProductUpdateData } from '../schemas/product'
+import { useToast } from '../context/ToastContext'
+import { useValidation } from './useValidation'
 
-export const useProducts = (activeProductId?: string | null) => {
+export const useProducts = () => {
+	const { showToast } = useToast()
+
 	const [products, setProducts] = useState<ProductWithDetails[]>([])
-
-	const [prices, setPrices] = useState<PriceHistory[]>([])
 
 	const [searchName, setSearchName] = useState("")
 	const [appliedSearchName, setAppliedSearchName ] = useState("")
 
 	const [loading, setLoading] = useState<boolean>(false)
-	const [loadingDetails, setLoadingDetails] = useState<boolean>(false)
 	const [submitting, setSubmitting] = useState<boolean>(false)
-	const [errors, setErrors] = useState<ProductErrors>({})
-	const [priceErrors, setPriceErrors] = useState<PriceHistoryErrors>({})
-	const [recipeErrors, setRecipeErrors] = useState<RecipeItemErrors>({})
+
+	const { errors , validate, clearErrors } = useValidation<ProductErrors>()
+
+	const validateProduct = useCallback((data: ProductCreateData) => validate(productCreateSchema, data), [validate])
+	const validateProductUpdate = useCallback((data: ProductUpdateData) => validate(productUpdateSchema, data), [validate])
 
 	const [loadError, setLoadError] = useState<string | null>(null)
-	const [submitError, setSubmitError] = useState<string | null>(null)
 
 	useEffect(() => {
 		async function loadProducts() {
@@ -39,38 +39,18 @@ export const useProducts = (activeProductId?: string | null) => {
 		loadProducts()
 	}, [])
 
-	useEffect(() => {
-		if (!activeProductId) return
-
-		async function loadProductPriceHistory() {
-			try {
-				setLoadingDetails(true)
-
-				if (activeProductId) {
-					const prices = await getProductPriceHistory(activeProductId)
-					setPrices(prices)
-				}
-
-			} catch (err) {
-				setLoadError(err instanceof Error ? err.message : "Unkown error")
-			} finally {
-				setLoadingDetails(false)
-			}
-		}
-		
-		loadProductPriceHistory()
-	}, [activeProductId])
-
-	const handleProductCreate = useCallback( async (productData: CreateProductPayload): Promise<boolean> => {
-		const result = productCreateSchema.safeParse(productData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<ProductErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+		const handleProductCreate = useCallback( async (productData: ProductCreateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+		let tempId = crypto.randomUUID()
+		let optimisticProduct: ProductWithDetails = {
+			...productData,
+			id: tempId,
+			business_id: tempId,
+			latest_price: null,
+			recipe_items: []
+		}
+
+		setProducts((prev) => [...prev, optimisticProduct])
 		try {
 			const newProduct: Product = await createProduct(productData)
 
@@ -82,182 +62,61 @@ export const useProducts = (activeProductId?: string | null) => {
 				recipe_items: []
 			})
 
-			setProducts((prevProducts) => [...prevProducts, newProductWithNoDetails])
+			setProducts((prev) => 
+				 prev.map((p) => (p.id === tempId ? newProductWithNoDetails : p))
+			)
+			showToast('Product created succesfully','message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to create product :", err)
+			setProducts((prev) => prev.filter((p) => p.id !== tempId))
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to create product: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
 		}
 	} , [])
 
-	const handleProductUpdate = useCallback( async (id: string, productData: Partial<CreateProductPayload>): Promise<boolean> => {
-		const result = productUpdateSchema.safeParse(productData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<ProductErrors>(result.error)
-			setErrors(newErrors)
-			return false
-		}
-		setErrors({})		
+	const handleProductUpdate = useCallback( async (id: string, productData: ProductUpdateData): Promise<boolean> => {
 		setSubmitting(true)
-		setSubmitError(null)
+
+		let previousProduct: ProductWithDetails | undefined
+		setProducts((prev) => {
+			previousProduct = prev.find((p) => p.id === id)
+			return prev.map((p) => (p.id === id ? { ...p, ...productData } : p))
+		})
 		try {
 			const updatedProduct: Product = await updateProduct(id, productData)
-			setProducts((prevProducts) => 
-				prevProducts.map((product) => 
-					product.id === id ? { ...product, ...updatedProduct } : product
-				)
+			setProducts((prev) =>
+				prev.map((p) => (p.id === id ? { ...p, ...updatedProduct } : p))
 			)
+			showToast('Product updated successfully', 'message')
 			return true
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to update product:", err)
+			if (previousProduct) {
+				setProducts((prev) => prev.map((p) => (p.id === id ? previousProduct! : p)))
+			}
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to update product: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
-		}
-	} , [])
+		}	} , [])
 
 	const handleProductDelete = async (id: string) => {
 		setSubmitting(true)
-		setSubmitError(null)
 		try {
 			await deleteProduct(id)
 
 			setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id))
+			showToast('Product deleted succesfully','message')
 		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to delete product:", err)
+			const message = err instanceof Error ? err.message : "Unknown error"
+			showToast(`Failed to delete product: ${message}`)
 		} finally {
 			setSubmitting(false)
 		}
 	}
-
-	const handlePriceCreate = useCallback( async (productId: string, priceData: CreatePriceHistoryPayload): Promise<boolean> => {
-		const result = priceHistoryCreateSchema.safeParse(priceData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<PriceHistoryErrors>(result.error)
-			setPriceErrors(newErrors)
-			return false
-		}
-		setPriceErrors({})		
-		setSubmitting(true)
-		setSubmitError(null)
-		try {
-			const newPrice: PriceHistory = await createPriceProduct(productId, priceData)
-
-			setPrices((prevPrices) => [...prevPrices, newPrice])
-			setProducts((prevProducts) => 
-					prevProducts.map((product) => {
-						if (product.id !== productId) return product
-
-						const hasNoPrice = !product.latest_price
-						
-						const isNewer = product.latest_price && 
-							new Date(newPrice.valid_from) > new Date(product.latest_price.valid_from)
-
-						if (hasNoPrice || isNewer) return { ...product, latest_price: newPrice }
-						return product
-					})
-				)
-			return true
-		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to create price:", err)
-			return false
-		} finally {
-			setSubmitting(false)
-		}
-	}, [])
-
-	const handleRecipeItemCreate = useCallback( async (productId: string, recipeItemData: CreateRecipeItemPayload ): Promise<boolean> => {
-		const result = recipeItemCreateSchema.safeParse(recipeItemData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<RecipeItemErrors>(result.error)
-			setRecipeErrors(newErrors)
-			return false
-		}
-		setPriceErrors({})		
-		setSubmitting(true)
-		setSubmitError(null)
-		try {
-			const newRecipeItem: RecipeItem = await createRecipeItem(productId, recipeItemData)
-
-			setProducts((prevProducts) => 
-				    prevProducts.map((product) => 
-						product.id === productId
-							? { ...product, recipe_items: [...product.recipe_items, newRecipeItem] }
-							: product
-				    )
-			)
-			return true
-		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to create recipe item:", err)
-			return false
-		} finally {
-			setSubmitting(false)
-		}
-	}, []) 
-
-	const handleRecipeItemUpdate = useCallback( async (productId: string, recipeId: string, recipeItemData: Partial<CreateRecipeItemPayload> ): Promise<boolean> => {
-		const result = recipeItemUpdateSchema.safeParse(recipeItemData)
-		if (!result.success) {
-			const newErrors = parseZodErrors<RecipeItemErrors>(result.error)
-			setRecipeErrors(newErrors)
-			return false
-		}
-		setRecipeErrors({})		
-		setSubmitting(true)
-		setSubmitError(null)
-		try {
-			const updatedRecipeItem: RecipeItem = await updateRecipeItem(productId, recipeId, recipeItemData)
-
-			setProducts((prevProducts) => 
-				    prevProducts.map((product) => 
-						product.id === productId
-							? {
-								...product,
-								recipe_items: product.recipe_items.map((item) => 
-									item.id === recipeId ? updatedRecipeItem : item
-								)
-							}
-							: product
-				    )
-			)
-			return true
-		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			return false
-		} finally {
-			setSubmitting(false)
-		}
-	} , [])
-
-
-	const handleRecipeItemDelete = async ( productId: string, id: string) => {
-		setSubmitting(true)
-		setSubmitError(null)
-		try {
-			await deleteRecipeItem(productId, id)
-
-			setProducts((prevProducts) => 
-				prevProducts.map((product) => 
-					product.id === productId 
-						? { ...product, recipe_items: product.recipe_items.filter((item) => item.id !== id) }
-						: product
-				)
-			)
-		} catch (err) {
-			setSubmitError(err instanceof Error ? err.message : "Unknown error")
-			console.error("Failed to delete product:", err)
-		} finally {
-			setSubmitting(false)
-		}
-	}
-
 	const visibleProducts = useMemo(() => {
 		return products.filter(product=>
 			product.name.toLowerCase().includes(appliedSearchName.toLowerCase())
@@ -270,25 +129,20 @@ export const useProducts = (activeProductId?: string | null) => {
 
 	return {
 		products,
+		setProducts,
 		visibleProducts,
-		prices,
 		searchName,
 		setSearchName,
 		setAppliedSearchName: handleSearchNameChanged,
+		validateProduct,
+		validateProductUpdate,
 		handleProductCreate,
 		handleProductUpdate,
 		handleProductDelete,
-		handlePriceCreate,
-		handleRecipeItemCreate,
-		handleRecipeItemUpdate,
-		handleRecipeItemDelete,
 		loading,
-		loadingDetails,
 		submitting,
 		errors,
-		priceErrors,
-		recipeErrors,
 		loadError,
-		submitError
+		clearErrors,
 	}
 }

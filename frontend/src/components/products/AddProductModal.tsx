@@ -3,25 +3,24 @@ import ModalLayout from '../../layouts/ModalLayout'
 import { buttonVariants } from '../styles/ButtonStyles'
 import InputModal from '../InputModal'
 import ErrorMessage from '../errors/ErrorMessage'
-import type { CreateProductPayload } from '../../types'
-import type { ProductErrors } from '../../schemas/product'
+import type { ProductCreateData, ProductErrors } from '../../schemas/product'
 
 interface AddProductModalProps {
 	onClose: () => void
-	onCreate: (data: CreateProductPayload) => Promise<boolean>
+	onCreate: (data: ProductCreateData) => Promise<boolean>
+	validateProduct: (data: ProductCreateData) => boolean
 	submitting: boolean
 	errors: ProductErrors
-	submitError: string | null
 }
 
-export default function AddProductModal({ onClose, onCreate, submitting, errors, submitError }: AddProductModalProps) {
+export default function AddProductModal({ onClose, onCreate, validateProduct, submitting, errors }: AddProductModalProps) {
 	const [name, setName] = useState('')
 
 	const handleSubmit = async () => {
-		const success = await onCreate({
-			name
-		})
-		if (success) onClose()
+		const productData = { name }
+		if (!validateProduct(productData)) return
+		onClose()
+		onCreate(productData)
 	}
 
 	return (
@@ -38,7 +37,6 @@ export default function AddProductModal({ onClose, onCreate, submitting, errors,
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
 			</div>
-			{submitError && (<ErrorMessage message={submitError} />)}
 			<div className="flex flex-col md:flex-row justify-between md:mx-4 gap-2 mt-4">
 					<button
 						onClick={onClose}

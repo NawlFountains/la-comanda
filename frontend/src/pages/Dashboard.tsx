@@ -21,23 +21,26 @@ export default function Dashboard() {
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
 	const {
 		customers, 
+		validateCustomer,
 		handleCustomerCreate, 
 		errors: customerErrors 
 	} = useCustomer()
 
 	const {
+		validateOrder,
 		submitting: orderSubmitting,
 		handleOrderCreate, 
 		errors: orderErrors,
-		submitError: orderSubmitError
+		clearErrors: orderClearErrors
 	} = useOrders()
 
 	const {
 		products, 
 		submitting: productSubmitting,
+		validateProduct,
 		handleProductCreate, 
 		errors: productErrors,
-		submitError: productSubmitError
+		clearErrors: productClearErrors
 	} = useProducts()
 
 	const { 
@@ -115,25 +118,32 @@ export default function Dashboard() {
 
 			{showAddOrderMenu && (
 				<AddOrderModal 
-					onClose={() => setShowAddOrderMenu(false)}
+					onClose={() => {
+						orderClearErrors()
+						setShowAddOrderMenu(false)
+					}}
 					onCreate={handleOrderCreate}
 					onCreateCustomer={handleCustomerCreate}
+					validateOrder={validateOrder}
+					validateCustomer={validateCustomer}
 					products={products}
 					customers={customers}
 					submitting={orderSubmitting}
 					orderErrors={orderErrors}
 					customerErrors={customerErrors}
-					submitError={orderSubmitError}
 				/>
 			)}
 
 			{showAddProductMenu && (
 				<AddProductModal 
-					onClose={() => setShowAddProductMenu(false)}
+					onClose={() => {
+						productClearErrors()
+						setShowAddProductMenu(false)
+					}}
 					onCreate={handleProductCreate}
+					validateProduct={validateProduct}
 					submitting={productSubmitting}
 					errors={productErrors}
-					submitError={productSubmitError}
 				/>
 			)}
 

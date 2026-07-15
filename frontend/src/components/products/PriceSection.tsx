@@ -2,24 +2,22 @@ import { useState } from 'react'
 import { buttonVariants } from '../styles/ButtonStyles'
 import ErrorMessage from '../errors/ErrorMessage'
 import InputModal from '../InputModal'
-import type { PriceHistoryErrors } from '../../schemas/price_history'
-import type { Product, PriceHistory, CreatePriceHistoryPayload } from '../../types'
+import type { Product, PriceHistory } from '../../types'
 import {formatDate} from '../../utils/date'
-
+import type {PriceActions} from './EditProductModal.types'
 
 interface PriceSectionProps {
-	onAddPrice: (productId: string, data: CreatePriceHistoryPayload) => Promise<boolean>
 	product: Product
 	prices: PriceHistory[]
-	priceErrors: PriceHistoryErrors
+	priceActions: PriceActions
 }
 
 export default function PriceSection({
-	onAddPrice,
 	product,
 	prices,
-	priceErrors
+	priceActions
 }: PriceSectionProps ) {
+	const { validatePrice, onAdd, errors } = priceActions
 	const [showPastPrices, setShowPastPrices] = useState(false)
 	const [createPrice, setCreatePrice] = useState(false)
 	const [price, setPrice] = useState<string>('')
@@ -28,14 +26,11 @@ export default function PriceSection({
 	})
 
 	const handleSubmit = async () => {
-		const successPrice = await onAddPrice(product.id, {
-			price,
-			valid_from: validFrom
-		})
-		if (successPrice) {
-			setShowPastPrices(true)
-			setCreatePrice(false)
-		}
+		const priceData = { price, valid_from: validFrom }
+		if (!validatePrice(priceData)) return
+		setCreatePrice(false)
+		setShowPastPrices(false)
+		onAdd(product.id, priceData)
 	}
 	return (
 		<div className='flex flex-col text-center gap-3'>
@@ -88,13 +83,13 @@ export default function PriceSection({
 				</tr>
 			)}	
 
-			{priceErrors && (
+			{errors && (
 				<tr>
 					<td>
-					{priceErrors.price && (<ErrorMessage message={priceErrors.price}/>)}
+					{errors.price && (<ErrorMessage message={errors.price}/>)}
 					</td>
 					<td>
-					{priceErrors.valid_from && (<ErrorMessage message={priceErrors.valid_from}/>)}
+					{errors.valid_from && (<ErrorMessage message={errors.valid_from}/>)}
 					</td>
 				</tr>
 			)}

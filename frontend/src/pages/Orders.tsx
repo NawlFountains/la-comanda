@@ -28,6 +28,8 @@ export default function Orders() {
 		setSearchDate,
 		setAppliedDate,
 		setFilterStatus,
+		validateOrder,
+		validateOrderUpdate,
 		handleOrderCreate,
 		handleOrderUpdate,
 		handleOrderDelete,
@@ -35,9 +37,14 @@ export default function Orders() {
 		submitting,
 		errors: orderErrors,
 		loadError,
-		submitError
+		clearErrors: orderClearErrors
 	} = useOrders()
-	const { customers, handleCustomerCreate, errors: customerErrors } = useCustomer()
+	const { customers, 
+		validateCustomer,
+		handleCustomerCreate, 
+		errors: customerErrors,
+		clearErrors: customerClearErrors,
+	} = useCustomer()
 	const { products } = useProducts()
 
 	const customerById = useMemo(() => {
@@ -140,13 +147,18 @@ export default function Orders() {
 				<AddOrderModal 
 					onCreate={handleOrderCreate}
 					onCreateCustomer={handleCustomerCreate}
-					onClose={() => setShowCreateOrderModal(false)}
+					onClose={() => {
+						customerClearErrors()
+						orderClearErrors()
+						setShowCreateOrderModal(false)
+					}}
+					validateOrder={validateOrder}
+					validateCustomer={validateCustomer}
 					products={products}
 					customers={customers}
 					submitting={submitting}
 					orderErrors={orderErrors}
 					customerErrors={customerErrors}
-					submitError={submitError}
 				/>
 			)}
 
@@ -161,13 +173,16 @@ export default function Orders() {
 
 			{activeModal?.mode === 'edit' && activeOrder && (
 				<EditOrderModal 
-					onClose={() => setActiveModal(null)}
+					onClose={() => {
+						orderClearErrors()
+						setActiveModal(null)
+					}}
 					onEdit={handleOrderUpdate}
+					validateOrderUpdate={validateOrderUpdate}
 					submitting={submitting}
 					order={activeOrder}
 					customer={customerById[activeOrder.customer_id]}
 					errors={orderErrors}
-					submitError={submitError}
 				/> 
 			)}
 
@@ -180,7 +195,6 @@ export default function Orders() {
 						setActiveModal(null)
 					}}	
 					submitting={submitting}
-					submitError={submitError}
 					/>
 			)}
 
