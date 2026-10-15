@@ -1,9 +1,11 @@
 import { NavLink, useRouteLoaderData } from "react-router-dom"
+import { useTranslation } from 'react-i18next'
 import type { User } from '@supabase/supabase-js'
 import useLogout from "../hooks/useLogout"
 import { useState } from "react"
 import { buttonVariants } from "./styles/ButtonStyles"
 import type {Business} from "../types"
+import LanguageSwitch from "./LanguageSwitch"
 
 interface NavBarProps {
 	business: Business | null
@@ -24,6 +26,7 @@ function StyledNavLink({to, onClick, children}: StyledNavLinkProps) {
 }
 
 export default function Navbar({ business }: NavBarProps) {
+	const { t } = useTranslation()
 	const user = useRouteLoaderData('root-layout') as User | null
 	const { loading, handleLogout } = useLogout()
 	const [ menuOpen, setMenuOpen ] = useState(false)
@@ -32,19 +35,19 @@ export default function Navbar({ business }: NavBarProps) {
 			? [
 				{
 					"to": "/dashboard",
-					"title": "Dashboard"
+					"title": t("tabs.dashboard")
 				},
 				{
 					"to": "/orders",
-					"title": "Orders"
+					"title": t("tabs.orders")
 				},
 				{
 					"to": "/stock",
-					"title": "Stock"
+					"title": t("tabs.stock")
 				},
 				{
 					"to": "/products",
-					"title": "Products"
+					"title": t("tabs.products")
 				}
 			]
 			: []
@@ -65,6 +68,7 @@ export default function Navbar({ business }: NavBarProps) {
 				</span>
 			))}
 			</div>
+			<LanguageSwitch />
 			{user ? (
 				<div>
 				<span>{business?.name || "Loading..."} </span>
@@ -76,7 +80,7 @@ export default function Navbar({ business }: NavBarProps) {
 				</button>
 				</div>
 			) : (
-				<StyledNavLink to='/login'>Log in</StyledNavLink>
+				<StyledNavLink to='/login'>{t("auth.login")}</StyledNavLink>
 			)}
 		</div>
 	
@@ -86,6 +90,9 @@ export default function Navbar({ business }: NavBarProps) {
 				<div className="p-2">
 				<NavLink to ="/">La comanda</NavLink>
 				</div>
+				<div
+					className="flex flex-row gap-4">
+					<LanguageSwitch />	
 				<button 
 					onClick={() => setMenuOpen(prev => !prev)} 
 					className="flex flex-col justify-center items-center w-8 h-8 gap-[6px] cursor-pointer group my-auto">
@@ -101,6 +108,7 @@ export default function Navbar({ business }: NavBarProps) {
 						menuOpen ? "-rotate-45 -translate-y-[9px]" : ""
 					}`} />
 				</button>
+				</div>
 			</div>
 
 			{/* Menu open */}
@@ -129,7 +137,7 @@ export default function Navbar({ business }: NavBarProps) {
 						{ loading ? 'Logging out...' : 'Log out'}
 						</button>
 					) : (
-						<StyledNavLink to='/login'>Log in</StyledNavLink>
+						<StyledNavLink to='/login'>{t("auth.login")}</StyledNavLink>
 					)}
 					</li>
 					</ul>
