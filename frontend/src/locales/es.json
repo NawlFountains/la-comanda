@@ -1,0 +1,13 @@
+   {
+     "tabs": { 
+        "dashboard": "Panel",
+        "orders": "Ordenes",
+        "stock": "Inventario", 
+        "products": "Productos", 
+        "results": "Results" 
+    },
+    "auth": {
+        "login": "Ingresar",
+        "logout": "Salir"
+    }
+   }

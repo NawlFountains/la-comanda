@@ -1,0 +1,13 @@
+   {
+     "tabs": { 
+        "dashboard": "Dashboard",
+        "orders": "Orders",
+        "stock": "Stock", 
+        "products": "Products", 
+        "results": "Results" 
+    },
+    "auth": {
+        "login": "Login",
+        "logout": "Logout"
+    }
+   }
