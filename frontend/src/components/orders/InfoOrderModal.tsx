@@ -1,4 +1,5 @@
 import {useMemo} from 'react'
+import { useTranslation } from 'react-i18next'
 import ModalLayout from '../../layouts/ModalLayout'
 import type { Customer, Order, Product } from '../../types'
 import {formatDatetime} from '../../utils/date'
@@ -11,6 +12,7 @@ interface InfoOrderModalProps {
 }
 
 export default function InfoOrderModal({ onClose, order, customer, products }: InfoOrderModalProps) {
+	const { t } = useTranslation()
 	const total = order.order_items.reduce((sum, item) => {
 	    return sum + (parseFloat(item.unit_price) * item.quantity)
 	}, 0)
@@ -30,10 +32,10 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 			{/* Customer and Order Status Grid */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 dark:bg-neutral-700/40 p-3 rounded-md border border-neutral-200 dark:border-neutral-600">
 				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
-					<p>Customer:</p>
-					<p>Contact:</p>
-					<p>Status:</p>
-					<p>Created at:</p>
+					<p>{t("orders.customer")}:</p>
+					<p>{t("orders.contact")}:</p>
+					<p>{t("orders.contact")}:</p>
+					<p>{t("orders.createdAt")}</p>
 					<p>ID:</p>
 				</div>
 				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
@@ -85,7 +87,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 
 			{/* Total Section */}
 			<div className="flex justify-between items-center p-3 bg-neutral-100 dark:bg-neutral-700/40 rounded-md border border-neutral-200 dark:border-neutral-600">
-				<span className="text-neutral-600 dark:text-neutral-200 font-medium text-sm">Total Amount</span>
+				<span className="text-neutral-600 dark:text-neutral-200 font-medium text-sm">{t("orders.total")}</span>
 				<p className="font-mono text-xl font-bold text-neutral-900 dark:text-neutral-400">${total.toFixed(2)}</p>
 			</div>
 		</ModalLayout>

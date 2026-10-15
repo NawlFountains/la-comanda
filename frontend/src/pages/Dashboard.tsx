@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import ScreenLayout from "../layouts/ScreenLayout"
 import LowStockItemsCard from "../components/items/LowStockItemsCard"
 import PendingOrdersCard from "../components/orders/PendingOrdersCard"
@@ -18,6 +19,7 @@ import DashboardSkeleton from "../components/skeletons/DashboardSkeleton"
 import ErrorLoading from "../components/errors/ErrorLoading"
 
 export default function Dashboard() {
+	const { t } = useTranslation()
 	const [ pendingOrders, setPendingOrders] = useState<Order[]>([])
 	const {
 		customers, 
@@ -149,7 +151,7 @@ export default function Dashboard() {
 
 			<div className="items-center">
 				<h1 className="text-xl py-4 font-mono">
-				Quick actions
+				{t("dashboard.quickActions")}
 				</h1>
 			</div>
 
@@ -160,7 +162,7 @@ export default function Dashboard() {
 				<button 
 					onClick={() => setShowAddOrderMenu(true)}
 					className={`${buttonVariants.secondary} rounded-xl`}>
-					+ Add Order
+					+ {t("orders.addOrder")}
 				</button>
 				<button 
 					onClick={() => setShowAddRestockMenu(true)}
@@ -177,7 +179,7 @@ export default function Dashboard() {
 			{/* General status */}
 
 				<h1 className="text-xl py-4 font-mono">
-				General status
+				{t("dashboard.generalStatus")}
 				</h1>
 
 			<div className="flex flex-col md:grid md:grid-cols-2 gap-4">

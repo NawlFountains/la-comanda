@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import {buttonVariants} from "../components/styles/ButtonStyles"
 import ErrorMessage from "../components/errors/ErrorMessage"
 import { useLogin } from "../hooks/useLogin"
@@ -8,6 +9,7 @@ import AuthLayout from "../layouts/AuthLayout"
 import InputModal from "../components/InputModal"
 
 export default function Login() {
+	const { t } = useTranslation()
 	const { email,
 		setEmail,
 		password, 
@@ -29,7 +31,7 @@ export default function Login() {
 				{`> Back`}
 			</Link>
 				 <h1 className="text-3xl font-bold">La comanda</h1>
-				 <h2 className="text-2xl text-neutral-700 dark:text-neutral-400">Sign into your account</h2>
+				 <h2 className="text-2xl text-neutral-700 dark:text-neutral-400">{t("auth.signIntoAccount")}</h2>
 			</div>
 
 			{/* Email input */}
@@ -38,7 +40,7 @@ export default function Login() {
 				 value={email}
 				 onChange={e => setEmail(e.target.value)}
 				 id="email"
-				 label="email"
+				 label={t("auth.email")}
 				 className="w-full h-10"
 				 placeholder="email@example.com"/>
 				 {errors.email && (
@@ -56,9 +58,9 @@ export default function Login() {
 							 value={password}
 							 onChange={e => setPassword(e.target.value)}
 							 id="password"
-							 label="password"
+							 label={t("auth.password")}
 							 className="w-full h-10"
-							 placeholder="password"
+							 placeholder={t("auth.password")}
 							 type={showPassword ? "text" : "password"}
 						 />
 					</div>
@@ -86,10 +88,10 @@ export default function Login() {
 				disabled={loading}
 				onClick={() => handleLogin()}
 				className={`${buttonVariants.primary} w-full max-w-sm mb-3 border border-neutral-600 rounded-lg`}>
-				{ loading ? 'Signing in...' : 'Sign in' }
+				{ loading ? t("auth.loggingIn") : t("auth.login") }
 			</button>
 			<p>
-				New here? <Link className="font-bold cursor-pointer" to="/register">Create your account</Link>
+				{t("auth.newHere")} <Link className="font-bold cursor-pointer" to="/register">{t("auth.createAccount")}</Link>
 			</p>
 			</div>
 		</AuthLayout>

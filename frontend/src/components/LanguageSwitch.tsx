@@ -24,7 +24,7 @@ export default function LanguageSwitch() {
           className={`px-2 py-1 cursor-pointer transition-colors ${
             current === code
               ? "bg-neutral-200 dark:bg-neutral-300 text-neutral-200 dark:text-neutral-700"
-              : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200"
+              : "bg-transparent text-neutral-700 dark:text-neutral-200"
           }`}
         >
           {label}

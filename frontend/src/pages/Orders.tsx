@@ -1,4 +1,5 @@
 import {useMemo, useState} from "react"
+import { useTranslation } from 'react-i18next'
 import ScreenLayout from "../layouts/ScreenLayout"
 import type { ActiveModal, OrderStatus } from "../types"
 import OrdersTable from "../components/orders/OrdersTable"
@@ -19,6 +20,7 @@ import PaginationControlFooter from "../components/PaginationControlFooter"
 import ErrorLoading from "../components/errors/ErrorLoading"
 
 export default function Orders() {
+	const { t } = useTranslation()
 	const { orders,
 		page,
 		setPage,
@@ -85,11 +87,11 @@ export default function Orders() {
 				  onChange={(e) => handleStatusChange(e.target.value as OrderStatus | "")}
 				  className="bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded p-2 font-medium focus:outline-none focus:ring-neutral-500 cursor-pointer"
 				>
-					<option value="" disabled hidden>Filter by status</option>
-					<option value="pending">Pending</option>
-					<option value="cancelled">Cancelled</option>
-					<option value="delivered">Delivered</option>
-					<option value="confirmed">Confirmed</option>
+					<option value="" disabled hidden>{t("orders.filterByStatus")}</option>
+					<option value="pending">{t("orderStatus.pending")}</option>
+					<option value="cancelled">{t("orderStatus.cancelled")}</option>
+					<option value="delivered">{t("orderStatus.delivered")}</option>
+					<option value="confirmed">{t("orderStatus.confirmed")}</option>
 				</select>
 
 				{filterStatus && (
@@ -105,7 +107,7 @@ export default function Orders() {
 				<button
 					onClick={() => setShowCreateOrderModal(true)}
 					className={buttonVariants.secondary}>
-				+ Add order
+				+ {t("orders.addOrder")}
 				</button>
 				</div>
 			</div>

@@ -76,7 +76,7 @@ export default function Navbar({ business }: NavBarProps) {
 					onClick={handleLogout}
 					disabled={loading}
 					className={`${buttonVariants.danger}`}>
-					{ loading ? 'Logging out...' : 'Log out'}
+					{ loading ? t("auth.loggingOut") : t("auth.logout") }
 				</button>
 				</div>
 			) : (

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { TrashIcon } from './styles/Icons'
 
 interface InputSearchFilterProps {
@@ -20,6 +21,7 @@ export default function InputSearchFilter({
 	placeholder,
 	className = "",
 }: InputSearchFilterProps) {
+	const { t } = useTranslation()
 	return (
 		<div className={`flex flex-row w-full ${className} min-h-10`}>
 			<input
@@ -37,7 +39,7 @@ export default function InputSearchFilter({
 				onClick={() => onApply(value)}
 				className="bg-neutral-800 dark:bg-neutral-700 text-neutral-200 px-4 rounded-r-lg hover:bg-neutral-700 dark:hover:bg-neutral-200 dark:hover:text-neutral-800 transition-colors whitespace-nowrap"
 			>
-				Search
+				{t("actions.search")}
 			</button>
 			{value && (
 				<button

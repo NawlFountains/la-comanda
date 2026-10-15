@@ -6,8 +6,53 @@
         "products": "Productos", 
         "results": "Results" 
     },
-    "auth": {
-        "login": "Ingresar",
-        "logout": "Salir"
+      "dashboard": {
+        "quickActions": "Acciones",
+        "generalStatus": "Estado general"
+    },
+    "actions": {
+        "add": "Agregar",
+        "edit": "Editar",
+        "delete": "Borrar",
+        "cancel": "Cancelar",
+        "search": "Buscar"
+    },
+    "orders": {
+        "createdAt": "Fecha",
+        "customer": "Cliente",
+        "customerName": "Nombre",
+        "contact": "Contacto",
+        "status": "Estado",
+        "product": "Producto",
+        "quantity": "Cantidad",
+        "price": "Precio",
+        "total": "Total",
+        "addOrder": "Agregar order",
+        "filterByStatus": "Filtrar por estado"
+    },
+    "orderStatus": {
+        "pending": "Pendiente",
+        "delivered": "Entregado",
+        "completed": "Completado",
+        "cancelled": "Cancelado"
+    },
+     "auth": {
+        "login": "Iniciar sesión",
+        "loggingIn": "Iniciando sesión...",
+        "loading": "Cargando...",
+        "logout": "Cerrar sesión",
+        "loggingOut": "Cerrando sesión...",
+        "register": "Registrarse",
+        "email": "Email",
+        "password": "Contraseña",
+        "name": "Nombre",
+        "phone": "Teléfono",
+        "confirmPassword": "Confirmar contraseña",
+        "signIn": "Iniciar sesión",
+        "signUp": "Registrarse",
+        "forgotPassword": "Olvidé mi contraseña",
+        "signIntoAccount": "Iniciar sesión en tu cuenta",
+        "newHere": "¿Nuevo aquí?",
+        "createAccount": "Crea tu cuenta"
     }
    }

@@ -6,8 +6,53 @@
         "products": "Products", 
         "results": "Results" 
     },
+    "dashboard": {
+        "quickActions": "Quick actions",
+        "generalStatus": "General status"
+    },
+    "actions": {
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "search": "Search"
+    },
+    "orders": {
+        "createdAt": "Created at",
+        "customer": "Customer",
+        "customerName": "Customer name",
+        "contact": "Contact",
+        "status": "Status",
+        "product": "Product",
+        "quantity": "Quantity",
+        "price": "Price",
+        "total": "Total",
+        "addOrder": "Add order",
+        "filterByStatus": "Filter by status"
+    },
+    "orderStatus": {
+        "pending": "Pending",
+        "delivered": "Delivered",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+    },
     "auth": {
         "login": "Login",
-        "logout": "Logout"
+        "loggingIn": "Logging in...",
+        "loading": "Loading...",
+        "logout": "Logout",
+        "loggingOut": "Logging out...",
+        "register": "Register",
+        "email": "Email",
+        "password": "Password",
+        "name": "Name",
+        "phone": "Phone",
+        "confirmPassword": "Confirm password",
+        "signIn": "Sign in",
+        "signUp": "Sign up",
+        "forgotPassword": "Forgot password?",
+        "newHere": "New here?",
+        "signIntoAccount": "Sign into your account",
+        "createAccount": "Create your account"
     }
    }
