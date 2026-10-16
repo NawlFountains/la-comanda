@@ -21,6 +21,11 @@
         "search": "Search",
         "confirmDeletion": "Are you sure you want to delete {{name}} ?"
     },
+    "navigation": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page"
+    },
     "products": {
         "addProduct": "Add product"
     },

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { buttonVariants } from './styles/ButtonStyles'
 
 interface PaginationControlFooterProps {
@@ -10,6 +11,7 @@ interface PaginationControlFooterProps {
 }
 
 export default function PaginationControlFooter({ loading, page, setPage, limit, itemCount }: PaginationControlFooterProps) {
+	const { t } = useTranslation()
 	return (
 		<div className="flex flex-row justify-center items-center gap-4 mt-4 mb-2">
 			<button
@@ -17,15 +19,15 @@ export default function PaginationControlFooter({ loading, page, setPage, limit,
 			onClick={() => setPage(prev => Math.max(prev - 1, 1))}
 			className={`${buttonVariants.secondary} px-4 py-1 disabled:opacity-50 disabled:cursor-not-allowed`}
 			>
-				Previous
+				{t("navigation.previous")}
 			</button>
-			<span className="font-mono text-sm">Page {page}</span>
+			<span className="font-mono text-sm">{t("navigation.page")} {page}</span>
 			<button
 				disabled={itemCount < limit || loading} 
 				onClick={() => setPage(prev => prev + 1)}
 				className={`${buttonVariants.secondary} px-4 py-1 disabled:opacity-50 disabled:cursor-not-allowed`}
 			>
-				Next
+				{t("navigation.next")}
 			</button>
 		</div>
 	)

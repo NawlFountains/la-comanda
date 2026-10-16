@@ -21,6 +21,11 @@
         "search": "Buscar",
         "confirmDeletion": "¿Estás seguro de borrar {{name}} ?"
     },
+    "navigation": {
+        "previous": "Previo",
+        "next": "Siguiente",
+        "page": "Página"
+    },
     "products": {
         "addProduct": "Agregar producto"
     },
