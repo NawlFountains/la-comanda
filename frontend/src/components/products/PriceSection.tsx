@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { buttonVariants } from '../styles/ButtonStyles'
 import ErrorMessage from '../errors/ErrorMessage'
 import InputModal from '../InputModal'
@@ -17,6 +18,7 @@ export default function PriceSection({
 	prices,
 	priceActions
 }: PriceSectionProps ) {
+	const { t } = useTranslation()
 	const { validatePrice, onAdd, errors } = priceActions
 	const [showPastPrices, setShowPastPrices] = useState(false)
 	const [createPrice, setCreatePrice] = useState(false)
@@ -39,8 +41,8 @@ export default function PriceSection({
 			<table>
 			<thead>
 				<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700'>
-				<td>Price</td>
-				<td>From</td>
+				<td>{t("products.price")}</td>
+				<td>{t("products.priceFrom")}</td>
 				</tr>
 			</thead>
 			<tbody>
@@ -62,7 +64,7 @@ export default function PriceSection({
 						value={price}
 						placeholder="e.g. 100.50"
 						id="priceValue"
-						label="Price"
+						label={t("products.price")}
 						type='number'
 						onChange={(e) => setPrice(e.target.value)}
 						/>
@@ -73,7 +75,7 @@ export default function PriceSection({
 						name="input_valid_from"
 						type="date"
 						id="priceValidFrom"
-						label="From"
+						label={t("products.priceFrom")}
 						className='w-1/3 text-center'
 						value={validFrom}
 						onChange={(e) => setValidFrom(e.target.value)}
@@ -101,14 +103,14 @@ export default function PriceSection({
 						<button 
 							onClick={() => setCreatePrice(false)}
 							className={buttonVariants.danger}>
-						Cancel
+						{t("actions.cancel")}
 						</button>
 					</td>
 					<td>
 						<button 
 							onClick={() => handleSubmit()}
 							className={buttonVariants.secondary}>
-						Confirm
+						{t("actions.confirm")}
 						</button>
 					</td>
 				</tr>
@@ -122,7 +124,7 @@ export default function PriceSection({
 				onClick={() => setShowPastPrices(!showPastPrices)}
 				className="text-sm text-neutral-600 dark:text-neutral-300 underline cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-100"
 			>
-				{showPastPrices? "Hide History" : `Show History (${prices.length - 1} more)`}
+				{showPastPrices? t("products.hidePastPrices") : t("products.showPastPrices", { count: prices.length - 1 })}
 			</button>
 		)}
 
@@ -130,7 +132,7 @@ export default function PriceSection({
 			<button
 				onClick={() => setCreatePrice(true)}
 				className={`${buttonVariants.secondary}`}>
-				Add Price
+				{t("products.addPrice")}
 			</button>
 		)}
 		</div>

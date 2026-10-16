@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import ScreenLayout from "../layouts/ScreenLayout"
 import ProductsTable from "../components/products/ProductsTable"
 import ProductsRow from "../components/products/ProductsRow"
@@ -18,6 +19,7 @@ import { usePriceHistory } from "../hooks/usePriceHistory"
 import { useRecipeItems } from "../hooks/useRecipeItems"
 
 export default function Products() {
+	const { t } = useTranslation()
 	const [ activeModal, setActiveModal] = useState<ActiveModal>(null)
 	const productsData = useProducts()
 
@@ -41,7 +43,7 @@ export default function Products() {
 				{/* Search filter */}
 				<InputSearchFilter 
 					id="searchSupplier"
-					placeholder="Search products by name"
+					placeholder={t("products.searchByName")}
 					value={productsData.searchName}
 					onChange={(e) => productsData.setSearchName(e ?? "")}
 					onApply={productsData.setAppliedSearchName}
@@ -50,7 +52,7 @@ export default function Products() {
 				<button
 					onClick={() => setCreateProductModal(true)}
 					className={buttonVariants.secondary}>
-				+ Add product 
+				+ {t("products.addProduct")}
 				</button>
 			</div>
 

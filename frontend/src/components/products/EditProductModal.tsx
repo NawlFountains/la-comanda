@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
@@ -28,6 +29,7 @@ export default function EditProductModal({
 	priceActions,
 	recipeItemActions
 }: EditProductModalProps) {
+	const { t } = useTranslation()
 	const [name, setName] = useState(product?.name || '')
 	const { onEdit, validateProductUpdate, errors, submitting, loading } = productsActions
 
@@ -45,13 +47,13 @@ export default function EditProductModal({
 
 	return (
 		<ModalLayout onClose={onClose}> <div className='flex flex-col'>
-				<h1 className='font-mono text-center'>Edit product</h1>
+				<h1 className='font-mono text-center'>{t("products.editProduct")}</h1>
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 
 					placeholder='e.g. Potatoes'
 					id="productName"
-					label="Name"
+					label={t("products.name")}
 					value={name}
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
@@ -83,13 +85,13 @@ export default function EditProductModal({
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						Cancel
+						{t("actions.cancel")}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{ submitting ? 'Editing' : 'Edit'}
+						{ submitting ? t("actions.editing") : t("actions.edit") }
 					</button>
 				</div>
 		</ModalLayout>

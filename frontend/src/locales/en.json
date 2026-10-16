@@ -19,15 +19,13 @@
         "deleting": "Deleteing...",
         "cancel": "Cancel",
         "search": "Search",
+        "confirm": "Confirm",
         "confirmDeletion": "Are you sure you want to delete {{name}} ?"
     },
     "navigation": {
         "previous": "Previous",
         "next": "Next",
         "page": "Page"
-    },
-    "products": {
-        "addProduct": "Add product"
     },
     "orders": {
         "createdAt": "Created at",
@@ -51,6 +49,24 @@
         "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone.",
         "currentlyPendingOrders": "Currently pending orders",
         "morePendingOrders": "More pending orders, check orders page"
+    },
+    "products": {
+        "searchByName": "Search product by name",
+        "addProduct": "Add product",
+        "editProduct": "Edit product",
+        "infoProduct": "Info product",
+        "addPrice": "Add price",
+        "name": "Name",
+        "currentPrice": "Current price",
+        "prices": "Prices",
+        "price": "Price",
+        "priceFrom": "From",
+        "showPastPrices": "Show past prices ({{ count }} more)",
+        "hidePastPrices": "Hide past prices",
+        "recipe": "Recipe",
+        "noMatchingProducts": "No matching products found",
+        "noPrice": "No price setted",
+        "noRecipe": "No recipe setted"
     },
     "orderStatus": {
         "pending": "Pending",

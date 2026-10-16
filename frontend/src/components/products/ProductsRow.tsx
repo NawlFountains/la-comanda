@@ -14,7 +14,7 @@ export default function ProductsRow({ product, onTriggerEdit, onTriggerInfo, onT
 			key={product.id} 
 			className="grid grid-cols-3 p-2 gap-4">
 			<p>{product.name}</p>
-			<p className='font-mono'>{product?.latest_price ? `$${product.latest_price.price}` : <span className='text-neutral-400'>No price set</span>}</p>
+			<p className='font-mono'>{product?.latest_price ? `$${product.latest_price.price}` : <span className='text-neutral-400'>-</span>}</p>
 			<div className='space-x-3'>
 				<button
 					onClick={onTriggerInfo}

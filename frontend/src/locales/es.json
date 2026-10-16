@@ -19,15 +19,13 @@
         "deleting": "Borrando...",
         "cancel": "Cancelar",
         "search": "Buscar",
+        "confirm": "Confirmar",
         "confirmDeletion": "¿Estás seguro de borrar {{name}} ?"
     },
     "navigation": {
         "previous": "Previo",
         "next": "Siguiente",
         "page": "Página"
-    },
-    "products": {
-        "addProduct": "Agregar producto"
     },
     "orders": {
         "createdAt": "Fecha",
@@ -57,6 +55,24 @@
         "delivered": "Entregado",
         "confirmed": "Confirmado",
         "cancelled": "Cancelado"
+    },
+      "products": {
+        "searchByName": "Buscar producto por nombre",
+        "addProduct": "Agregar producto",
+        "editProduct": "Editar producto",
+        "infoProduct": "Información del producto",
+        "addPrice": "Agregar precio",
+        "name": "Nombre",
+        "currentPrice": "Precio actual",
+        "prices": "Precios",
+        "price": "Precio",
+        "priceFrom": "Desde",
+        "showPastPrices": "Mostrar precios anteriores ({{ count }} más)",
+        "hidePastPrices": "Ocultar precios anteriores",
+        "recipe": "Receta",
+        "noMatchingProducts": "No se encontraron productos que coincidan",
+        "noPrice": "Sin precio",
+        "noRecipe": "Sin receta"
     },
      "auth": {
         "login": "Iniciar sesión",
