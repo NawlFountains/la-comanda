@@ -134,7 +134,8 @@ export default function Navbar({ business }: NavBarProps) {
 							onClick={handleLogout}
 							disabled={loading}
 							className={`${buttonVariants.danger} w-full`}>
-						{ loading ? 'Logging out...' : 'Log out'}
+							{ loading ? t("auth.loggingOut") : t("auth.logout") }
+
 						</button>
 					) : (
 						<StyledNavLink to='/login'>{t("auth.login")}</StyledNavLink>

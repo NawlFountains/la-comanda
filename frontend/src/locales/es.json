@@ -12,10 +12,17 @@
     },
     "actions": {
         "add": "Agregar",
+        "adding": "Agregando...",
         "edit": "Editar",
+        "editing": "Editando...",
         "delete": "Borrar",
+        "deleting": "Borrando...",
         "cancel": "Cancelar",
-        "search": "Buscar"
+        "search": "Buscar",
+        "confirmDeletion": "¿Estás seguro de borrar {{name}} ?"
+    },
+    "products": {
+        "addProduct": "Agregar producto"
     },
     "orders": {
         "createdAt": "Fecha",
@@ -25,15 +32,23 @@
         "status": "Estado",
         "product": "Producto",
         "quantity": "Cantidad",
-        "price": "Precio",
+        "unitPrice": "Precio",
         "total": "Total",
+        "orderFor": "orden para",
         "addOrder": "Agregar order",
-        "filterByStatus": "Filtrar por estado"
+        "filterByStatus": "Filtrar por estado",
+        "selectCustomer": "Seleccionar cliente",
+        "createCustomer": "Crear cliente",
+        "selectProduct": "Seleccionar producto",
+        "productsOrdered": "Productos ordenados",
+        "infoOrder": "Información de la orden",
+        "editOrder": "Editar orden",
+        "cancelOrderWarning": "¿Estás seguro de cancelar la orden? Esta acción no se puede revertir."
     },
     "orderStatus": {
         "pending": "Pendiente",
         "delivered": "Entregado",
-        "completed": "Completado",
+        "confirmed": "Confirmado",
         "cancelled": "Cancelado"
     },
      "auth": {

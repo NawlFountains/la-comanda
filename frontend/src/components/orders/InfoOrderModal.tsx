@@ -25,7 +25,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 			{/* Title & Order ID Header */}
 			<div className="text-lg border-b border-neutral-200 dark:border-neutral-700 pb-2 ">
 				<h1 className="font-mono text-center break-all px-4">
-					Info about Order
+					{t("orders.infoOrder")}
 				</h1>
 			</div>
 
@@ -34,7 +34,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>{t("orders.customer")}:</p>
 					<p>{t("orders.contact")}:</p>
-					<p>{t("orders.contact")}:</p>
+					<p>{t("orders.status")}:</p>
 					<p>{t("orders.createdAt")}</p>
 					<p>ID:</p>
 				</div>
@@ -57,13 +57,13 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 				<thead>
 					<tr className='font-mono bg-neutral-200 dark:bg-neutral-700 text-lg'>
 						<td className='w-1/3'>
-						Product
+						{t("orders.product")}
 						</td>
 						<td className='w-1/3'>
-						Quantity
+						{t("orders.quantity")}
 						</td>
 						<td className='w-1/3'>
-						Unit price
+						{t("orders.unitPrice")}
 						</td>
 					</tr>
 				</thead>

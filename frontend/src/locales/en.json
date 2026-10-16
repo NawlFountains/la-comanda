@@ -12,10 +12,17 @@
     },
     "actions": {
         "add": "Add",
+        "adding": "Adding...",
         "edit": "Edit",
+        "editing": "Editing...",
         "delete": "Delete",
+        "deleting": "Deleteing...",
         "cancel": "Cancel",
-        "search": "Search"
+        "search": "Search",
+        "confirmDeletion": "Are you sure you want to delete {{name}} ?"
+    },
+    "products": {
+        "addProduct": "Add product"
     },
     "orders": {
         "createdAt": "Created at",
@@ -25,15 +32,23 @@
         "status": "Status",
         "product": "Product",
         "quantity": "Quantity",
-        "price": "Price",
+        "unitPrice": "Price",
         "total": "Total",
+        "filterByStatus": "Filter by status",
+        "orderFor": "order for",
         "addOrder": "Add order",
-        "filterByStatus": "Filter by status"
+        "selectCustomer": "Select customer",
+        "createCustomer": "Create customer",
+        "selectProduct": "Select product",
+        "productsOrdered": "Products ordered",
+        "infoOrder": "Info order",
+        "editOrder": "Edit order",
+        "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone."
     },
     "orderStatus": {
         "pending": "Pending",
         "delivered": "Delivered",
-        "completed": "Completed",
+        "confirmed": "Confirmed",
         "cancelled": "Cancelled"
     },
     "auth": {

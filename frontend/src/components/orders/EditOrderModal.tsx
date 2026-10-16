@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from "react-i18next"
 import ModalLayout from '../../layouts/ModalLayout'
 import ErrorMessage from '../errors/ErrorMessage'
 import { buttonVariants } from '../styles/ButtonStyles'
@@ -25,6 +26,7 @@ export default function EditOrderModal({
 	submitting, 
 	errors
 }: EditOrderModalProps ) {
+	const { t } = useTranslation()
 	const [ status, setStatus ] = useState<OrderStatus>(order?.status || 'pending' as OrderStatus)
 
 	const handleSubmit = async () => {
@@ -39,17 +41,17 @@ export default function EditOrderModal({
 			{/* Title & Order ID Header */}
 			<div className="text-lg border-b border-neutral-200 dark:border-neutral-700 pb-2 mb-4">
 				<h1 className="font-mono text-center break-all px-4">
-					Edit Order 
+					{t("orders.editOrder")}
 				</h1>
 			</div>
 
 			{/* Customer and Order Status Grid */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 dark:bg-neutral-700/40 p-3 rounded-md border border-neutral-200 dark:border-neutral-600">
 				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
-					<p>Customer:</p>
-					<p>Contact:</p>
-					<p>Status:</p>
-					<p>Created at:</p>
+					<p>{t("orders.customer")}:</p>
+					<p>{t("orders.contact")}:</p>
+					<p>{t("orders.status")}:</p>
+					<p>{t("orders.createdAt")}</p>
 					<p>ID:</p>
 				</div>
 				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider  text-sm flex flex-col gap-2 justify-center sm:col-span-3">
@@ -66,20 +68,20 @@ export default function EditOrderModal({
 			</div>
 			<div className='flex flex-col'>
 			<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Status</legend>
+				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.status")}</legend>
 				<select
 				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={status}
 					onChange={(e) => setStatus(e.target.value as OrderStatus)}
 				      >
-				      <option value="cancelled">Cancelled</option>
-				      <option value="pending">Pending</option>
-				      <option value="delivered">Delivered</option>
-				      <option value="confirmed">Confirmed</option>
+				      <option value="cancelled">{t("orderStatus.cancelled")}</option>
+				      <option value="pending">{t("orderStatus.pending")}</option>
+				      <option value="delivered">{t("orderStatus.delivered")}</option>
+				      <option value="confirmed">{t("orderStatus.confirmed")}</option>
 				</select>
 				</fieldset>
 				{status === 'cancelled' && (
-					<p className='text-red-500 p-2'> Setting an order status as cancelled it's irreversible. </p>
+					<p className='text-red-500 p-2'>{t("orders.cancelOrderWarning")}</p>
 				)}
 				{errors.status && (<ErrorMessage message={errors.status}/>)}
 			</div>
@@ -89,13 +91,13 @@ export default function EditOrderModal({
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						Cancel
+						{t("actions.cancel")}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{submitting ? 'Editing...' : 'Edit'}
+						{submitting ? t("actions.editing") : t("actions.edit")}
 					</button>
 				</div>
 		</ModalLayout>

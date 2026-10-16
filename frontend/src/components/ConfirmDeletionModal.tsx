@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next"
 import { cardVariants } from "./styles/CardStyles"
 import {buttonVariants} from "./styles/ButtonStyles"
 
@@ -14,6 +15,7 @@ export default function ConfirmDeletionModal( {
 	onConfirm, 
 	submitting,
 }: ConfirmDeletionModalProps) {
+	const { t } = useTranslation() 
 	return (
 		<div 
 			onClick={onClose}
@@ -22,18 +24,18 @@ export default function ConfirmDeletionModal( {
 			<div
 				onClick={(e) => e.stopPropagation()}
 				className={`${cardVariants.base} gap-4 p-4 w-full md:w-fit shadow-lg`}>
-				<p> Are you sure you want to delete {name} ?</p>
+				<p> {t("actions.confirmDeletion", { name })}</p>
 				<div className="flex flex-row justify-between">
 					<button 
 						onClick={onClose}
 						className={buttonVariants.base}>
-						Cancel
+						{t("actions.cancel")}
 					</button>
 					<button 
 						onClick={onConfirm}
 						disabled={submitting}
 						className={buttonVariants.danger}>
-						{submitting ? 'Deleting...' : 'Delete'}
+						{submitting ? t("actions.deleting") : t("actions.delete")}
 					</button>
 				</div>
 			</div>

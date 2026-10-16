@@ -190,7 +190,7 @@ export default function Orders() {
 
 			{activeModal?.mode === 'delete' && activeOrder && (
 				<ConfirmDeletionModal
-					name={`order for ${customerById[activeOrder.customer_id].name}`}
+					name={`${t("orders.orderFor")} ${customerById[activeOrder.customer_id].name}`}
 					onClose={() => setActiveModal(null)}
 					onConfirm={() => {
 						handleOrderDelete(activeOrder.id)

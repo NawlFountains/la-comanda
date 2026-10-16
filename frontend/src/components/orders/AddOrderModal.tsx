@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import { useTranslation } from 'react-i18next'
 import type { OrderCreateData, OrderErrors, OrderItemCreateData } from '../../schemas/order'
 import type { Product, Customer, OrderStatus } from '../../types'
 import { buttonVariants } from '../styles/ButtonStyles'
@@ -32,6 +33,7 @@ export default function AddOrderModal({
 	orderErrors, 
 	customerErrors,
 }: AddOrderModalProps) {
+	const { t } = useTranslation()
 	const [customerId, setCustomerId] = useState('')
 	const [status, setStatus] = useState<OrderStatus>('pending')
 	const [orderItems, setOrderItems] = useState<OrderItemCreateData[]>([])
@@ -86,21 +88,21 @@ export default function AddOrderModal({
 		<ModalLayout onClose={onClose}>
 			<div className='flex flex-col'>
 				<div>
-				<h1 className='text-center text-lg font-mono'>Add Order</h1>
+				<h1 className='text-center text-lg font-mono'>{t("orders.addOrder")}</h1>
 				</div>
 			</div>
 			<div className='w-full flex-1'>
 	<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Customer</legend>
+				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.customer")}</legend>
 				      <select
 				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={customerId}
 					id="customerId"
 					onChange={(e) => setCustomerId(e.target.value)}
 				      >
-					<option value="" disabled>Select an costumer</option>
+					<option value="" disabled>{t("orders.selectCustomer")}</option>
 					<option value='create-customer'>
-					 Create new customer
+					 {t("orders.createCustomer")}
 					</option>
 					{customers.map((validCustomers) => (
 					  <option key={validCustomers.id} value={validCustomers.id}>
@@ -120,7 +122,7 @@ export default function AddOrderModal({
 					<InputModal 
 						className='p-1 w-full'
 						id="customerName"
-						label="Name"
+						label={t("orders.customerName")}
 						value={customerName}
 						onChange={(e) => setCustomerName(e.target.value)}
 						placeholder='e.g. Cornelius'/>
@@ -131,7 +133,7 @@ export default function AddOrderModal({
 						className='p-1 w-full'
 						value={customerPhone}
 						id="customerPhone"
-						label="Phone"
+						label={t("orders.contact")}
 						onChange={(e) => setCustomerPhone(e.target.value)}
 						placeholder='+54 9 11 1234-5678'/>
 					{customerErrors.phone && (<ErrorMessage message={customerErrors.phone}/>)}
@@ -140,7 +142,7 @@ export default function AddOrderModal({
 			)}
 			<div className='flex flex-col'>
 				<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Status</legend>
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.status")}</legend>
 
 				<select
 				      	className='dark:bg-neutral-800 w-full rounded-lg py-1 px-2'
@@ -148,22 +150,22 @@ export default function AddOrderModal({
 					id="orderStatus"
 					onChange={(e) => setStatus(e.target.value as OrderStatus)}
 				      >
-				      <option value="cancelled">Cancelled</option>
-				      <option value="pending">Pending</option>
-				      <option value="delivered">Delivered</option>
-				      <option value="confirmed">Confirmed</option>
+				      <option value="cancelled">{t("orderStatus.cancelled")}</option>
+				      <option value="pending">{t("orderStatus.pending")}</option>
+				      <option value="delivered">{t("orderStatus.delivered")}</option>
+				      <option value="confirmed">{t("orderStatus.confirmed")}</option>
 				</select>
 				</fieldset>
 			</div>
 			 <div className='flex flex-col gap-2'>
-				<h2 className='text-center text-xl font-mono'>Products ordered</h2>
+				<h2 className='text-center text-xl font-mono'>{t("orders.productsOrdered")}</h2>
 				{orderItems.map((item, index) => (
 					<div key={index} className='flex flex-row gap-2 items-center pb-2'>
 
 					    {/* Item Dropdown Selection */}
 					    <div className='w-full flex-1'>
 					    <fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Product</legend>
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.product")}</legend>
 
 					      <select
 						className='dark:bg-neutral-800 w-full rounded-lg py-1 px-2'
@@ -171,7 +173,7 @@ export default function AddOrderModal({
 						value={item.product_id}
 						onChange={(e) => handleItemChange(index, 'product_id', e.target.value)}
 					      >
-						<option value="" disabled>Select an product</option>
+						<option value="" disabled>{t("orders.selectProduct")}</option>
 						{products.map((validProducts) => (
 						  <option key={validProducts.id} value={validProducts.id}>
 						    {validProducts.name}
@@ -189,7 +191,7 @@ export default function AddOrderModal({
 						    type='number'
 						    step='1'
 						    id={`orderItem${index}Id`}
-						    label="Quantity"
+						    label={t("orders.quantity")}
 						    value={item.quantity || ''}
 						    onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
 					    />
@@ -209,7 +211,7 @@ export default function AddOrderModal({
 				<button
 					onClick={() => handleAddOrderItem()}
 					className={buttonVariants.secondary}>
-					+ Add product 
+					+ {t("products.addProduct")}
 				</button>
 				{orderErrors.order_items && (<ErrorMessage message={orderErrors.order_items} /> )}
 				</div>
@@ -218,14 +220,14 @@ export default function AddOrderModal({
 
 					<button
 						onClick={onClose}
-						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						Cancel
+						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>						
+						{t('actions.cancel')}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{submitting ? 'Adding...' : 'Add'}
+						{submitting ? t('actions.adding') : t('actions.add')}
 					</button>
 				</div>
 		</ModalLayout>
