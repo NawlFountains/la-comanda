@@ -43,7 +43,9 @@
         "productsOrdered": "Products ordered",
         "infoOrder": "Info order",
         "editOrder": "Edit order",
-        "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone."
+        "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone.",
+        "currentlyPendingOrders": "Currently pending orders",
+        "morePendingOrders": "More pending orders, check orders page"
     },
     "orderStatus": {
         "pending": "Pending",

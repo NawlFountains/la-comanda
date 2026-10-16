@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { Order, Customer } from '../../types'
 import {cardVariants} from '../styles/CardStyles'
 import { formatDatetime } from '../../utils/date'
@@ -12,6 +13,7 @@ interface PendingOrdersCardProps {
 }
 
 export default function PendingOrdersCard({ orders, customers, route }: PendingOrdersCardProps) {
+	const { t } = useTranslation()
 	const customerById = useMemo(() => {
 		return Object.fromEntries(customers.map(customer => [customer.id, customer]))
 	}, [customers])
@@ -19,14 +21,14 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 	return (
 		<div className={cardVariants.tableBody}>
 			<div className='flex flex-col gap-2 p-4'>
-				<h1 className="text-xl "> Currently pending orders</h1>
+				<h1 className="text-xl ">{t("orders.currentlyPendingOrders")}</h1>
 			</div>
 			<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
 				<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 sm:grid-cols-4 p-1 font-mono">
 						<p className='hidden sm:block'>Ref</p>
-						<p>Customer name</p>
-						<p>Created at</p>
-						<p>Total</p>
+						<p>{t("orders.customer")}</p>
+						<p>{t("orders.createdAt")}</p>
+						<p>{t("orders.total")}</p>
 				</div>
 				{orders.length > 0 ? (
 					orders.map(order => {
@@ -55,7 +57,7 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 						to={route} 
 						className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 underline transition-colors"
 					>
-						More pending orders, check orders page →
+						{t("orders.morePendingOrders")} →
 					</Link>
 				</div>
 			)}

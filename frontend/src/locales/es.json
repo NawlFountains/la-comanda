@@ -43,7 +43,9 @@
         "productsOrdered": "Productos ordenados",
         "infoOrder": "Información de la orden",
         "editOrder": "Editar orden",
-        "cancelOrderWarning": "¿Estás seguro de cancelar la orden? Esta acción no se puede revertir."
+        "cancelOrderWarning": "¿Estás seguro de cancelar la orden? Esta acción no se puede revertir.",
+        "currentlyPendingOrders": "Ordenes pendientes",
+        "morePendingOrders": "Más ordenes pendientes, puedes verlas en la sección de ordenes"
     },
     "orderStatus": {
         "pending": "Pendiente",
