@@ -1,4 +1,5 @@
 import {useState} from "react"
+import { useTranslation } from "react-i18next"
 import ScreenLayout from "../layouts/ScreenLayout"
 import StockTable from "../components/items/StockTable"
 import StockRow from "../components/items/StockRow"
@@ -25,6 +26,7 @@ type MultiActiveModal =
   | null;
 
 export default function Stock() {
+	const { t } = useTranslation()
 	const { 
 		items, 
 		visibleItems, 
@@ -102,7 +104,7 @@ export default function Stock() {
 							role='tab'
 							className={`${activeTab === 'stock' ? `${buttonVariants.toggleOn}` : buttonVariants.toggleOff}`}
 							onClick={() => setActiveTab('stock')}>
-							Stock
+							{t("nav.stock")}
 						</button>
 					</div>
 					<div className={`py-2 ${activeTab === 'restock' ? `border-b-2` : ''} border-neutral-800 dark:border-neutral-600 transition-all duration-50`}>
@@ -111,7 +113,7 @@ export default function Stock() {
 							role='tab'
 							className={`${activeTab === 'restock'? buttonVariants.toggleOn : buttonVariants.toggleOff}`}
 							onClick={() => setActiveTab('restock')}>
-							Restock
+							{t("nav.restock")}
 						</button>
 					</div>
 				</div>
@@ -125,7 +127,7 @@ export default function Stock() {
 							{/* Search filter */}
 							<InputSearchFilter 
 								id="itemSearchName"
-								placeholder="Search by item name"
+								placeholder={t("items.searchPlaceholder")}
 								value={itemSearchName}
 								onChange={(e) => setItemSearchName(e ?? "")}
 								onApply={setAppliedItemSearchName}
@@ -140,7 +142,7 @@ export default function Stock() {
 									<span className={`transition-all duration-150 ${filterLowStock ? 'opacity-100 scale-100' : 'opacity-0 scale-0 w-0'}`}>
 										✓
 									</span>
-									<span className="text-nowrap">Low Stock</span>
+									<span className="text-nowrap">{t("items.lowStock")}</span>
 								</button>
 
 								{/* Add Item Button */}
@@ -148,7 +150,7 @@ export default function Stock() {
 									onClick={() => setShowAddItemModal(true)}
 									className={`${buttonVariants.secondary} flex items-center`}
 								>
-									+ Add item
+									+ {t("items.addItem")}
 								</button>
 							</div>
 						</div>
@@ -183,7 +185,7 @@ export default function Stock() {
 							{/* Search filter */}
 							<InputSearchFilter 
 								id="searchSupplier"
-								placeholder="Search by supplier name"
+								placeholder={t("restocks.searchPlaceholder")}
 								value={restockSearchSupplier}
 								onChange={(e) => setRestockSearchSupplier(e ?? "")}
 								onApply={setAppliedSearchSupplier}
@@ -191,7 +193,7 @@ export default function Stock() {
 							<button
 								onClick={() => setShowAddRestockModal(true)}
 								className={buttonVariants.secondary}>
-							+ Add Restock 
+							+ {t("restocks.addRestock")} 
 							</button>
 						</div>
 

@@ -159,7 +159,7 @@ const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionP
 											onClick={() => setEditingRecipeId(null)}
 											className="text-emerald-600 font-medium text-sm px-2 cursor-pointer"
 										>
-											Done
+											✔
 										</button>
 									</td>
 										</>
@@ -202,14 +202,14 @@ const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionP
 							    {/* Item Dropdown Selection */}
 							    <td>
 							<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg mx-3 pb-1">
-								<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Item</legend>
+								<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("common.fields.item")}</legend>
 							      <select
 								className='dark:bg-neutral-800 w-2/3 py-1 px-2 text-center'
 								value={item.item_id}
 								id={`recipeItem${idx}ItemId`}
 								onChange={(e) => handleItemChange(idx, 'item_id', e.target.value)}
 							      >
-								<option value="" disabled>Select an item</option>
+								<option value="" disabled>{t("items.selectAnItem")}</option>
 								{items.map((validItem) => (
 								  <option key={validItem.id} value={validItem.id}>
 								    {validItem.name}

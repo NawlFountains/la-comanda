@@ -1,4 +1,5 @@
 import {useState} from "react"
+import { useTranslation } from 'react-i18next'
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
 import { buttonVariants } from '../styles/ButtonStyles'
@@ -16,6 +17,7 @@ interface EditItemModalProps {
 }
 
 export default function EditItemModal( { onClose, onEdit, validateItemUpdate, submitting, errors, item } : EditItemModalProps) {
+	const { t } = useTranslation()
 	const [name, setName] = useState(item.name)
 	const [currentStock, setCurrentStock] = useState<string>(item.current_stock)
 	const [unit, setUnit] = useState(item.unit)
@@ -32,12 +34,12 @@ export default function EditItemModal( { onClose, onEdit, validateItemUpdate, su
 	return (
 			<ModalLayout onClose={onClose}>
 				<h2 className="text-center text-lg font-mono p-2">
-				Edit item <span className="font-medium">{item.name}</span>
+				{t("items.editItem")} <span className="font-medium">{item.name}</span>
 				</h2>
 				<div className="flex flex-col">
 				<InputModal
 					value={name}
-					label='Name'
+					label={t("common.fields.name")}
 					id='itemName'
 					onChange={(e) => setName(e.target.value)}
 					placeholder="e.g. Potatoes">
@@ -50,7 +52,7 @@ export default function EditItemModal( { onClose, onEdit, validateItemUpdate, su
 						value={currentStock}
 						type="number"
 						id="itemCurrentStock"
-						label="Current stock"
+						label={t("items.currentStock")}
 						className="w-full"
 						onChange={(e) => setCurrentStock(e.target.value)}
 						placeholder="e.g. 0.5">
@@ -62,7 +64,7 @@ export default function EditItemModal( { onClose, onEdit, validateItemUpdate, su
 						value={unit}
 						className="w-full"
 						id="itemUnit"
-						label="Unit"
+						label={t("items.unit")}
 						onChange={(e) => setUnit(e.target.value)}
 						placeholder="kg/l">
 					</InputModal>
@@ -73,7 +75,7 @@ export default function EditItemModal( { onClose, onEdit, validateItemUpdate, su
 				<InputModal
 					value={lowStockThreshold}
 					id="itemLowStockThreshold"
-					label="Low stock threshold"
+					label={t("items.lowStockThreshold")}
 					onChange={(e) => setLowStockThreshold(e.target.value)}
 					placeholder="e.g. 50">
 				</InputModal>
@@ -83,7 +85,7 @@ export default function EditItemModal( { onClose, onEdit, validateItemUpdate, su
 				<InputModal
 					value={notes}
 					id="itemNotes"
-					label="Notes (optional)"
+					label={t("common.fields.notes")+ " ("+ t("common.fields.optional") +")"}
 					onChange={(e) => setNotes(e.target.value)}>
 				</InputModal>
 				{errors.notes && (<ErrorMessage message={errors.notes}/>)}
@@ -93,13 +95,13 @@ export default function EditItemModal( { onClose, onEdit, validateItemUpdate, su
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						Cancel
+						{ t("common.actions.cancel") }
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{submitting ? 'Editing...' : 'Edit'}
+						{submitting ? t("common.actions.editing") : t("common.actions.edit")}
 					</button>
 				</div>
 			</ModalLayout>

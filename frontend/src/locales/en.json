@@ -21,7 +21,9 @@
       "quantity": "Quantity",
       "total": "Total",
       "status": "Status",
-      "item": "Item"
+      "item": "Item",
+      "notes": "Notes",
+      "optional": "Optional"
     }
   },
   "pagination": {
@@ -33,6 +35,7 @@
     "dashboard": "Dashboard",
     "orders": "Orders",
     "stock": "Stock",
+    "restock": "Restock",
     "products": "Products"
   },
   "dashboard": {
@@ -83,7 +86,25 @@
   "items": {
     "addItem": "Add item",
     "editItem": "Edit item",
-    "itemInfo": "Item info"
+    "itemInfo": "Item info",
+    "unit": "Unit",
+    "selectAnItem": "Select an item",
+    "noMatchingItems": "No matching items found",
+    "searchPlaceholder": "Search item by name",
+    "lowStock": "Low stock",
+    "currentStock": "Current stock",
+    "lowStockThreshold": "Low stock threshold",
+    "lowStockItems": "Low stock items"
+  },
+  "restocks": {
+    "supplier": "Supplier",
+    "items": "Items",
+    "date": "Date",
+    "addRestock": "Add restock",
+    "editRestock": "Edit restock",
+    "addRestockItems": "Add restock items",
+    "searchPlaceholder": "Search restock by supplier name",
+    "latestRestocks": "Latest restocks"
   },
   "auth": {
     "login": "Log in",

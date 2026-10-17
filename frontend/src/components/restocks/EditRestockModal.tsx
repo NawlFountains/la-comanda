@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import ModalLayout from '../../layouts/ModalLayout'
 import InputModal from '../InputModal'
 import ErrorMessage from '../errors/ErrorMessage'
@@ -16,6 +17,7 @@ interface EditRestockModalProps {
 }
 
 export default function EditRestockModal( { onClose, onEdit, validateRestockUpdate, submitting, restock, errors }: EditRestockModalProps ) {
+	const { t } = useTranslation()
 	const [supplier, setSupplier] = useState<string>(restock?.supplier || '')
 	const [notes, setNotes] = useState<string>(restock?.notes || '')
 	const [restockDate, setRestockDate] = useState<string>(restock?.restock_date || '')
@@ -34,14 +36,14 @@ export default function EditRestockModal( { onClose, onEdit, validateRestockUpda
 	return (
 		<ModalLayout onClose={onClose}>
 				<div className='p-2'>
-					<h1 className='text-center text-lg font-mono'>Edit restock</h1>
+					<h1 className='text-center text-lg font-mono'>{t("restocks.editRestock")}</h1>
 				</div>
 				<div className='flex flex-col'>
 					<InputModal 
 						type="date"
 						value={restockDate}
 						id="restockDate"
-						label="Date"
+						label={t("restocks.date")}
 						onChange={(e) => setRestockDate(e.target.value)}/>
 					{errors.restock_date && (<ErrorMessage message={errors.restock_date}/>)}
 				</div>
@@ -51,16 +53,16 @@ export default function EditRestockModal( { onClose, onEdit, validateRestockUpda
 							placeholder='Supplier name'
 							value={supplier}
 							id="restockSupplier"
-							label="Supplier"
+							label={t("restocks.supplier")}
 							onChange={(e) => setSupplier(e.target.value)}/>
 						{errors.supplier && (<ErrorMessage message={errors.supplier} />)}
 					</div>
 					<div className='flex flex-col'>
 						<InputModal 
-							placeholder='Notes'
+							placeholder={t("common.fields.notes")}
 							value={notes}
 							id="restockNotes"
-							label="Notes"
+							label={t("common.fields.notes")}
 							onChange={(e) => setNotes(e.target.value)}/>
 						{errors.notes && (<ErrorMessage message={errors.notes} />)}
 					</div>
@@ -70,13 +72,13 @@ export default function EditRestockModal( { onClose, onEdit, validateRestockUpda
 				<button
 					onClick={onClose}
 					className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-					Cancel
+					{t("common.actions.cancel")}
 				</button>
 				<button 
 					disabled={submitting}
 					onClick={handleSubmit}
 					className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-					{submitting ? 'Editing...' : 'Edit'}
+					{submitting ? t("common.actions.editing") : t("common.actions.edit")}
 				</button>
 			</div>
 		</ModalLayout>

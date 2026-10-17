@@ -21,7 +21,9 @@
       "quantity": "Cantidad",
       "total": "Total",
       "status": "Estado",
-      "item": "Ingrediente"
+      "item": "Ingrediente",
+      "notes": "Notas",
+      "optional": "Opcional"
     }
   },
   "pagination": {
@@ -33,6 +35,7 @@
     "dashboard": "Panel",
     "orders": "Ordenes",
     "stock": "Inventario",
+    "restock": "Reabastecimiento",
     "products": "Productos"
   },
   "dashboard": {
@@ -83,7 +86,25 @@
   "items": {
     "addItem": "Agregar ingrediente",
     "editItem": "Editar ingrediente",
-    "itemInfo": "Información del ingrediente"
+    "itemInfo": "Información del ingrediente",
+    "selectAnItem": "Seleccionar ingrediente",
+    "unit": "Unidad",
+    "noMatchingItems": "No se encontraron ingredientes",
+    "searchPlaceholder": "Buscar ingrediente por nombre",
+    "lowStock": "Bajo stock",
+    "currentStock": "Stock actual",
+    "lowStockThreshold": "Umbral de stock",
+    "lowStockItems": "Ingredientes con bajo stock"
+  },
+  "restocks": {
+    "supplier": "Proveedor",
+    "items": "Ingredientes",
+    "date": "Fecha",
+    "addRestock": "Agregar reabastecimiento",
+    "editRestock": "Editar reabastecimiento",
+    "addRestockItems": "Agregar ingredientes",
+    "searchPlaceholder": "Buscar reabastecimiento por proveedor",
+    "latestRestocks": "Últimos reabastecimientos"
   },
   "auth": {
     "login": "Iniciar sesión",

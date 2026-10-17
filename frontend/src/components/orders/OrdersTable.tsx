@@ -9,8 +9,8 @@ export default function OrdersTable({ children }: { children: React.ReactNode })
 		<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
 			<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-4 md:grid-cols-5 p-1 font-mono">
 				<p>Ref</p>
-				<p>{t('orders.customerName')}</p>
-				<p>{t('orders.status')}</p>
+				<p>{t('common.fields.name')}</p>
+				<p>{t('common.fields.status')}</p>
 				<p className='hidden md:block'>{t('orders.createdAt')}</p>
 				<p>Actions</p>
 			</div>

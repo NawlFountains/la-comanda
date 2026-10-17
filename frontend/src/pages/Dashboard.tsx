@@ -161,17 +161,17 @@ export default function Dashboard() {
 			<div className="flex flex-col md:grid md:grid-cols-3 w-full md:w-2/3 max-w-xl gap-4 mb-4">
 				<button 
 					onClick={() => setShowAddOrderMenu(true)}
-					className={`${buttonVariants.secondary} rounded-xl`}>
+					className={`${buttonVariants.secondary} rounded-xl text-wrap`}>
 					+ {t("orders.addOrder")}
 				</button>
 				<button 
 					onClick={() => setShowAddRestockMenu(true)}
-					className={`${buttonVariants.secondary} rounded-xl`}>
-					+ Add Restock 
+					className={`${buttonVariants.secondary} rounded-xl text-wrap`}>
+					+ {t("restocks.addRestock")}
 				</button>
 				<button 
 					onClick={() => setShowAddProductMenu(true)}
-					className={`${buttonVariants.secondary} rounded-xl`}>
+					className={`${buttonVariants.secondary} rounded-xl text-wrap`}>
 					+ {t("products.addProduct")}
 				</button>
 			</div>

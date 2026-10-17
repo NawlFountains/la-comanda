@@ -19,15 +19,15 @@ export default function PaginationControlFooter({ loading, page, setPage, limit,
 			onClick={() => setPage(prev => Math.max(prev - 1, 1))}
 			className={`${buttonVariants.secondary} px-4 py-1 disabled:opacity-50 disabled:cursor-not-allowed`}
 			>
-				{t("navigation.previous")}
+				{t("pagination.previous")}
 			</button>
-			<span className="font-mono text-sm">{t("navigation.page")} {page}</span>
+			<span className="font-mono text-sm">{t("pagination.page")} {page}</span>
 			<button
 				disabled={itemCount < limit || loading} 
 				onClick={() => setPage(prev => prev + 1)}
 				className={`${buttonVariants.secondary} px-4 py-1 disabled:opacity-50 disabled:cursor-not-allowed`}
 			>
-				{t("navigation.next")}
+				{t("pagination.next")}
 			</button>
 		</div>
 	)

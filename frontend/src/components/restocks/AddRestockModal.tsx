@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import {useTranslation} from 'react-i18next'
 import ModalLayout from '../../layouts/ModalLayout'
 import type { RestockCreateData, RestockErrors, RestockItemCreateData } from '../../schemas/restock'
 import type { Item } from '../../types'
@@ -16,6 +17,7 @@ interface AddRestockModalProps {
 }
 
 export default function AddRestockModal({ onClose, onCreate, validateRestock, items, submitting, errors }: AddRestockModalProps) {
+	const { t } = useTranslation()
 	const [supplier, setSupplier] = useState<string>('')
 	const [notes, setNotes] = useState<string>('')
 	const [restockDate, setRestockDate] = useState<string>( () => {
@@ -61,13 +63,13 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 	return (
 		<ModalLayout onClose={onClose}>
 			<div className='p-2'>
-				<h1 className='text-center text-lg font-mono'>Add restock</h1>
+				<h1 className='text-center text-lg font-mono'>{t("restocks.addRestock")}</h1>
 			</div>
 			<div className='flex flex-col'>
 				<InputModal 
 					id="restockDate"
 					type="date"
-					label="Date"
+					label={t("restocks.date")}
 					value={restockDate}
 					onChange={(e) => setRestockDate(e.target.value)}/>
 				{errors.restock_date && (<ErrorMessage message={errors.restock_date}/>)}
@@ -77,16 +79,16 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 					<InputModal 
 						placeholder='e.g. Supermarket'
 						id="restockSupplier"
-						label="Supplier"
+						label={t("restocks.supplier")}
 						value={supplier}
 						onChange={(e) => setSupplier(e.target.value)}/>
 					{errors.supplier && (<ErrorMessage message={errors.supplier} />)}
 				</div>
 				<div className='flex flex-col'>
 					<InputModal 
-						placeholder='Notes'
+						placeholder={t("common.fields.notes")}
 						id="restockNotes"
-						label="Notes"
+						label={t("common.fields.notes")}
 						value={notes}
 						onChange={(e) => setNotes(e.target.value)}/>
 					{errors.notes && (<ErrorMessage message={errors.notes} />)}
@@ -94,7 +96,7 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 				
 			</div>
 			<div className='flex flex-col gap-2'>
-				<h2 className='text-center text-xl font-mono'>Restock items</h2>
+				<h2 className='text-center text-xl font-mono'>{t("restocks.items")}</h2>
 				{restockItems.map((item, index) => {
 					const selectedItem = items.find( i => i.id === item.item_id)
 					
@@ -104,14 +106,14 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 				    {/* Item Dropdown Selection */}
 				    <div className='w-full flex-1'>
 					<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">Item</legend>
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("common.fields.item")}</legend>
 				      <select
 				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={item.item_id}
 					id={`restockItem${index}Id`}
 					onChange={(e) => handleItemChange(index, 'item_id', e.target.value)}
 				      >
-					<option value="" disabled>Select an item</option>
+					<option value="" disabled>{t("items.selectAnItem")}</option>
 					{items.map((validItem) => (
 					  <option key={validItem.id} value={validItem.id}>
 					    {validItem.name}
@@ -127,7 +129,7 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 				    	className='w-full'
 					    placeholder='e.g 3'
 					    id={`restockItem${index}Quantity`}
-					    label="Quantity"
+					    label={t("common.fields.quantity")}
 					    type='number'
 					    value={item.quantity || ''}
 					    step="any"
@@ -151,7 +153,7 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 				<button
 					onClick={() => handleAddRestockItem()}
 					className={buttonVariants.secondary}>
-					+ Add item
+					+ {t("items.addItem")}
 				</button>
 				{errors.restock_items && (<ErrorMessage message={errors.restock_items} /> )}
 				</div>
@@ -160,13 +162,13 @@ export default function AddRestockModal({ onClose, onCreate, validateRestock, it
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						Cancel
+						{t("common.actions.cancel")}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{submitting ? 'Adding...' : 'Add'}
+						{submitting ? t("common.actions.adding") : t("common.actions.add")}
 					</button>
 				</div>
 		</ModalLayout>
