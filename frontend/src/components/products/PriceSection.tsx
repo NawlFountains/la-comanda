@@ -41,7 +41,7 @@ export default function PriceSection({
 			<table>
 			<thead>
 				<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700'>
-				<td>{t("products.price")}</td>
+				<td>{t("common.fields.price")}</td>
 				<td>{t("products.priceFrom")}</td>
 				</tr>
 			</thead>
@@ -64,7 +64,7 @@ export default function PriceSection({
 						value={price}
 						placeholder="e.g. 100.50"
 						id="priceValue"
-						label={t("products.price")}
+						label={t("common.fields.price")}
 						type='number'
 						onChange={(e) => setPrice(e.target.value)}
 						/>
@@ -103,14 +103,14 @@ export default function PriceSection({
 						<button 
 							onClick={() => setCreatePrice(false)}
 							className={buttonVariants.danger}>
-						{t("actions.cancel")}
+						{t("common.actions.cancel")}
 						</button>
 					</td>
 					<td>
 						<button 
 							onClick={() => handleSubmit()}
 							className={buttonVariants.secondary}>
-						{t("actions.confirm")}
+						{t("common.actions.confirm")}
 						</button>
 					</td>
 				</tr>

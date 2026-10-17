@@ -53,7 +53,7 @@ export default function EditProductModal({
 				<InputModal 
 					placeholder='e.g. Potatoes'
 					id="productName"
-					label={t("products.name")}
+					label={t("common.fields.name")}
 					value={name}
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
@@ -85,13 +85,13 @@ export default function EditProductModal({
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						{t("actions.cancel")}
+						{t("common.actions.cancel")}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{ submitting ? t("actions.editing") : t("actions.edit") }
+						{ submitting ? t("common.actions.editing") : t("common.actions.edit") }
 					</button>
 				</div>
 		</ModalLayout>

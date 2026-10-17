@@ -23,13 +23,13 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 	return (
 		<ModalLayout onClose={onClose}>
 			<div className='flex flex-col'>
-				<h1 className='font-mono text-lg text-center'>{t("products.infoProduct")}</h1>
+				<h1 className='font-mono text-lg text-center'>{t("products.productInfo")}</h1>
 			</div>
 
 			{/* Product info */}
 			<div className="grid grid-cols-4 gap-x-4 max-w-lg mx-auto text-md p-3 rounded-md border border-neutral-200">
 				<div className="text-center text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
-					<p>{t("products.name")}</p>
+					<p>{t("common.fields.name")}</p>
 					<p>ID:</p>
 				</div>
 				<div className="text-left text-neutral-800 dark:text-neutral-400 font-medium tracking-wider text-sm flex flex-col gap-2 justify-center col-span-3">
@@ -48,7 +48,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 					<thead>
 						<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700 font-medium'>
 							<td>
-							{t("products.price")}
+							{t("common.fields.price")}
 							</td>
 							<td>
 							{t("products.priceFrom")}
@@ -85,10 +85,10 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 					<thead>
 						<tr className='font-mono text-lg bg-neutral-200 dark:bg-neutral-700'>
 							<td>
-								Item
+								{t("common.fields.item")}
 							</td>
 							<td>
-								Amount
+								{t("common.fields.quantity")}
 							</td>
 						</tr>
 					</thead>

@@ -10,7 +10,7 @@ export default function ProductsTable({ children }: { children : React.ReactNode
 
 			{/* Header */}
 			<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 p-2 font-mono">
-				<p>{t("products.name")}</p>
+				<p>{t("common.fields.name")}</p>
 				<p>{t("products.currentPrice")}</p>
 				<p>Actions</p>
 			</div>

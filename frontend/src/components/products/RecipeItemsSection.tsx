@@ -1,4 +1,5 @@
 import { useState, useMemo, forwardRef, useImperativeHandle } from 'react'
+import { useTranslation } from 'react-i18next'
 import InputModal from '../InputModal.tsx'
 import ErrorMessage from "../errors/ErrorMessage"
 import { buttonVariants } from '../styles/ButtonStyles'
@@ -20,6 +21,7 @@ interface RecipeItemSectionProps {
 
 const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionProps>(
 	({ product, items, recipeItemActions }, ref) => { 
+	const { t } = useTranslation()
 	const { onAdd, onEdit, onDelete, validateRecipe, validateRecipeUpdate, errors } = recipeItemActions
 
 	const [newRecipeItems, setNewRecipeItems] = useState<RecipeItemCreateData[]>([])
@@ -116,8 +118,8 @@ const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionP
 						<table>
 						<thead>
 							<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700'>
-							<td>Item</td>
-							<td>Amount</td>
+							<td>{t("common.fields.item")}</td>
+							<td>{t("common.fields.quantity")}</td>
 							<td>Actions</td>
 							</tr>
 						</thead>
@@ -143,7 +145,7 @@ const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionP
 											placeholder='Quantity'
 											type='number'
 											id={`recipeItem${idx}Quantity`}
-											label="Quantity"
+											label={t("common.fields.quantity")}
 											value={editedRecipeItems[item.id]?.quantity ?? item.quantity}
 											step="any"
 											onChange={(e) => handleRecipeItemChange(item.id, 'quantity', e.target.value) }
@@ -223,7 +225,7 @@ const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionP
 								    className='w-1/3 text-center'
 								    placeholder='Quantity'
 								    id={`recipeItem${idx}Quantity`}
-								    label="Quantity"
+									label={t("common.fields.quantity")}
 								    type='number'
 								    value={item.quantity || ''}
 								    step="any"
@@ -262,7 +264,7 @@ const RecipeItemSection = forwardRef<RecipeItemSectionHandle, RecipeItemSectionP
 					<button
 						onClick={() => handleAddRecipeItem()} 
 						className={`${buttonVariants.secondary}`}>
-						Add item
+						{t("items.addItem")}
 					</button>
 				</div>		
 		)

@@ -35,19 +35,19 @@ export default function Navbar({ business }: NavBarProps) {
 			? [
 				{
 					"to": "/dashboard",
-					"title": t("tabs.dashboard")
+					"title": t("nav.dashboard")
 				},
 				{
 					"to": "/orders",
-					"title": t("tabs.orders")
+					"title": t("nav.orders")
 				},
 				{
 					"to": "/stock",
-					"title": t("tabs.stock")
+					"title": t("nav.stock")
 				},
 				{
 					"to": "/products",
-					"title": t("tabs.products")
+					"title": t("nav.products")
 				}
 			]
 			: []

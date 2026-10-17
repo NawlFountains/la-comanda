@@ -172,7 +172,7 @@ export default function Dashboard() {
 				<button 
 					onClick={() => setShowAddProductMenu(true)}
 					className={`${buttonVariants.secondary} rounded-xl`}>
-					+ Add Product 
+					+ {t("products.addProduct")}
 				</button>
 			</div>
 

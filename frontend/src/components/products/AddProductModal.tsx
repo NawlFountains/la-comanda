@@ -35,7 +35,7 @@ export default function AddProductModal({ onClose, onCreate, validateProduct, su
 					placeholder='e.g. Milanesas'
 					value={name}
 					id="productName"
-					label={t("products.name")}
+					label={t("common.fields.name")}
 					onChange={(e) => setName(e.target.value)}/>
 				{errors.name && (<ErrorMessage message={errors.name}/>)}
 			</div>
@@ -43,13 +43,13 @@ export default function AddProductModal({ onClose, onCreate, validateProduct, su
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						{ t("actions.cancel") }
+						{ t("common.actions.cancel") }
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{ submitting ? t("actions.adding") : t("actions.add") }
+						{ submitting ? t("common.actions.adding") : t("common.actions.add") }
 					</button>
 				</div>
 		</ModalLayout>

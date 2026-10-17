@@ -39,7 +39,7 @@ export default function InputSearchFilter({
 				onClick={() => onApply(value)}
 				className="bg-neutral-800 dark:bg-neutral-700 text-neutral-200 px-4 rounded-r-lg hover:bg-neutral-700 dark:hover:bg-neutral-200 dark:hover:text-neutral-800 transition-colors whitespace-nowrap"
 			>
-				{t("actions.search")}
+				{t("common.actions.search")}
 			</button>
 			{value && (
 				<button

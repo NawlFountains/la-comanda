@@ -24,18 +24,18 @@ export default function ConfirmDeletionModal( {
 			<div
 				onClick={(e) => e.stopPropagation()}
 				className={`${cardVariants.base} gap-4 p-4 w-full md:w-fit shadow-lg`}>
-				<p> {t("actions.confirmDeletion", { name })}</p>
+				<p> {t("common.confirmDelete", { name })}</p>
 				<div className="flex flex-row justify-between">
 					<button 
 						onClick={onClose}
 						className={buttonVariants.base}>
-						{t("actions.cancel")}
+						{t("common.actions.cancel")}
 					</button>
 					<button 
 						onClick={onConfirm}
 						disabled={submitting}
 						className={buttonVariants.danger}>
-						{submitting ? t("actions.deleting") : t("actions.delete")}
+						{submitting ? t("common.actions.deleting") : t("common.actions.delete")}
 					</button>
 				</div>
 			</div>

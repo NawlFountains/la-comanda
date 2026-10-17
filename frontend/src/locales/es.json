@@ -1,96 +1,102 @@
-   {
-     "tabs": { 
-        "dashboard": "Panel",
-        "orders": "Ordenes",
-        "stock": "Inventario", 
-        "products": "Productos", 
-        "results": "Results" 
-    },
-      "dashboard": {
-        "quickActions": "Acciones",
-        "generalStatus": "Estado general"
-    },
+{
+  "common": {
     "actions": {
-        "add": "Agregar",
-        "adding": "Agregando...",
-        "edit": "Editar",
-        "editing": "Editando...",
-        "delete": "Borrar",
-        "deleting": "Borrando...",
-        "cancel": "Cancelar",
-        "search": "Buscar",
-        "confirm": "Confirmar",
-        "confirmDeletion": "¿Estás seguro de borrar {{name}} ?"
+      "add": "Agregar",
+      "adding": "Agregando...",
+      "edit": "Editar",
+      "editing": "Editando...",
+      "delete": "Borrar",
+      "deleting": "Borrando...",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar",
+      "search": "Buscar"
     },
-    "navigation": {
-        "previous": "Previo",
-        "next": "Siguiente",
-        "page": "Página"
-    },
-    "orders": {
-        "createdAt": "Fecha",
-        "customer": "Cliente",
-        "customerName": "Nombre",
-        "contact": "Contacto",
-        "status": "Estado",
-        "product": "Producto",
-        "quantity": "Cantidad",
-        "unitPrice": "Precio",
-        "total": "Total",
-        "orderFor": "orden para",
-        "addOrder": "Agregar order",
-        "filterByStatus": "Filtrar por estado",
-        "selectCustomer": "Seleccionar cliente",
-        "createCustomer": "Crear cliente",
-        "selectProduct": "Seleccionar producto",
-        "productsOrdered": "Productos ordenados",
-        "infoOrder": "Información de la orden",
-        "editOrder": "Editar orden",
-        "cancelOrderWarning": "¿Estás seguro de cancelar la orden? Esta acción no se puede revertir.",
-        "currentlyPendingOrders": "Ordenes pendientes",
-        "morePendingOrders": "Más ordenes pendientes, puedes verlas en la sección de ordenes"
-    },
-    "orderStatus": {
-        "pending": "Pendiente",
-        "delivered": "Entregado",
-        "confirmed": "Confirmado",
-        "cancelled": "Cancelado"
-    },
-      "products": {
-        "searchByName": "Buscar producto por nombre",
-        "addProduct": "Agregar producto",
-        "editProduct": "Editar producto",
-        "infoProduct": "Información del producto",
-        "addPrice": "Agregar precio",
-        "name": "Nombre",
-        "currentPrice": "Precio actual",
-        "prices": "Precios",
-        "price": "Precio",
-        "priceFrom": "Desde",
-        "showPastPrices": "Mostrar precios anteriores ({{ count }} más)",
-        "hidePastPrices": "Ocultar precios anteriores",
-        "recipe": "Receta",
-        "noMatchingProducts": "No se encontraron productos que coincidan",
-        "noPrice": "Sin precio",
-        "noRecipe": "Sin receta"
-    },
-     "auth": {
-        "login": "Iniciar sesión",
-        "loggingIn": "Iniciando sesión...",
-        "loading": "Cargando...",
-        "logout": "Cerrar sesión",
-        "loggingOut": "Cerrando sesión...",
-        "register": "Registrarse",
-        "email": "Email",
-        "password": "Contraseña",
-        "name": "Nombre",
-        "phone": "Teléfono",
-        "confirmPassword": "Confirmar contraseña",
-        "signIn": "Iniciar sesión",
-        "signUp": "Registrarse",
-        "forgotPassword": "Olvidé mi contraseña",
-        "signIntoAccount": "Iniciar sesión en tu cuenta",
-        "newHere": "¿Nuevo aquí?",
-        "createAccount": "Crea tu cuenta"
+    "loading": "Buscando...",
+    "confirmDelete": "¿Seguro que quieres borrar {{name}}?",
+    "fields": {
+      "name": "Nombre",
+      "phone": "Célular",
+      "price": "Precio",
+      "unitPrice": "Precio unitario",
+      "quantity": "Cantidad",
+      "total": "Total",
+      "status": "Estado",
+      "item": "Ingrediente"
     }
-   }
+  },
+  "pagination": {
+    "previous": "Previo",
+    "next": "Siguiente",
+    "page": "Página"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "orders": "Ordenes",
+    "stock": "Inventario",
+    "products": "Productos"
+  },
+  "dashboard": {
+    "quickActions": "Acciones rapidas",
+    "generalStatus": "Estado general",
+    "pendingOrders": "Pedidos pendientes",
+    "morePendingOrders": "Más pedidos pendientes, pueden buscarlos en la sección de 'Ordenes'"
+  },
+  "orders": {
+    "createdAt": "Fecha",
+    "customer": "Cliente",
+    "customerName": "Nombre",
+    "contact": "Contacto",
+    "product": "Producto",
+    "filterByStatus": "Filtar por estado",
+    "orderFor": "orden para",
+    "addOrder": "Agregar orden",
+    "editOrder": "Editar order",
+    "orderInfo": "Información de la orden",
+    "selectCustomer": "Seleccionar cliente",
+    "createCustomer": "Crear cliente",
+    "selectProduct": "Seleccionar producto",
+    "productsOrdered": "Productos ordenados",
+    "cancelOrderWarning": "¿Seguro que quieres cancelar esta orden? Esta acción no se puede deshacer."
+  },
+  "orderStatus": {
+    "pending": "Pendiente",
+    "confirmed": "Confirmado",
+    "delivered": "Entregado",
+    "cancelled": "Cancelado"
+  },
+  "products": {
+    "searchByName": "Buscar producto por nombre",
+    "addProduct": "Agregar producto",
+    "editProduct": "Editar producto",
+    "productInfo": "Información del producto",
+    "addPrice": "Agregar precio",
+    "currentPrice": "Precio actual",
+    "prices": "Precios",
+    "priceFrom": "Desde",
+    "showPastPrices": "Mostrar precios anteriores ({{count}} más)",
+    "hidePastPrices": "Ocultar precios anteriores",
+    "recipe": "Receta",
+    "noMatchingProducts": "No se encontraron productos",
+    "noPrice": "Sin precio",
+    "noRecipe": "Sin receta"
+  },
+  "items": {
+    "addItem": "Agregar ingrediente",
+    "editItem": "Editar ingrediente",
+    "itemInfo": "Información del ingrediente"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "loggingIn": "Iniciando sesión...",
+    "logout": "Cerrar sesión",
+    "loggingOut": "Cerrando sesión...",
+    "register": "Registrarse",
+    "email": "Email",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "newHere": "¿Nuevo aqui?",
+    "signIntoAccount": "Inicia sesión en tu cuenta",
+    "createAccount": "Crea tu cuenta"
+  }
+}

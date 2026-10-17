@@ -21,14 +21,14 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 	return (
 		<div className={cardVariants.tableBody}>
 			<div className='flex flex-col gap-2 p-4'>
-				<h1 className="text-xl ">{t("orders.currentlyPendingOrders")}</h1>
+				<h1 className="text-xl ">{t("dashboard.pendingOrders")}</h1>
 			</div>
 			<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
 				<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 sm:grid-cols-4 p-1 font-mono">
 						<p className='hidden sm:block'>Ref</p>
 						<p>{t("orders.customer")}</p>
 						<p>{t("orders.createdAt")}</p>
-						<p>{t("orders.total")}</p>
+						<p>{t("common.fields.total")}</p>
 				</div>
 				{orders.length > 0 ? (
 					orders.map(order => {
@@ -57,7 +57,7 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 						to={route} 
 						className="text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-50 underline transition-colors"
 					>
-						{t("orders.morePendingOrders")} →
+						{t("dashboard.morePendingOrders")} →
 					</Link>
 				</div>
 			)}

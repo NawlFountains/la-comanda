@@ -1,96 +1,102 @@
-   {
-     "tabs": { 
-        "dashboard": "Dashboard",
-        "orders": "Orders",
-        "stock": "Stock", 
-        "products": "Products", 
-        "results": "Results" 
-    },
-    "dashboard": {
-        "quickActions": "Quick actions",
-        "generalStatus": "General status"
-    },
+{
+  "common": {
     "actions": {
-        "add": "Add",
-        "adding": "Adding...",
-        "edit": "Edit",
-        "editing": "Editing...",
-        "delete": "Delete",
-        "deleting": "Deleteing...",
-        "cancel": "Cancel",
-        "search": "Search",
-        "confirm": "Confirm",
-        "confirmDeletion": "Are you sure you want to delete {{name}} ?"
+      "add": "Add",
+      "adding": "Adding...",
+      "edit": "Edit",
+      "editing": "Editing...",
+      "delete": "Delete",
+      "deleting": "Deleting...",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "search": "Search"
     },
-    "navigation": {
-        "previous": "Previous",
-        "next": "Next",
-        "page": "Page"
-    },
-    "orders": {
-        "createdAt": "Created at",
-        "customer": "Customer",
-        "customerName": "Customer name",
-        "contact": "Contact",
-        "status": "Status",
-        "product": "Product",
-        "quantity": "Quantity",
-        "unitPrice": "Price",
-        "total": "Total",
-        "filterByStatus": "Filter by status",
-        "orderFor": "order for",
-        "addOrder": "Add order",
-        "selectCustomer": "Select customer",
-        "createCustomer": "Create customer",
-        "selectProduct": "Select product",
-        "productsOrdered": "Products ordered",
-        "infoOrder": "Info order",
-        "editOrder": "Edit order",
-        "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone.",
-        "currentlyPendingOrders": "Currently pending orders",
-        "morePendingOrders": "More pending orders, check orders page"
-    },
-    "products": {
-        "searchByName": "Search product by name",
-        "addProduct": "Add product",
-        "editProduct": "Edit product",
-        "infoProduct": "Info product",
-        "addPrice": "Add price",
-        "name": "Name",
-        "currentPrice": "Current price",
-        "prices": "Prices",
-        "price": "Price",
-        "priceFrom": "From",
-        "showPastPrices": "Show past prices ({{ count }} more)",
-        "hidePastPrices": "Hide past prices",
-        "recipe": "Recipe",
-        "noMatchingProducts": "No matching products found",
-        "noPrice": "No price setted",
-        "noRecipe": "No recipe setted"
-    },
-    "orderStatus": {
-        "pending": "Pending",
-        "delivered": "Delivered",
-        "confirmed": "Confirmed",
-        "cancelled": "Cancelled"
-    },
-    "auth": {
-        "login": "Login",
-        "loggingIn": "Logging in...",
-        "loading": "Loading...",
-        "logout": "Logout",
-        "loggingOut": "Logging out...",
-        "register": "Register",
-        "email": "Email",
-        "password": "Password",
-        "name": "Name",
-        "phone": "Phone",
-        "confirmPassword": "Confirm password",
-        "signIn": "Sign in",
-        "signUp": "Sign up",
-        "forgotPassword": "Forgot password?",
-        "newHere": "New here?",
-        "signIntoAccount": "Sign into your account",
-        "createAccount": "Create your account"
+    "loading": "Loading...",
+    "confirmDelete": "Are you sure you want to delete {{name}}?",
+    "fields": {
+      "name": "Name",
+      "phone": "Phone",
+      "price": "Price",
+      "unitPrice": "Unit price",
+      "quantity": "Quantity",
+      "total": "Total",
+      "status": "Status",
+      "item": "Item"
     }
-   }
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "orders": "Orders",
+    "stock": "Stock",
+    "products": "Products"
+  },
+  "dashboard": {
+    "quickActions": "Quick actions",
+    "generalStatus": "General status",
+    "pendingOrders": "Pending orders",
+    "morePendingOrders": "More pending orders, check the orders page"
+  },
+  "orders": {
+    "createdAt": "Created at",
+    "customer": "Customer",
+    "customerName": "Customer name",
+    "contact": "Contact",
+    "product": "Product",
+    "filterByStatus": "Filter by status",
+    "orderFor": "order for",
+    "addOrder": "Add order",
+    "editOrder": "Edit order",
+    "orderInfo": "Order info",
+    "selectCustomer": "Select customer",
+    "createCustomer": "Create customer",
+    "selectProduct": "Select product",
+    "productsOrdered": "Products ordered",
+    "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone."
+  },
+  "orderStatus": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "products": {
+    "searchByName": "Search product by name",
+    "addProduct": "Add product",
+    "editProduct": "Edit product",
+    "productInfo": "Product info",
+    "addPrice": "Add price",
+    "currentPrice": "Current price",
+    "prices": "Prices",
+    "priceFrom": "From",
+    "showPastPrices": "Show past prices ({{count}} more)",
+    "hidePastPrices": "Hide past prices",
+    "recipe": "Recipe",
+    "noMatchingProducts": "No matching products found",
+    "noPrice": "No price set",
+    "noRecipe": "No recipe set"
+  },
+  "items": {
+    "addItem": "Add item",
+    "editItem": "Edit item",
+    "itemInfo": "Item info"
+  },
+  "auth": {
+    "login": "Log in",
+    "loggingIn": "Logging in...",
+    "logout": "Log out",
+    "loggingOut": "Logging out...",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "forgotPassword": "Forgot password?",
+    "newHere": "New here?",
+    "signIntoAccount": "Sign in to your account",
+    "createAccount": "Create your account"
+  }
+}

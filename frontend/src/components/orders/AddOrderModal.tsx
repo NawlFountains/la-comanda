@@ -142,7 +142,7 @@ export default function AddOrderModal({
 			)}
 			<div className='flex flex-col'>
 				<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.status")}</legend>
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("common.fields.status")}</legend>
 
 				<select
 				      	className='dark:bg-neutral-800 w-full rounded-lg py-1 px-2'
@@ -191,7 +191,7 @@ export default function AddOrderModal({
 						    type='number'
 						    step='1'
 						    id={`orderItem${index}Id`}
-						    label={t("orders.quantity")}
+						    label={t("common.fields.quantity")}
 						    value={item.quantity || ''}
 						    onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
 					    />
@@ -221,13 +221,13 @@ export default function AddOrderModal({
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>						
-						{t('actions.cancel')}
+						{t('common.actions.cancel')}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{submitting ? t('actions.adding') : t('actions.add')}
+						{submitting ? t('common.actions.adding') : t('common.actions.add')}
 					</button>
 				</div>
 		</ModalLayout>

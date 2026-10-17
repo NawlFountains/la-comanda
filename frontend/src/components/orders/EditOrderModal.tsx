@@ -50,7 +50,7 @@ export default function EditOrderModal({
 				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
 					<p>{t("orders.customer")}:</p>
 					<p>{t("orders.contact")}:</p>
-					<p>{t("orders.status")}:</p>
+					<p>{t("common.fields.status")}:</p>
 					<p>{t("orders.createdAt")}</p>
 					<p>ID:</p>
 				</div>
@@ -68,7 +68,7 @@ export default function EditOrderModal({
 			</div>
 			<div className='flex flex-col'>
 			<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.status")}</legend>
+				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("common.fields.status")}</legend>
 				<select
 				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={status}
@@ -91,13 +91,13 @@ export default function EditOrderModal({
 					<button
 						onClick={onClose}
 						className={`${buttonVariants.danger} border border-dashed w-full md:w-1/4`}>
-						{t("actions.cancel")}
+						{t("common.actions.cancel")}
 					</button>
 					<button 
 						onClick={handleSubmit}
 						disabled={submitting}
 						className={`${buttonVariants.secondary} w-full md:w-1/4`}>
-						{submitting ? t("actions.editing") : t("actions.edit")}
+						{submitting ? t("common.actions.editing") : t("common.actions.edit")}
 					</button>
 				</div>
 		</ModalLayout>
