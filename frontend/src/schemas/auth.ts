@@ -1,16 +1,16 @@
 import { z } from "zod"
 
 export const loginSchema = z.object({
-	email: z.email("Invalid email address."),
-	password: z.string().min(6, "Password must be at least 6 characters.")
+	email: z.email("common.errors.invalidEmail"),
+	password: z.string().min(6, "common.errors.minLength")
 })
 
 export const registerSchema = z.object({
-	email: z.email("Invalid email address."),
-	password: z.string().min(6, "Password must be at least 6 characters."),
+	email: z.email("common.errors.invalidEmail"),
+	password: z.string().min(6, "common.errors.minLength"),
 	confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+	    message: "common.errors.passwordsDontMatch",
     path: ["confirmPassword"]
 })
 

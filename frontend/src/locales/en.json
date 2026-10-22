@@ -11,6 +11,23 @@
       "confirm": "Confirm",
       "search": "Search"
     },
+    "errors": {
+      "required": "This field is required",
+      "invalidEmail": "Invalid email address",
+      "passwordsDontMatch": "Passwords do not match",
+      "minLength": "This field must be at least {{length}} characters long",
+      "mustBeNumber": "This field must be a number",
+      "mustBePositive": "This field must be a positive number",
+      "mustBeInteger": "This field must be an integer",
+      "mustBePositiveInteger": "This field must be a positive integer",
+      "mustBeNonNegative": "This field must be zero or greater",
+      "mustIncludeItem": "This field must include at least one item",
+      "mustIncludeProduct": "This field must include at least one product",
+      "maxLength": "This field must be at most {{length}} characters long",
+      "invalidId": "Invalid ID",
+      "invalidStatus": "Invalid status",
+      "invalidDate": "Invalid date"
+    },
     "loading": "Loading...",
     "confirmDelete": "Are you sure you want to delete {{name}}?",
     "fields": {
@@ -75,6 +92,9 @@
     "singular": "Customer",
     "name": "Customer name",
     "contact": "Contact",
+    "errors": {
+      "invalidPhoneNumber": "Enter a valid phone number"
+    },
     "toast": {
       "updated": "Customer updated",
       "deleted": "Customer deleted",

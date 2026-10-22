@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export const customerCreateSchema = z.object({
-	name: z.string().min(1, "Name is required").max(100),
-	phone: z.e164("Enter a valid phone number"),
+	name: z.string().min(1, "common.errors.required").max(100, "common.errors.maxLength"),
+	phone: z.e164("customers.errors.invalidPhoneNumber"),
 })
 
 export const customerUpdateSchema = customerCreateSchema.partial()

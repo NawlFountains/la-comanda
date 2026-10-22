@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const businessCreateSchema = z.object({
-	name: z.string().min(1, "Business name is required").max(100),
+	name: z.string().min(1, "common.errors.required").max(100, "common.errors.maxLength"),
 	phone: z.string().optional()
 })
 

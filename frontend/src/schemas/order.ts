@@ -5,17 +5,17 @@ const ORDER_STATUSES = ['pending', 'delivered', 'confirmed', 'cancelled'] as con
 
 export const orderItemSchema = z.object({
 	product_id: idSchema,
-	quantity: z.number().int("Must be a integer").positive("Quantity must be greater than 0")
+	quantity: z.number("common.errors.mustBeNumber").int("common.errors.mustBeInteger").positive("common.errors.mustBePositive")
 })
 
 export const orderCreateSchema = z.object({
 	customer_id: idSchema,
-	status: z.enum(ORDER_STATUSES),
-	order_items: z.array(orderItemSchema).min(1, "Must include at least one item")
+	status: z.enum(ORDER_STATUSES, { error: "common.errors.invalidStatus" }),
+	order_items: z.array(orderItemSchema).min(1, "common.errors.mustIncludeItem")
 })
 
 export const orderUpdateSchema = z.object({
-	status: z.enum(ORDER_STATUSES)
+	status: z.enum(ORDER_STATUSES, { error: "common.errors.invalidStatus" })
 })
 
 export type OrderCreateData = z.infer<typeof orderCreateSchema>

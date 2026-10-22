@@ -11,6 +11,23 @@
       "confirm": "Confirmar",
       "search": "Buscar"
     },
+    "errors": {
+      "required": "Este campo es obligatorio",
+      "invalidEmail": "Dirección de correo electrónico no válida",
+      "passwordsDontMatch": "Las contraseñas no coinciden",
+      "minLength": "Este campo debe tener al menos {{length}} caracteres",
+      "mustBeNumber": "Este campo debe ser un número",
+      "mustBePositive": "Este campo debe ser un número positivo",
+      "mustBeInteger": "Este campo debe ser un número entero",
+      "mustBePositiveInteger": "Este campo debe ser un número entero positivo",
+      "mustBeNonNegative": "Este campo debe ser cero o mayor",
+      "mustIncludeItem": "Este campo debe incluir al menos un ingrediente",
+      "mustIncludeProduct": "Este campo debe incluir al menos un producto",
+      "maxLength": "Este campo debe tener como máximo {{length}} caracteres",
+      "invalidId": "Identificador no válido",
+      "invalidStatus": "Estado no válido",
+      "invalidDate": "Fecha no válida"
+    },
     "loading": "Buscando...",
     "confirmDelete": "¿Seguro que quieres borrar {{name}}?",
     "fields": {
@@ -75,6 +92,9 @@
     "singular": "Cliente",
     "name": "Nombre del cliente",
     "contact": "Contacto",
+    "errors": {
+      "invalidPhoneNumber": "Introduce un número de teléfono válido"
+    },
     "toast": {
       "updated": "Cliente actualizado",
       "deleted": "Cliente eliminado",

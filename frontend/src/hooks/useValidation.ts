@@ -1,19 +1,6 @@
 import { useState, useCallback } from 'react'
-import { ZodError } from 'zod';
-import { ZodType } from 'zod';
-
-function parseZodErrors<T extends Record<string, string| undefined>>(error: ZodError): T {
-  const formErrors = {} as T;
-
-  for (const issue of error.issues) {
-    const field = issue.path[0] as keyof T;
-    
-    if (field && !formErrors[field]) {
-      formErrors[field] = issue.message as T[keyof T];
-    }
-  }
-  return formErrors;
-}
+import type { ZodType } from 'zod'
+import { parseZodErrors } from '../utils/parseZodErrors'
 
 export function useValidation<TErrors extends Record<string, string | undefined>>() {
 	const [errors, setErrors] = useState<TErrors>({} as TErrors)

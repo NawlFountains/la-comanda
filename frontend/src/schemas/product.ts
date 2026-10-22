@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const productCreateSchema = z.object({
-	name: z.string().min(1, "Name is required").max(100),
+	name: z.string().min(1, "common.errors.required").max(100, "common.errors.maxLength"),
 })
 
 export const productUpdateSchema = productCreateSchema.partial()

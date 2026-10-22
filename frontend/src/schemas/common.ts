@@ -1,10 +1,10 @@
 import { z } from "zod"
 
-export const idSchema = z.uuid()
-export const priceSchema = z.number().positive("Price must be greater than 0")
+export const idSchema = z.uuid("common.errors.invalidId")
+export const priceSchema = z.number("common.errors.mustBeNumber").positive("common.errors.mustBePositive")
 export const decimalStringSchema = z
 	.string()
-	.min(1, "This field is required")
-	.refine((val) => !isNaN(Number(val)), { message: "Must be a valid number" })
-	.refine((val) => Number(val) >= 0, { message: "Must be zero or greater" })
+	.min(1, "common.errors.required")
+	.refine((val) => !isNaN(Number(val)), { message: "common.errors.mustBeNumber" })
+	.refine((val) => Number(val) >= 0, { message: "common.errors.mustBeNonNegative" })
 

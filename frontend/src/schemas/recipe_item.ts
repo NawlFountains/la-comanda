@@ -4,7 +4,7 @@ import { decimalStringSchema, idSchema } from './common'
 export const recipeItemCreateSchema = z.object({
 	item_id: idSchema,
 	quantity: decimalStringSchema,
-	unit: z.string().min(1, 'Unit is required')
+	unit: z.string().min(1, "common.errors.required")
 })
 
 export const recipeItemUpdateSchema = recipeItemCreateSchema.partial()
