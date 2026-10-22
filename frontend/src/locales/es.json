@@ -55,6 +55,47 @@
     "restock": "Reabastecimiento",
     "products": "Productos"
   },
+  "home": {
+    "heroTitle": "Deja de adivinar cuánto inventario tienes. Enfócate en lo importante",
+    "heroDescription": "Optimiza tu inventario, automatiza las alertas de reposición y administra los pedidos de tus clientes desde un solo panel.",
+    "pillars": {
+      "realTimeStock": {
+        "title": "Inventario en tiempo real",
+        "description": "Controla automáticamente el inventario actual y actualízalo con cada reposición y pedido."
+      },
+      "smartRestocking": {
+        "title": "Reposición inteligente",
+        "description": "No te quedes sin stock. Define un umbral mínimo y genera órdenes de compra con un solo clic."
+      },
+      "orderManagement": {
+        "title": "Gestión de pedidos sencilla",
+        "description": "Sigue los pedidos de tus clientes desde que los realizan hasta que se completan, sin complicaciones."
+      }
+    },
+    "workflow": {
+      "inventoryTitle": "Dile adiós a las hojas de cálculo",
+      "inventoryDescription": "En lugar de perder tiempo registrando cada compra, anota la reposición y el inventario se actualizará automáticamente.",
+      "orderSyncTitle": "Sincronización de pedidos",
+      "orderSyncDescription": "Registra todos los pedidos, ya sean presenciales, de tu cocinero o tuyos. Se sincronizan al instante para mantener actualizado el inventario en todo el sistema."
+    },
+    "images": {
+      "dashboardPreview": "Vista previa del panel de inventario",
+      "inventoryManagement": "Ilustración de la actualización automática del inventario tras una reposición",
+      "orderSync": "Ilustración de la sincronización de pedidos con el inventario"
+    },
+    "pricing": {
+      "title": "Precio",
+      "month": "/ Mes",
+      "features": {
+        "orderManagement": "Gestión de pedidos de clientes",
+        "stockManagement": "Gestión de inventario",
+        "productPricing": "Precios de productos",
+        "dashboard": "Panel general"
+      },
+      "tryForFree": "Pruébalo gratis",
+      "freeTrial": "* Prueba gratuita de 7 días"
+    }
+  },
   "dashboard": {
     "quickActions": "Acciones rapidas",
     "generalStatus": "Estado general",

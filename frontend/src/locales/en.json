@@ -55,6 +55,47 @@
     "restock": "Restock",
     "products": "Products"
   },
+  "home": {
+    "heroTitle": "Stop guessing your inventory. Focus on what matters",
+    "heroDescription": "Streamline your stock, automate restock alerts, and manage customer orders from one centralized dashboard.",
+    "pillars": {
+      "realTimeStock": {
+        "title": "Real-time stock",
+        "description": "Automatically track current stock and update it with every restock and order."
+      },
+      "smartRestocking": {
+        "title": "Smart restocking",
+        "description": "Never run out of stock again. Set a low-stock threshold and generate purchase orders in one click."
+      },
+      "orderManagement": {
+        "title": "Seamless order management",
+        "description": "Track customer orders from placement to fulfillment without losing your mind."
+      }
+    },
+    "workflow": {
+      "inventoryTitle": "Goodbye to spreadsheets",
+      "inventoryDescription": "Instead of spending time tracking every purchase, simply log a restock and your stock updates automatically.",
+      "orderSyncTitle": "Order syncing",
+      "orderSyncDescription": "Log every order, whether it comes in person, from your cook, or from you. Orders sync instantly, keeping inventory accurate across your system."
+    },
+    "images": {
+      "dashboardPreview": "Preview of the inventory dashboard",
+      "inventoryManagement": "Illustration of automatic stock updates after a restock",
+      "orderSync": "Illustration of orders syncing with inventory"
+    },
+    "pricing": {
+      "title": "Pricing",
+      "month": "/ Month",
+      "features": {
+        "orderManagement": "Manage customer orders",
+        "stockManagement": "Stock management",
+        "productPricing": "Product pricing",
+        "dashboard": "General dashboard"
+      },
+      "tryForFree": "Try for free",
+      "freeTrial": "* 7-day free trial"
+    }
+  },
   "dashboard": {
     "quickActions": "Quick actions",
     "generalStatus": "General status",
