@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from "react-i18next"
 import type { ProductWithDetails, PriceHistory } from '../types'
 import {useToast} from '../context/ToastContext'
 import { priceHistoryCreateSchema, type PriceHistoryCreateData, type PriceHistoryErrors } from '../schemas/price_history'
@@ -9,6 +10,7 @@ export const usePriceHistory = (
 	activeProductId: string | null | undefined,
 	setProducts: React.Dispatch<React.SetStateAction<ProductWithDetails[]>>
 ) => {
+	const { t } = useTranslation(undefined, { keyPrefix: "prices.toast"})
 	const { showToast } = useToast()
 
 	const [prices, setPrices] = useState<PriceHistory[]>([])
@@ -74,7 +76,7 @@ export const usePriceHistory = (
 					return p
 				})
 			)
-			showToast('Price created successfully', 'message')
+			showToast(t("added"), 'message')
 			return true
 		} catch (err) {
 			setPrices((prev) => prev.filter((p) => p.id !== tempId))
@@ -82,7 +84,7 @@ export const usePriceHistory = (
 				prev.map((p) => (p.id === productId ? { ...p, latest_price: previousLatestPrice ?? null } : p))
 			)
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to create price: ${message}`)
+			showToast(`${t("addError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)

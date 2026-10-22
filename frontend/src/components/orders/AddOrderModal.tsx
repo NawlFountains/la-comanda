@@ -93,7 +93,7 @@ export default function AddOrderModal({
 			</div>
 			<div className='w-full flex-1'>
 	<fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.customer")}</legend>
+				<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("customers.singular")}</legend>
 				      <select
 				      	className='dark:bg-neutral-800 w-full py-1 px-2'
 					value={customerId}
@@ -122,7 +122,7 @@ export default function AddOrderModal({
 					<InputModal 
 						className='p-1 w-full'
 						id="customerName"
-						label={t("orders.customerName")}
+						label={t("common.fields.name")}
 						value={customerName}
 						onChange={(e) => setCustomerName(e.target.value)}
 						placeholder='e.g. Cornelius'/>
@@ -133,7 +133,7 @@ export default function AddOrderModal({
 						className='p-1 w-full'
 						value={customerPhone}
 						id="customerPhone"
-						label={t("orders.contact")}
+						label={t("common.fields.phone")}
 						onChange={(e) => setCustomerPhone(e.target.value)}
 						placeholder='+54 9 11 1234-5678'/>
 					{customerErrors.phone && (<ErrorMessage message={customerErrors.phone}/>)}
@@ -165,7 +165,7 @@ export default function AddOrderModal({
 					    {/* Item Dropdown Selection */}
 					    <div className='w-full flex-1'>
 					    <fieldset className="border border-neutral-400 dark:border-neutral-600 rounded-lg px-2 pb-1">
-						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("orders.product")}</legend>
+						<legend className="text-xs px-1 text-neutral-600 dark:text-neutral-200">{t("products.singular")}</legend>
 
 					      <select
 						className='dark:bg-neutral-800 w-full rounded-lg py-1 px-2'

@@ -43,7 +43,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 				<div className='flex flex-col'>
 				{prices && prices.length > 0 ? (
 					<>
-					<h2 className='font-mono text-lg'>{t("products.prices")}</h2>
+					<h2 className='font-mono text-lg'>{t("prices.plural")}</h2>
 					<table>
 					<thead>
 						<tr className='text-lg font-mono bg-neutral-200 dark:bg-neutral-700 font-medium'>
@@ -51,7 +51,7 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 							{t("common.fields.price")}
 							</td>
 							<td>
-							{t("products.priceFrom")}
+							{t("prices.from")}
 							</td>
 						</tr>
 					</thead>
@@ -73,14 +73,14 @@ export default function InfoProductModal({ onClose, loading, product, prices, it
 							onClick={() => setShowPastPrices(!showPastPrices)}
 							className="text-sm text-neutral-600 dark:text-neutral-300 underline cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-100"
 						>
-							{showPastPrices? t("products.hidePastPrices") : t("products.showPastPrices", { count: prices.length - 1 })}
+							{showPastPrices? t("prices.hidePast") : t("prices.showPast", { count: prices.length - 1 })}
 						</button>
 					)}
 				</div>
 				<div className='flex flex-col'>
 				{product.recipe_items && product.recipe_items.length > 0 ?  (
 					<>
-					<h2 className='font-mono text-lg'>{t("products.recipe")}</h2>
+					<h2 className='font-mono text-lg'>{t("recipeItems.recipe")}</h2>
 					<table>
 					<thead>
 						<tr className='font-mono text-lg bg-neutral-200 dark:bg-neutral-700'>

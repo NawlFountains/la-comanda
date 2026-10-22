@@ -46,12 +46,8 @@
   },
   "orders": {
     "createdAt": "Created at",
-    "customer": "Customer",
-    "customerName": "Customer name",
-    "contact": "Contact",
-    "product": "Product",
     "filterByStatus": "Filter by status",
-    "orderFor": "order for",
+    "orderFor": "Order for",
     "addOrder": "Add order",
     "editOrder": "Edit order",
     "orderInfo": "Order info",
@@ -59,7 +55,15 @@
     "createCustomer": "Create customer",
     "selectProduct": "Select product",
     "productsOrdered": "Products ordered",
-    "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone."
+    "cancelOrderWarning": "Are you sure you want to cancel this order? This action cannot be undone.",
+    "toast": {
+      "updated": "Order updated",
+      "deleted": "Order cancelled",
+      "added": "Order added",
+      "updateError": "Failed to update order",
+      "deleteError": "Failed to delete order",
+      "addError": "Failed to add order"
+    }
   },
   "orderStatus": {
     "pending": "Pending",
@@ -67,21 +71,63 @@
     "delivered": "Delivered",
     "cancelled": "Cancelled"
   },
+  "customers": {
+    "singular": "Customer",
+    "name": "Customer name",
+    "contact": "Contact",
+    "toast": {
+      "updated": "Customer updated",
+      "deleted": "Customer deleted",
+      "added": "Customer added",
+      "updateError": "Failed to update customer",
+      "deleteError": "Failed to delete customer",
+      "addError": "Failed to add customer"
+    }
+  },
   "products": {
+    "singular": "Product",
     "searchByName": "Search product by name",
     "addProduct": "Add product",
     "editProduct": "Edit product",
     "productInfo": "Product info",
-    "addPrice": "Add price",
-    "currentPrice": "Current price",
-    "prices": "Prices",
-    "priceFrom": "From",
-    "showPastPrices": "Show past prices ({{count}} more)",
-    "hidePastPrices": "Hide past prices",
-    "recipe": "Recipe",
     "noMatchingProducts": "No matching products found",
-    "noPrice": "No price set",
-    "noRecipe": "No recipe set"
+    "toast": {
+      "updated": "Product updated",
+      "deleted": "Product deleted",
+      "added": "Product added",
+      "updateError": "Failed to update product",
+      "deleteError": "Failed to delete product",
+      "addError": "Failed to add product"
+    }
+  },
+  "prices": {
+    "plural": "Prices",
+    "addPrice": "Add price",
+    "current": "Current price",
+    "from": "From",
+    "none": "No price set",
+    "showPast": "Show past prices ({{count}} more)",
+    "hidePast": "Hide past prices",
+    "toast": {
+      "updated": "Price updated",
+      "deleted": "Price deleted",
+      "added": "Price added",
+      "updateError": "Failed to update price",
+      "deleteError": "Failed to delete price",
+      "addError": "Failed to add price"
+    }
+  },
+  "recipeItems": {
+    "recipe": "Recipe",
+    "none": "No recipe set",
+    "toast": {
+      "updated": "Recipe item updated",
+      "deleted": "Recipe item deleted",
+      "added": "Recipe item added",
+      "updateError": "Failed to update recipe item",
+      "deleteError": "Failed to delete recipe item",
+      "addError": "Failed to add recipe item"
+    }
   },
   "items": {
     "addItem": "Add item",
@@ -94,7 +140,15 @@
     "lowStock": "Low stock",
     "currentStock": "Current stock",
     "lowStockThreshold": "Low stock threshold",
-    "lowStockItems": "Low stock items"
+    "lowStockItems": "Low stock items",
+    "toast": {
+      "updated": "Item updated",
+      "deleted": "Item deleted",
+      "added": "Item added",
+      "updateError": "Failed to update item",
+      "deleteError": "Failed to delete item",
+      "addError": "Failed to add item"
+    }
   },
   "restocks": {
     "supplier": "Supplier",
@@ -104,7 +158,15 @@
     "editRestock": "Edit restock",
     "addRestockItems": "Add restock items",
     "searchPlaceholder": "Search restock by supplier name",
-    "latestRestocks": "Latest restocks"
+    "latestRestocks": "Latest restocks",
+    "toast": {
+      "updated": "Restock updated",
+      "deleted": "Restock deleted",
+      "added": "Restock added",
+      "updateError": "Failed to update restock",
+      "deleteError": "Failed to delete restock",
+      "addError": "Failed to add restock"
+    }
   },
   "auth": {
     "login": "Log in",

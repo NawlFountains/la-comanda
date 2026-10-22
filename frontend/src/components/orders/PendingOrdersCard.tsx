@@ -26,7 +26,7 @@ export default function PendingOrdersCard({ orders, customers, route }: PendingO
 			<div className="flex flex-col divide-y divide-neutral-300 dark:divide-neutral-600 rounded-b-xl">
 				<div className="bg-neutral-200 dark:bg-neutral-900 grid grid-cols-3 sm:grid-cols-4 p-1 font-mono">
 						<p className='hidden sm:block'>Ref</p>
-						<p>{t("orders.customer")}</p>
+						<p>{t("customers.singular")}</p>
 						<p>{t("orders.createdAt")}</p>
 						<p>{t("common.fields.total")}</p>
 				</div>

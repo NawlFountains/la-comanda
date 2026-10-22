@@ -32,8 +32,8 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 			{/* Customer and Order Status Grid */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 max-w-lg mx-auto text-md mb-2 bg-neutral-50 dark:bg-neutral-700/40 p-3 rounded-md border border-neutral-200 dark:border-neutral-600">
 				<div className="text-left text-neutral-500 dark:text-neutral-200 font-mono uppercase tracking-wider text-sm flex flex-col gap-2 justify-center">
-					<p>{t("orders.customer")}:</p>
-					<p>{t("orders.contact")}:</p>
+					<p>{t("customers.singular")}:</p>
+					<p>{t("customers.contact")}:</p>
 					<p>{t("common.fields.status")}:</p>
 					<p>{t("orders.createdAt")}</p>
 					<p>ID:</p>
@@ -57,7 +57,7 @@ export default function InfoOrderModal({ onClose, order, customer, products }: I
 				<thead>
 					<tr className='font-mono bg-neutral-200 dark:bg-neutral-700 text-lg'>
 						<td className='w-1/3'>
-						{t("orders.product")}
+						{t("products.singular")}
 						</td>
 						<td className='w-1/3'>
 						{t("common.fields.quantity")}

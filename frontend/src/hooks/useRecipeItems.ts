@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from "react-i18next"
 import { recipeItemCreateSchema, recipeItemUpdateSchema } from '../schemas/recipe_item'
 import { createRecipeItem, deleteRecipeItem, updateRecipeItem } from '../api/products'
 import type { RecipeItemCreateData, RecipeItemErrors, RecipeItemUpdateData } from '../schemas/recipe_item'
@@ -7,6 +8,7 @@ import { useToast } from '../context/ToastContext'
 import { useValidation } from './useValidation'
 
 export const useRecipeItems = (setProducts: React.Dispatch<React.SetStateAction<ProductWithDetails[]>>) => {
+	const { t } = useTranslation(undefined, { keyPrefix: "recipeItems.toast"})
 	const { showToast } = useToast()
 	const { errors, validate, clearErrors} = useValidation<RecipeItemErrors>()
 	const validateRecipe = useCallback((data: RecipeItemCreateData) => validate(recipeItemCreateSchema, data), [validate])
@@ -36,7 +38,7 @@ export const useRecipeItems = (setProducts: React.Dispatch<React.SetStateAction<
 						: p
 				)
 			)
-			showToast('Recipe item created successfully', 'message')
+			showToast(t("added"), 'message')
 			return true
 		} catch (err) {
 			setProducts((prev) =>
@@ -47,7 +49,7 @@ export const useRecipeItems = (setProducts: React.Dispatch<React.SetStateAction<
 				)
 			)
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to create recipe item: ${message}`)
+			showToast(`${"addError"}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -71,11 +73,11 @@ export const useRecipeItems = (setProducts: React.Dispatch<React.SetStateAction<
 							: product
 				    )
 			)
-			showToast(`Recipe item updated succesfully`, `message`)
+			showToast(t("updated"), `message`)
 			return true
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to update recipe item: ${message}`)
+			showToast(`${t("updateError")}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -95,10 +97,10 @@ export const useRecipeItems = (setProducts: React.Dispatch<React.SetStateAction<
 						: product
 				)
 			)
-			showToast(`Recipe item deleted succesfully`, `message`)
+			showToast(t("deleted"), `message`)
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to delete recipe item: ${message}`)
+			showToast(`${(t("deleteError"))}: ${message}`)
 		} finally {
 			setSubmitting(false)
 		}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useTranslation } from "react-i18next"
 import { createProduct, deleteProduct, updateProduct, getProductsWithDetails } from '../api/products'
 import type { Product, ProductWithDetails } from '../types'
 import { productCreateSchema, productUpdateSchema } from '../schemas/product'
@@ -7,6 +8,7 @@ import { useToast } from '../context/ToastContext'
 import { useValidation } from './useValidation'
 
 export const useProducts = () => {
+	const { t } = useTranslation(undefined, { keyPrefix: "products.toast"})
 	const { showToast } = useToast()
 
 	const [products, setProducts] = useState<ProductWithDetails[]>([])
@@ -65,12 +67,12 @@ export const useProducts = () => {
 			setProducts((prev) => 
 				 prev.map((p) => (p.id === tempId ? newProductWithNoDetails : p))
 			)
-			showToast('Product created succesfully','message')
+			showToast(t("added"),'message')
 			return true
 		} catch (err) {
 			setProducts((prev) => prev.filter((p) => p.id !== tempId))
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to create product: ${message}`)
+			showToast(`${t("addError")}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -90,14 +92,14 @@ export const useProducts = () => {
 			setProducts((prev) =>
 				prev.map((p) => (p.id === id ? { ...p, ...updatedProduct } : p))
 			)
-			showToast('Product updated successfully', 'message')
+			showToast(t("updated"), 'message')
 			return true
 		} catch (err) {
 			if (previousProduct) {
 				setProducts((prev) => prev.map((p) => (p.id === id ? previousProduct! : p)))
 			}
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to update product: ${message}`)
+			showToast(`${t("updateError")}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -109,10 +111,10 @@ export const useProducts = () => {
 			await deleteProduct(id)
 
 			setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id))
-			showToast('Product deleted succesfully','message')
+			showToast(t("deleted"),'message')
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to delete product: ${message}`)
+			showToast(`${t("deleteError")}: ${message}`)
 		} finally {
 			setSubmitting(false)
 		}
@@ -121,7 +123,7 @@ export const useProducts = () => {
 		return products.filter(product=>
 			product.name.toLowerCase().includes(appliedSearchName.toLowerCase())
 		)
-	}, [products, appliedSearchName])
+}, [products, appliedSearchName])
 
 	const handleSearchNameChanged = (name: string | null) => {
 		setAppliedSearchName(name ? name : '')

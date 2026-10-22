@@ -1,4 +1,5 @@
 import {useCallback, useEffect, useState} from "react"
+import { useTranslation } from "react-i18next"
 import { createCustomer, getCustomers } from '../api/customers'
 import type { Customer } from '../types'
 import {customerCreateSchema} from "../schemas/customer"
@@ -7,6 +8,7 @@ import {useToast} from "../context/ToastContext"
 import {useValidation} from "./useValidation"
 
 export const useCustomer = () => {
+	const { t } = useTranslation(undefined, { keyPrefix: "customers.toast"})
 	const { showToast } = useToast()
 	const { errors, validate, clearErrors } = useValidation<CustomerErrors>()
 	const validateCustomer = useCallback((data: CustomerCreateData) => validate(customerCreateSchema, data), [validate])
@@ -37,11 +39,11 @@ export const useCustomer = () => {
 			const newCustomer: Customer= await createCustomer(customerData)
 
 			setCustomers((prevCustomers) => [...prevCustomers, newCustomer])
-			showToast('Customer created succesfully', 'message')
+			showToast(t("added"), 'message')
 			return newCustomer.id 
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unkown error"
-			showToast(`Failed to create customer: ${message}`)
+			showToast(`${t("addError")}: ${message}`)
 			return null 
 		} finally {
 			setSubmitting(false)

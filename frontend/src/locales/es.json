@@ -33,7 +33,7 @@
   },
   "nav": {
     "dashboard": "Panel",
-    "orders": "Ordenes",
+    "orders": "Pedidos",
     "stock": "Inventario",
     "restock": "Reabastecimiento",
     "products": "Productos"
@@ -42,24 +42,28 @@
     "quickActions": "Acciones rapidas",
     "generalStatus": "Estado general",
     "pendingOrders": "Pedidos pendientes",
-    "morePendingOrders": "Más pedidos pendientes, pueden buscarlos en la sección de 'Ordenes'"
+    "morePendingOrders": "Más pedidos pendientes, pueden buscarlos en la sección de 'Pedidos'"
   },
   "orders": {
     "createdAt": "Fecha",
-    "customer": "Cliente",
-    "customerName": "Nombre",
-    "contact": "Contacto",
-    "product": "Producto",
     "filterByStatus": "Filtar por estado",
-    "orderFor": "orden para",
-    "addOrder": "Agregar orden",
-    "editOrder": "Editar order",
-    "orderInfo": "Información de la orden",
+    "orderFor": "pedido para",
+    "addOrder": "Agregar pedido",
+    "editOrder": "Editar pedido",
+    "orderInfo": "Información de la pedido",
     "selectCustomer": "Seleccionar cliente",
     "createCustomer": "Crear cliente",
     "selectProduct": "Seleccionar producto",
     "productsOrdered": "Productos ordenados",
-    "cancelOrderWarning": "¿Seguro que quieres cancelar esta orden? Esta acción no se puede deshacer."
+    "cancelOrderWarning": "¿Seguro que quieres cancelar este pedido? Esta acción no se puede deshacer.",
+    "toast": {
+      "updated": "Pedido actualizado",
+      "deleted": "Pedido cancelado",
+      "added": "Pedido agregado",
+      "updateError": "Error al actualizar pedido",
+      "deleteError": "Error al eliminar pedido",
+      "addError": "Error al agregar pedido"
+    }
   },
   "orderStatus": {
     "pending": "Pendiente",
@@ -67,21 +71,63 @@
     "delivered": "Entregado",
     "cancelled": "Cancelado"
   },
+  "customers": {
+    "singular": "Cliente",
+    "name": "Nombre del cliente",
+    "contact": "Contacto",
+    "toast": {
+      "updated": "Cliente actualizado",
+      "deleted": "Cliente eliminado",
+      "added": "Cliente agregado",
+      "updateError": "Error al actualizar cliente",
+      "deleteError": "Error al eliminar cliente",
+      "addError": "Error al agregar cliente"
+    }
+  },
   "products": {
+    "singular": "Producto",
     "searchByName": "Buscar producto por nombre",
     "addProduct": "Agregar producto",
     "editProduct": "Editar producto",
     "productInfo": "Información del producto",
-    "addPrice": "Agregar precio",
-    "currentPrice": "Precio actual",
-    "prices": "Precios",
-    "priceFrom": "Desde",
-    "showPastPrices": "Mostrar precios anteriores ({{count}} más)",
-    "hidePastPrices": "Ocultar precios anteriores",
-    "recipe": "Receta",
     "noMatchingProducts": "No se encontraron productos",
-    "noPrice": "Sin precio",
-    "noRecipe": "Sin receta"
+    "toast": {
+      "updated": "Producto actualizado",
+      "deleted": "Producto borrado",
+      "added": "Producto agregado",
+      "updateError": "Error al actualizar producto",
+      "deleteError": "Error al eliminar producto",
+      "addError": "Error al agregar producto"
+    }
+  },
+  "prices": {
+    "plural": "Precios",
+    "addPrice": "Agregar precio",
+    "current": "Precio actual",
+    "from": "Desde",
+    "none": "Sin precio",
+    "showPast": "Mostrar precios anteriores ({{count}} más)",
+    "hidePast": "Ocultar precios anteriores",
+    "toast": {
+      "updated": "Precio actualizado",
+      "deleted": "Precio eliminado",
+      "added": "Precio agregado",
+      "updateError": "Error al actualizar precio",
+      "deleteError": "Error al eliminar precio",
+      "addError": "Error al agregar precio"
+    }
+  },
+  "recipeItems": {
+    "recipe": "Receta",
+    "none": "Sin receta",
+    "toast": {
+      "updated": "Ingrediente de receta actualizado",
+      "deleted": "Ingrediente de receta eliminado",
+      "added": "Ingrediente de receta agregado",
+      "updateError": "Error al actualizar ingrediente de receta",
+      "deleteError": "Error al eliminar ingrediente de receta",
+      "addError": "Error al agregar ingrediente de receta"
+    }
   },
   "items": {
     "addItem": "Agregar ingrediente",
@@ -94,7 +140,15 @@
     "lowStock": "Bajo stock",
     "currentStock": "Stock actual",
     "lowStockThreshold": "Umbral de stock",
-    "lowStockItems": "Ingredientes con bajo stock"
+    "lowStockItems": "Ingredientes con bajo stock",
+    "toast": {
+      "updated": "Ingrediente actualizado",
+      "deleted": "Ingrediente borrado",
+      "added": "Ingrediente agregado",
+      "updateError": "Error al actualizar ingrediente",
+      "deleteError": "Error al eliminar ingrediente",
+      "addError": "Error al agregar ingrediente"
+    }
   },
   "restocks": {
     "supplier": "Proveedor",
@@ -104,7 +158,15 @@
     "editRestock": "Editar reabastecimiento",
     "addRestockItems": "Agregar ingredientes",
     "searchPlaceholder": "Buscar reabastecimiento por proveedor",
-    "latestRestocks": "Últimos reabastecimientos"
+    "latestRestocks": "Últimos reabastecimientos",
+    "toast": {
+      "updated": "Reabastecimiento actualizado",
+      "deleted": "Reabastecimiento borrado",
+      "added": "Reabastecimiento agregado",
+      "updateError": "Error al actualizar reabastecimiento",
+      "deleteError": "Error al eliminar reabastecimiento",
+      "addError": "Error al agregar reabastecimiento"
+    }
   },
   "auth": {
     "login": "Iniciar sesión",

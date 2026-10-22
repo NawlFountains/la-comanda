@@ -1,4 +1,5 @@
 import {useCallback, useEffect, useState} from "react"
+import { useTranslation } from "react-i18next"
 import { deleteRestock, getRestocks, updateRestock } from '../api/restocks'
 import type { Restock } from '../types'
 import { restockCreateSchema, restockUpdateSchema, type RestockCreateData, type RestockErrors, type RestockUpdateData } from '../schemas/restock'
@@ -7,6 +8,7 @@ import {useToast} from "../context/ToastContext"
 import {useValidation} from "./useValidation"
 
 export const useRestocks = () => {
+	const { t } = useTranslation(undefined, { keyPrefix: "restocks.toast"})
 	const { showToast } = useToast()
 	const { errors, validate, clearErrors } = useValidation<RestockErrors>()
 
@@ -69,12 +71,12 @@ export const useRestocks = () => {
 			const newRestock: Restock = await createRestock(restockData)
 
 			setRestocks((prevRestocks) => prevRestocks.map((r) => (r.id === tempId ? newRestock : r )))
-			showToast('Restock succesfuly created', 'message')
+			showToast(t("added"), 'message')
 			return true
 		} catch (err) {
 			setRestocks((prevRestocks) => prevRestocks.filter((r) => (r.id !== tempId)))
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to create restock: ${message}`)
+			showToast(`${t("addError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -87,10 +89,10 @@ export const useRestocks = () => {
 			await deleteRestock(id)
 
 			setRestocks((prevRestocks) => prevRestocks.filter((restock) => restock.id !== id))
-			showToast(`Restock succesfuly deleted`, 'message')
+			showToast(t("deleted"), 'message')
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to delete restock: ${message}`)
+			showToast(`${t("deleteError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -110,14 +112,14 @@ export const useRestocks = () => {
 		try {
 			const updatedRestock: Restock = await updateRestock(id, restockData)
 			setRestocks((prev) => prev.map((r) => (r.id === id ? updatedRestock : r)))
-			showToast(`Restock succesfuly update`, 'message')
+			showToast(t("updated"), 'message')
 			return true
 		} catch (err) {
 			if (previousRestock) {
 				setRestocks((prev) => prev.map((r) => (r.id === id ? previousRestock! : r)))
 			}
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to update restock: ${message}`)
+			showToast(`${t("updateError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)

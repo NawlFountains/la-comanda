@@ -75,7 +75,7 @@ export default function PriceSection({
 						name="input_valid_from"
 						type="date"
 						id="priceValidFrom"
-						label={t("products.priceFrom")}
+						label={t("prices.from")}
 						className='w-1/3 text-center'
 						value={validFrom}
 						onChange={(e) => setValidFrom(e.target.value)}
@@ -124,7 +124,7 @@ export default function PriceSection({
 				onClick={() => setShowPastPrices(!showPastPrices)}
 				className="text-sm text-neutral-600 dark:text-neutral-300 underline cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-100"
 			>
-				{showPastPrices? t("products.hidePastPrices") : t("products.showPastPrices", { count: prices.length - 1 })}
+				{showPastPrices? t("prices.hidePast") : t("prices.showPast", { count: prices.length - 1 })}
 			</button>
 		)}
 
@@ -132,7 +132,7 @@ export default function PriceSection({
 			<button
 				onClick={() => setCreatePrice(true)}
 				className={`${buttonVariants.secondary}`}>
-				{t("products.addPrice")}
+				{t("prices.addPrice")}
 			</button>
 		)}
 		</div>

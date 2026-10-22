@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react"
+import { useTranslation } from "react-i18next"
 import { getOrders, createOrder, updateOrder } from '../api/orders'
 import type { OrderStatus, Order } from '../types'
 import {orderCreateSchema, orderUpdateSchema } from "../schemas/order"
@@ -7,6 +8,7 @@ import {useToast} from "../context/ToastContext"
 import {useValidation} from "./useValidation"
 
 export const useOrders = () => {
+	const { t } = useTranslation(undefined, { keyPrefix: "orders.toast" })
 	const { showToast } = useToast()
 	const { errors, validate, clearErrors } = useValidation<OrderErrors>()
 
@@ -71,12 +73,12 @@ export const useOrders = () => {
 			const newOrder: Order = await createOrder(orderData)
 
 			setOrders((prev) => prev.map((o) => (o.id === tempId ? newOrder: o )))
-			showToast(`Order succesfully created`, 'message')
+			showToast(t("added"), 'message')
 			return true
 		} catch (err) {
 			setOrders((prev) => prev.filter((o) => (o.id !== tempId)))
 			const message = err instanceof Error ? err.message : "Unkown error"
-			showToast(`Failed to create order: ${message}`)
+			showToast(`${t("addError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -88,11 +90,11 @@ export const useOrders = () => {
 		try {
 			const updatedOrder: Order = await updateOrder(id, { status: 'cancelled' as OrderStatus })
 			setOrders((prevOrders) => prevOrders.map((order) => order.id === id ? updatedOrder : order))
-			showToast(`Order succesfully deleted`, 'message')
+			showToast(t("deleted"), 'message')
 			return true
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unkown error"
-			showToast(`Failed to delete order: ${message}`)
+			showToast(`${t("deleteError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -111,14 +113,14 @@ export const useOrders = () => {
 		try {
 			const updatedOrder: Order = await updateOrder(id, orderData)
 			setOrders((prev) => prev.map((o) => (o.id === id ? updatedOrder : o)))
-			showToast(`Order succesfully updated`, 'message')
+			showToast(t("updated"), 'message')
 			return true
 		} catch (err) {
 			if (previousOrder) {
 				setOrders((prev) => prev.map((o) => (o.id === id ? previousOrder! : o)))
 			}
 			const message = err instanceof Error ? err.message : "Unkown error"
-			showToast(`Failed to update order: ${message}`)
+			showToast(`${t("updateError")}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)

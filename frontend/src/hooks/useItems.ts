@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { deleteItem, getStock, updateItem } from '../api/items'
 import type { Item } from '../types'
 import { createItem } from '../api/items'
@@ -8,6 +9,7 @@ import {useToast} from '../context/ToastContext'
 import {useValidation} from './useValidation'
 
 export const useItems = () => {
+	const { t } = useTranslation(undefined, { keyPrefix: "items.toast" })
 	const { showToast} = useToast()
 	const { errors, validate, clearErrors } = useValidation<ItemErrors>()
 
@@ -68,12 +70,12 @@ export const useItems = () => {
 			setItems((prevItems) => 
 				 prevItems.map((item) => (item.id === tempId ? newItem : item))
 			)
-			showToast("Item succesfully added", "message")
+			showToast(t("added"), "message")
 			return true
 		} catch (err) {
 			setItems((prevItems) => prevItems.filter((item) => item.id !== tempId))
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to add item: ${message}`)
+			showToast(`${t("addError")} ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -86,10 +88,10 @@ export const useItems = () => {
 			await deleteItem(id)
 
 			setItems((prevItems) => prevItems.filter((item) => item.id !== id))
-			showToast("Item succesfully deleted", "message")
+			showToast(t("deleted"), "message")
 		} catch (err) {
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to delete item: ${message}`)
+			showToast(`${t("deleteError")}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
@@ -108,14 +110,14 @@ export const useItems = () => {
 		try {
 			const updatedItem: Item= await updateItem(id, itemData)
 			setItems((prev) => prev.map((i) => (i.id === id ? updatedItem : i)))
-			showToast("Item succesfully updated", "message")
+			showToast(t("updated"), "message")
 			return true
 		} catch (err) {
 			if (previousItem) {
 				setItems((prev) => prev.map((i) => (i.id === id ? previousItem! : i)))
 			}
 			const message = err instanceof Error ? err.message : "Unknown error"
-			showToast(`Failed to update item: ${message}`)
+			showToast(`${t("updateError")}: ${message}`)
 			return false
 		} finally {
 			setSubmitting(false)
