@@ -49,6 +49,7 @@
     "page": "Page"
   },
   "nav": {
+    "back": "Back",
     "dashboard": "Dashboard",
     "orders": "Orders",
     "stock": "Stock",
@@ -235,12 +236,15 @@
     "logout": "Log out",
     "loggingOut": "Logging out...",
     "register": "Register",
+    "registering": "Registering...",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
     "forgotPassword": "Forgot password?",
     "newHere": "New here?",
     "signIntoAccount": "Sign in to your account",
-    "createAccount": "Create your account"
+    "createAccount": "Create your account",
+    "businessInfo": "Business information",
+    "alreadyHaveAccount": "Already have an account?"
   }
 }

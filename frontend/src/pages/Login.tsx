@@ -28,7 +28,7 @@ export default function Login() {
 			<Link 
 				className="absolute left-0 text-neutral-600 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hidden sm:flex"
 				to="/">
-				{`> Back`}
+				{`> ${t("nav.back")}`}
 			</Link>
 				 <h1 className="text-3xl font-bold">La comanda</h1>
 				 <h2 className="text-2xl text-neutral-700 dark:text-neutral-400">{t("auth.signIntoAccount")}</h2>

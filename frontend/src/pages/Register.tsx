@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import { useTranslation } from "react-i18next";
 import AuthLayout from '../layouts/AuthLayout'
 import { buttonVariants } from '../components/styles/ButtonStyles'
 import { EyeIcon, EyeSlashIcon } from '../components/styles/Icons'
@@ -8,6 +9,7 @@ import ErrorMessage from '../components/errors/ErrorMessage'
 import InputModal from '../components/InputModal'
 
 export default function Register () {
+	const { t } = useTranslation()
 	const {
 		email,
 		setEmail,
@@ -35,10 +37,10 @@ export default function Register () {
 			<Link 
 				className="absolute left-0 text-neutral-600 dark:text-neutral-400 hover:text-neutral-700 hidden dark:hover:text-neutral-200 sm:flex"
 				to="/">
-				{`> Back`}
+				{`> ${t("nav.back")}`}
 			</Link>
 				 <h1 className="text-3xl font-bold">La comanda</h1>
-				 <h2 className="text-2xl text-neutral-700 dark:text-neutral-400">Create your account</h2>
+				 <h2 className="text-2xl text-neutral-700 dark:text-neutral-400"> {t("auth.createAccount")} </h2>
 			</div>
 
 			{/* Email input */}
@@ -47,7 +49,7 @@ export default function Register () {
 				 value={email}
 				 onChange={e => setEmail(e.target.value)}
 				 id="email"
-				 label="email"
+				 label={t("auth.email")}
 				 className="w-full h-10"
 				 placeholder="email@example.com"/>
 				 {registerErrors.email && (
@@ -65,9 +67,9 @@ export default function Register () {
 							 value={password}
 							 onChange={e => setPassword(e.target.value)}
 							 id="password"
-							 label="password"
+							 label={t("auth.password")}
 							 className="w-full h-10"
-							 placeholder="password"
+							 placeholder={t("auth.password")}
 							 type={showPassword ? "text" : "password"}
 						 />
 					</div>
@@ -99,9 +101,9 @@ export default function Register () {
 							 value={confirmPassword}
 							 onChange={e => setConfirmPassword(e.target.value)}
 							 id="confirm-password"
-							 label="confirm password"
+							 label={t("auth.confirmPassword")}
 							 className="w-full h-10"
-							 placeholder="Confirm password"
+							 placeholder={t("auth.confirmPassword")}
 							 type={showPassword ? "text" : "password"}
 						 />
 					</div>
@@ -126,7 +128,7 @@ export default function Register () {
 			 </div>
 
 			 <div className='border-b pb-2'>
-			 <h2 className='font-mono text-lg text-neutral-800'>Business information</h2>
+			 <h2 className='font-mono text-lg text-neutral-800 dark:text-neutral-200'>{t("auth.businessInfo")}</h2>
 			 </div>
 
 			 {/* Business name*/}
@@ -135,7 +137,7 @@ export default function Register () {
 					 value={name}
 					 onChange={e => setName(e.target.value)}
 					 id="name"
-					 label="name"
+					 label={t("common.fields.name")}
 					 className="w-full h-10"
 					 placeholder="e.g. La comanda"/>
 					 {businessErrors.name && (
@@ -151,7 +153,7 @@ export default function Register () {
 					 value={phone}
 					 onChange={e => setPhone(e.target.value)}
 					 id="phone"
-					 label="phone (optional)"
+					 label={`${t("common.fields.phone")} (${t("common.fields.optional")})`}
 					 className="w-full h-10"
 					 placeholder="e.g. +123456789123"/>
 					 {businessErrors.phone && (
@@ -165,10 +167,10 @@ export default function Register () {
 				disabled={loading}
 				onClick={() => handleRegister()}
 				className={`${buttonVariants.primary} w-full max-w-sm mb-3 border border-neutral-600 rounded-lg`}>
-				{ loading ? 'Registering...' : 'Register' }
+				{ loading ? t("auth.registering") : t("auth.register") }
 			</button>
 			<p>
-				Already have an account? <Link className="font-bold" to="/login">Log in</Link>
+				{t("auth.alreadyHaveAccount")} <Link className="font-bold" to="/login">{t("auth.login")}</Link>
 			</p>
 			</div>
 		</AuthLayout>

@@ -49,6 +49,7 @@
     "page": "Página"
   },
   "nav": {
+    "back": "Volver",
     "dashboard": "Panel",
     "orders": "Pedidos",
     "stock": "Inventario",
@@ -235,12 +236,15 @@
     "logout": "Cerrar sesión",
     "loggingOut": "Cerrando sesión...",
     "register": "Registrarse",
+    "registering": "Registrando...",
     "email": "Email",
     "password": "Contraseña",
     "confirmPassword": "Confirmar contraseña",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "newHere": "¿Nuevo aqui?",
     "signIntoAccount": "Inicia sesión en tu cuenta",
-    "createAccount": "Crea tu cuenta"
+    "createAccount": "Crea tu cuenta",
+    "businessInfo": "Información del negocio",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?"
   }
 }
